@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isRecovering, setIsRecovering] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -24,6 +25,29 @@ export default function LoginPage() {
 
     router.push("/dashboard");
     router.refresh();
+  }
+
+  async function handlePasswordRecovery() {
+    if (!email) {
+      setMessage("Informe seu e-mail para receber o link de recuperacao de senha.");
+      return;
+    }
+
+    setIsRecovering(true);
+    setMessage("Enviando link de recuperacao...");
+    const supabase = createClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/nova-senha`
+    });
+
+    if (error) {
+      setMessage("Nao foi possivel enviar o link. Confira o e-mail e tente novamente.");
+      setIsRecovering(false);
+      return;
+    }
+
+    setMessage("Enviamos um link de recuperacao para o seu e-mail.");
+    setIsRecovering(false);
   }
 
   return (
@@ -87,6 +111,14 @@ export default function LoginPage() {
             className="mt-6 h-11 w-full rounded-md bg-sme-blue px-4 text-sm font-bold text-white transition hover:bg-sme-navy focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2"
           >
             Acessar sistema
+          </button>
+          <button
+            type="button"
+            onClick={handlePasswordRecovery}
+            disabled={isRecovering}
+            className="mt-3 h-10 w-full rounded-md border border-slate-300 px-4 text-sm font-bold text-sme-blue transition hover:border-sme-blue hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isRecovering ? "Enviando..." : "Esqueci minha senha"}
           </button>
           {message ? <p className="mt-4 text-sm text-slate-600">{message}</p> : null}
         </form>
