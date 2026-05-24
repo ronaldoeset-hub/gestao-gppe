@@ -1,30 +1,55 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { FileCheck2, Lock, Mail } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [isRecovering, setIsRecovering] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function loginErrorMessage(errorMessage: string) {
+    const normalized = errorMessage.toLowerCase();
+
+    if (normalized.includes("invalid login credentials")) {
+      return "E-mail ou senha incorretos. Confira os dados ou use Esqueci minha senha.";
+    }
+
+    if (normalized.includes("email not confirmed")) {
+      return "Este e-mail ainda nao foi confirmado no Supabase. Confirme o usuario em Authentication > Users.";
+    }
+
+    return `Nao foi possivel entrar: ${errorMessage}`;
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setIsSubmitting(true);
     setMessage("Validando acesso...");
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      setMessage("Não foi possível entrar. Confira e-mail e senha.");
-      return;
+    try {
+      const supabase = createClient();
+      const loginAttempt = supabase.auth.signInWithPassword({ email: email.trim(), password });
+      const timeout = new Promise<never>((_, reject) => {
+        window.setTimeout(() => reject(new Error("Tempo de resposta esgotado ao conectar com o Supabase.")), 15000);
+      });
+      const { error } = await Promise.race([loginAttempt, timeout]);
+
+      if (error) {
+        setMessage(loginErrorMessage(error.message));
+        setIsSubmitting(false);
+        return;
+      }
+
+      window.location.assign("/dashboard");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido no login.";
+      setMessage(`Nao foi possivel conectar ao login: ${errorMessage}`);
+      setIsSubmitting(false);
     }
-
-    router.push("/dashboard");
-    router.refresh();
   }
 
   async function handlePasswordRecovery() {
@@ -35,18 +60,26 @@ export default function LoginPage() {
 
     setIsRecovering(true);
     setMessage("Enviando link de recuperacao...");
-    const supabase = createClient();
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/nova-senha`
-    });
 
-    if (error) {
-      setMessage("Nao foi possivel enviar o link. Confira o e-mail e tente novamente.");
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/nova-senha`
+      });
+
+      if (error) {
+        setMessage(`Nao foi possivel enviar o link: ${error.message}`);
+        setIsRecovering(false);
+        return;
+      }
+
+      setMessage("Enviamos um link de recuperacao para o seu e-mail.");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido na recuperacao.";
+      setMessage(`Nao foi possivel conectar ao Supabase: ${errorMessage}`);
       setIsRecovering(false);
-      return;
     }
 
-    setMessage("Enviamos um link de recuperacao para o seu e-mail.");
     setIsRecovering(false);
   }
 
@@ -58,16 +91,16 @@ export default function LoginPage() {
             <FileCheck2 className="h-7 w-7" aria-hidden="true" />
           </div>
           <div>
-            <p className="font-bold">SME Águas Lindas de Goiás</p>
-            <p className="text-sm text-sky-100">Gerência GPPE</p>
+            <p className="font-bold">SME Aguas Lindas de Goias</p>
+            <p className="text-sm text-sky-100">Gerencia GPPE</p>
           </div>
         </div>
         <div className="max-w-2xl">
           <p className="mb-3 inline-flex rounded-md bg-white/12 px-3 py-1 text-sm font-semibold">Sistema interno</p>
-          <h1 className="text-4xl font-bold leading-tight lg:text-5xl">Gestão de Recursos e Conselhos - GPPE</h1>
+          <h1 className="text-4xl font-bold leading-tight lg:text-5xl">Gestao de Recursos e Conselhos - GPPE</h1>
           <p className="mt-4 max-w-xl text-base leading-7 text-sky-50">
-            Acompanhamento de unidades escolares, conselhos, repasses, documentos e prestações de contas em uma
-            aplicação independente preparada para publicação institucional.
+            Acompanhamento de unidades escolares, conselhos, repasses, documentos e prestacoes de contas em uma
+            aplicacao independente preparada para publicacao institucional.
           </p>
         </div>
         <div className="h-2 w-40 rounded-full bg-gradient-to-r from-sme-yellow via-white to-sme-red" />
@@ -76,6 +109,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="w-full max-w-md rounded-md border border-slate-200 bg-white p-6 shadow-soft">
           <h2 className="text-2xl font-bold text-sme-ink">Entrar</h2>
           <p className="mt-1 text-sm text-slate-600">Use as credenciais cadastradas no Supabase Auth.</p>
+
           <label className="mt-6 block text-sm font-semibold text-slate-700" htmlFor="email">
             E-mail
           </label>
@@ -91,6 +125,7 @@ export default function LoginPage() {
               placeholder="usuario@sme.gov.br"
             />
           </div>
+
           <label className="mt-4 block text-sm font-semibold text-slate-700" htmlFor="password">
             Senha
           </label>
@@ -103,14 +138,16 @@ export default function LoginPage() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               className="h-11 w-full border-0 outline-none"
-              placeholder="••••••••"
+              placeholder="********"
             />
           </div>
+
           <button
             type="submit"
-            className="mt-6 h-11 w-full rounded-md bg-sme-blue px-4 text-sm font-bold text-white transition hover:bg-sme-navy focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2"
+            disabled={isSubmitting}
+            className="mt-6 h-11 w-full rounded-md bg-sme-blue px-4 text-sm font-bold text-white transition hover:bg-sme-navy focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Acessar sistema
+            {isSubmitting ? "Entrando..." : "Acessar sistema"}
           </button>
           <button
             type="button"

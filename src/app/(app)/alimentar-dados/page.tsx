@@ -13,6 +13,12 @@ import { ModuleHeader } from "@/components/module-header";
 
 const dataActions = [
   {
+    href: "/diagnostico-dados",
+    title: "Ver diagnostico dos dados",
+    description: "Confira automaticamente o que falta completar por unidade escolar.",
+    icon: ClipboardCheck
+  },
+  {
     href: "/unidades#nova-unidade",
     title: "Cadastrar ou atualizar unidade escolar",
     description: "Inclua escola, creche ou CEMEI, com INEP, bairro e gestor responsavel.",

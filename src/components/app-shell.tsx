@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { href: "/dashboard", label: "Painel Geral", icon: Home },
   { href: "/alimentar-dados", label: "Alimentar Dados", icon: FileCheck2 },
+  { href: "/diagnostico-dados", label: "Diagnostico dos Dados", icon: BarChart3 },
   { href: "/unidades", label: "Unidades Escolares", icon: Building2 },
   { href: "/conselhos", label: "Conselhos Escolares", icon: UsersRound },
   { href: "/recursos", label: "Recursos Financeiros", icon: Landmark },
