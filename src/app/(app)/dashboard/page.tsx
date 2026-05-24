@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   AlertTriangle,
   Building2,
@@ -59,20 +60,20 @@ export default async function DashboardPage() {
             <select className="h-11 rounded-md border border-slate-200 bg-white px-3 text-sm font-semibold text-[#003b7a]">
               <option>Exercicio: 2026</option>
             </select>
-            <button className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-black text-[#003b7a]">
+            <Link href="/dashboard" className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-4 text-sm font-black text-[#003b7a] hover:bg-blue-50">
               <RefreshCw className="h-4 w-4" aria-hidden="true" />
               Atualizar
-            </button>
+            </Link>
           </div>
         </div>
       </section>
 
       <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-        <DashboardCard icon={Building2} label="Total de Unidades" value={String(schoolUnits.length)} detail="Ativas: 54 | Inativas: 1" tone="blue" />
-        <DashboardCard icon={Coins} label="Recursos Recebidos" value={formatCurrency(totalResources)} detail="Acumulado 2026" tone="green" />
-        <DashboardCard icon={Wallet} label="Recursos Executados" value={formatCurrency(executed)} detail={`${totalResources ? ((executed / totalResources) * 100).toFixed(2) : "0,00"}% do total`} tone="blue" />
-        <DashboardCard icon={WalletCards} label="Saldo Disponivel" value={formatCurrency(totalBalance)} detail={`${totalResources ? ((totalBalance / totalResources) * 100).toFixed(2) : "0,00"}% do total`} tone="yellow" />
-        <DashboardCard icon={AlertTriangle} label="Pendencias Criticas" value={String(overdueAccountabilities + pendingCouncils)} detail="Ver detalhes" tone="red" />
+        <DashboardCard href="/unidades" icon={Building2} label="Total de Unidades" value={String(schoolUnits.length)} detail="Ativas: 54 | Inativas: 1" tone="blue" />
+        <DashboardCard href="/recursos" icon={Coins} label="Recursos Recebidos" value={formatCurrency(totalResources)} detail="Acumulado 2026" tone="green" />
+        <DashboardCard href="/recursos" icon={Wallet} label="Recursos Executados" value={formatCurrency(executed)} detail={`${totalResources ? ((executed / totalResources) * 100).toFixed(2) : "0,00"}% do total`} tone="blue" />
+        <DashboardCard href="/recursos" icon={WalletCards} label="Saldo Disponivel" value={formatCurrency(totalBalance)} detail={`${totalResources ? ((totalBalance / totalResources) * 100).toFixed(2) : "0,00"}% do total`} tone="yellow" />
+        <DashboardCard href="/alertas" icon={AlertTriangle} label="Pendencias Criticas" value={String(overdueAccountabilities + pendingCouncils)} detail="Ver detalhes" tone="red" />
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[1fr_1.5fr]">
@@ -83,7 +84,7 @@ export default async function DashboardPage() {
               {councilSituation.map((item) => (
                 <LegendRow key={item.label} {...item} total={councils.length || 55} />
               ))}
-              <a className="inline-flex text-sm font-black text-[#0054a6]" href="/conselhos">Ver todas as unidades &rarr;</a>
+              <Link className="inline-flex text-sm font-black text-[#0054a6] hover:text-sme-navy" href="/conselhos">Ver todas as unidades &rarr;</Link>
             </div>
           </div>
         </Panel>
@@ -136,7 +137,7 @@ export default async function DashboardPage() {
                 );
               })}
             </div>
-            <a className="inline-flex text-sm font-black text-[#0054a6]" href="/recursos">Ver relatorio completo &rarr;</a>
+            <Link className="inline-flex text-sm font-black text-[#0054a6] hover:text-sme-navy" href="/recursos">Ver relatorio completo &rarr;</Link>
           </div>
         </Panel>
         <Panel title="Prestacao de Contas">
@@ -148,7 +149,7 @@ export default async function DashboardPage() {
               <LegendRow label="Atrasada" value={accountabilities.filter((item) => item.status === "atencao" || item.status === "vencido").length} total={accountabilities.length || 55} color="bg-red-500" />
             </div>
           </div>
-          <a className="mt-4 inline-flex text-sm font-black text-[#0054a6]" href="/prestacao-contas">Ver todas as prestacoes &rarr;</a>
+          <Link className="mt-4 inline-flex text-sm font-black text-[#0054a6] hover:text-sme-navy" href="/prestacao-contas">Ver todas as prestacoes &rarr;</Link>
         </Panel>
         <Panel title="Alertas Recentes">
           <div className="space-y-3">
@@ -163,7 +164,7 @@ export default async function DashboardPage() {
               </div>
             ))}
           </div>
-          <a className="mt-4 inline-flex text-sm font-black text-[#0054a6]" href="/alertas">Ver todos os alertas &rarr;</a>
+          <Link className="mt-4 inline-flex text-sm font-black text-[#0054a6] hover:text-sme-navy" href="/alertas">Ver todos os alertas &rarr;</Link>
         </Panel>
       </section>
 
@@ -180,7 +181,9 @@ export default async function DashboardPage() {
           </div>
           <div className="grid gap-2 sm:grid-cols-5 lg:w-[720px]">
             {["Oficio", "Despacho", "Relatorio", "Ata", "Memorando"].map((label) => (
-              <button key={label} className="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm font-black text-[#003b7a]">{label}</button>
+              <Link key={label} href="/documentos" className="inline-flex h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-3 text-sm font-black text-[#003b7a] hover:bg-blue-50">
+                {label}
+              </Link>
             ))}
           </div>
         </div>
@@ -189,7 +192,7 @@ export default async function DashboardPage() {
   );
 }
 
-function DashboardCard({ icon: Icon, label, value, detail, tone }: { icon: LucideIcon; label: string; value: string; detail: string; tone: "blue" | "green" | "yellow" | "red" }) {
+function DashboardCard({ href, icon: Icon, label, value, detail, tone }: { href: string; icon: LucideIcon; label: string; value: string; detail: string; tone: "blue" | "green" | "yellow" | "red" }) {
   const tones = {
     blue: "bg-[#0054a6] text-white",
     green: "bg-emerald-600 text-white",
@@ -198,9 +201,9 @@ function DashboardCard({ icon: Icon, label, value, detail, tone }: { icon: Lucid
   };
 
   return (
-    <div className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
+    <Link href={href} className="group block rounded-md border border-slate-200 bg-white p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sme-blue hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2">
       <div className="flex items-center gap-4">
-        <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full ${tones[tone]}`}>
+        <div className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-full transition group-hover:scale-105 ${tones[tone]}`}>
           <Icon className="h-8 w-8" aria-hidden="true" />
         </div>
         <div className="min-w-0">
@@ -209,7 +212,7 @@ function DashboardCard({ icon: Icon, label, value, detail, tone }: { icon: Lucid
           <p className="mt-1 text-sm font-semibold text-slate-500">{detail}</p>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

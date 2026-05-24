@@ -25,10 +25,10 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/dashboard", label: "Painel Geral", icon: Home },
+  { href: "/alimentar-dados", label: "Alimentar Dados", icon: FileCheck2 },
   { href: "/unidades", label: "Unidades Escolares", icon: Building2 },
   { href: "/conselhos", label: "Conselhos Escolares", icon: UsersRound },
   { href: "/recursos", label: "Recursos Financeiros", icon: Landmark },
@@ -39,11 +39,11 @@ const navItems = [
 ];
 
 const quickItems = [
-  { label: "Controle de Vencimentos", icon: ClipboardCheck },
-  { label: "Pendencias Criticas", icon: AlertTriangle, badge: "12" },
-  { label: "Prestacoes Pendentes", icon: FileText, badge: "28" },
-  { label: "Documentos Recentes", icon: FileArchive },
-  { label: "Exportar Dados (Excel)", icon: Download }
+  { href: "/conselhos", label: "Controle de Vencimentos", icon: ClipboardCheck },
+  { href: "/alertas", label: "Pendencias Criticas", icon: AlertTriangle, badge: "12" },
+  { href: "/prestacao-contas#nova-prestacao", label: "Prestacoes Pendentes", icon: FileText, badge: "28" },
+  { href: "/documentos", label: "Documentos Recentes", icon: FileArchive },
+  { href: "/transparencia", label: "Exportar Dados (Excel)", icon: Download }
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -52,9 +52,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
 
   async function signOut() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/login");
+    await fetch("/auth/logout", { method: "POST" });
+    router.replace("/login");
+    router.refresh();
   }
 
   return (
@@ -80,12 +80,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <nav className="hidden items-center gap-6 text-sm font-black uppercase lg:flex">
             <Link href="/dashboard" className="hover:text-sme-yellow">Inicio</Link>
-            <span className="inline-flex items-center gap-1 hover:text-sme-yellow">A Secretaria <ChevronDown className="h-3 w-3" /></span>
             <div className="group relative">
-              <button type="button" className="inline-flex items-center gap-1 hover:text-sme-yellow">
-                Servicos <ChevronDown className="h-3 w-3" />
-              </button>
+              <Link href="/secretaria" className="inline-flex items-center gap-1 hover:text-sme-yellow">
+                A Secretaria <ChevronDown className="h-3 w-3" />
+              </Link>
               <div className="invisible absolute left-0 top-full z-50 mt-4 w-80 rounded-md border border-slate-200 bg-white p-3 text-left text-sm normal-case text-slate-700 opacity-0 shadow-xl transition group-hover:visible group-hover:opacity-100">
+                <ServiceLink href="/secretaria" title="Sobre a GPPE" description="Importancia da gerencia na organizacao financeira das unidades." />
+                <ServiceLink href="https://smeaguaslindas.com/" title="Portal oficial da SME" description="Acesso ao site institucional da Secretaria Municipal de Educacao." external />
+                <ServiceLink href="/documentos" title="Documentos institucionais" description="Modelos, checklists, arquivos e orientacoes do setor." />
+              </div>
+            </div>
+            <div className="group relative">
+              <Link href="/servicos" className="inline-flex items-center gap-1 hover:text-sme-yellow">
+                Servicos <ChevronDown className="h-3 w-3" />
+              </Link>
+              <div className="invisible absolute left-0 top-full z-50 mt-4 w-80 rounded-md border border-slate-200 bg-white p-3 text-left text-sm normal-case text-slate-700 opacity-0 shadow-xl transition group-hover:visible group-hover:opacity-100">
+                <ServiceLink href="/servicos" title="Todos os servicos da GPPE" description="Visao geral das atividades realizadas pelo setor." />
                 <ServiceLink href="/recursos" title="Controle de recursos financeiros" description="Acompanhamento de repasses, saldos, custeio e capital." />
                 <ServiceLink href="/conselhos" title="Acompanhamento dos Conselhos Escolares" description="Mandatos, membros, vencimentos e regularidade documental." />
                 <ServiceLink href="/prestacao-contas" title="Prestacao de contas" description="Prazos, analise tecnica, pareceres e situacao por unidade." />
@@ -95,9 +105,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             </div>
             <div className="group relative">
-              <button type="button" className="inline-flex items-center gap-1 hover:text-sme-yellow">
+              <Link href="/gestao-escolar" className="inline-flex items-center gap-1 hover:text-sme-yellow">
                 Gestao Escolar <ChevronDown className="h-3 w-3" />
-              </button>
+              </Link>
               <div className="invisible absolute left-1/2 top-full z-50 mt-4 w-[520px] -translate-x-1/2 rounded-md border border-slate-200 bg-white p-4 text-left text-sm normal-case text-slate-700 opacity-0 shadow-xl transition group-hover:visible group-hover:opacity-100">
                 <div className="border-b border-slate-100 pb-3">
                   <p className="text-sm font-black uppercase text-[#003b7a]">Dados completos dos recursos municipais</p>
@@ -115,12 +125,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
             </div>
-            <span className="hover:text-sme-yellow">Transparencia</span>
+            <Link href="/transparencia" className="hover:text-sme-yellow">Transparencia</Link>
           </nav>
-          <div className="hidden h-11 w-56 items-center gap-2 rounded-md bg-white px-3 text-slate-500 lg:flex">
+          <Link href="/alimentar-dados" className="hidden h-11 w-56 items-center gap-2 rounded-md bg-white px-3 text-slate-500 transition hover:bg-blue-50 lg:flex">
             <span className="text-sm">Pesquisar...</span>
             <Search className="ml-auto h-4 w-4 text-[#003b7a]" aria-hidden="true" />
-          </div>
+          </Link>
           <Link href="/dashboard" className="hidden h-11 items-center gap-2 rounded-md bg-sme-yellow px-4 text-sm font-black uppercase text-[#003b7a] lg:inline-flex">
             <LayoutGrid className="h-4 w-4" aria-hidden="true" />
             Sistemas
@@ -196,16 +206,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               {quickItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.label} className="flex min-h-9 items-center gap-3 text-sm font-semibold text-[#003b7a]">
+                  <Link key={item.label} href={item.href} className="flex min-h-9 items-center gap-3 text-sm font-semibold text-[#003b7a] hover:text-sme-navy">
                     <Icon className="h-4 w-4" aria-hidden="true" />
                     <span className="flex-1">{item.label}</span>
                     {item.badge ? <span className="rounded-full bg-sme-yellow px-2 py-0.5 text-xs font-black text-[#003b7a]">{item.badge}</span> : null}
-                  </div>
+                  </Link>
                 );
               })}
             </div>
           </div>
-          <div className="m-4 flex items-center gap-3 rounded-md bg-blue-50 p-4 text-[#003b7a]">
+          <Link href="/servicos" className="m-4 flex items-center gap-3 rounded-md bg-blue-50 p-4 text-[#003b7a] hover:bg-blue-100">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0054a6] text-white">
               <HelpCircle className="h-5 w-5" aria-hidden="true" />
             </div>
@@ -213,7 +223,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <p className="font-black">Precisa de ajuda?</p>
               <p>Manual do Sistema</p>
             </div>
-          </div>
+          </Link>
         </aside>
         {open ? <button className="fixed inset-0 z-40 bg-slate-950/40 lg:hidden" aria-label="Fechar menu" onClick={() => setOpen(false)} /> : null}
 
@@ -233,7 +243,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
               <FooterColumn title="Links rapidos" items={["Portal da SME", "Transparencia", "Legislacao", "Fale Conosco"]} />
               <FooterColumn title="Documentos" items={["Regimentos", "Portarias", "Manuais", "Formularios"]} />
-              <FooterColumn title="Contato GPPE" items={["(61) 3618-7997", "gppe@smeaguaslindas.go.gov.br", "Rua 25, Qd. 96, Lt. 07"]} />
+              <FooterColumn
+                title="Contato GPPE"
+                items={[
+                  "(61) 3618-7997",
+                  "gppe@smeaguaslindas.go.gov.br",
+                  "Quadra 46, Conjunto A, Lote 01",
+                  "CEP 72910-004 - Parque da Barragem Setor 08"
+                ]}
+              />
               <div className="text-right md:text-left xl:text-right">
                 <p className="text-4xl font-black">GPPE</p>
                 <p className="font-bold uppercase text-blue-100">Setor Responsavel</p>
@@ -260,9 +278,9 @@ function FooterColumn({ title, items }: { title: string; items: string[] }) {
   );
 }
 
-function ServiceLink({ href, title, description }: { href: string; title: string; description: string }) {
+function ServiceLink({ href, title, description, external = false }: { href: string; title: string; description: string; external?: boolean }) {
   return (
-    <Link href={href} className="block rounded-md px-3 py-2 hover:bg-blue-50">
+    <Link href={href} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined} className="block rounded-md px-3 py-2 hover:bg-blue-50">
       <p className="font-black text-[#003b7a]">{title}</p>
       <p className="mt-0.5 text-xs leading-5 text-slate-500">{description}</p>
     </Link>
