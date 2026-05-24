@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Search } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { StatusBadge } from "@/components/status-badge";
@@ -81,7 +82,21 @@ export function SchoolUnitsTable({ rows }: SchoolUnitsTableProps) {
         rows={filteredRows}
         columns={[
           { key: "id", header: "Código", render: (row) => row.id },
-          { key: "name", header: "Unidade", render: (row) => <span className="font-semibold text-sme-ink">{row.name}</span> },
+          {
+            key: "name",
+            header: "Unidade",
+            render: (row) => (
+              <div>
+                <span className="font-semibold text-sme-ink">{row.name}</span>
+                <Link
+                  href={`/unidades/${encodeURIComponent(row.id)}`}
+                  className="mt-1 block text-xs font-bold text-sme-blue hover:text-sme-navy"
+                >
+                  Ver detalhes
+                </Link>
+              </div>
+            )
+          },
           { key: "inep", header: "INEP", render: (row) => row.inep },
           { key: "type", header: "Tipo", render: (row) => row.type },
           { key: "district", header: "Bairro", render: (row) => row.district },
