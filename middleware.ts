@@ -33,9 +33,10 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const isLogin = request.nextUrl.pathname.startsWith("/login");
+  const isPasswordRecovery = request.nextUrl.pathname.startsWith("/nova-senha");
   const isAppRoute = !request.nextUrl.pathname.startsWith("/_next") && !request.nextUrl.pathname.includes(".");
 
-  if (!user && !isLogin && isAppRoute) {
+  if (!user && !isLogin && !isPasswordRecovery && isAppRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
