@@ -154,3 +154,11 @@ https://github.com/ronaldoeset-hub/gestao-gppe/pull/new/feat-implementacao-gppe-
 - Verificacao via API REST do Supabase:
   - `GET /rest/v1/recursos_educacionais?select=id&limit=1`
   - Resultado: `200 OK`.
+
+## Promocao de Administrador
+
+- Aplicada correcao complementar no Supabase real para adicionar `profiles.access_status` e `profiles.access_requested_at`, usados pelo fluxo de aprovacao do site.
+- Usuario `ronaldoeset@gmail.com` promovido no Supabase real:
+  - `role`: `admin_sme`
+  - `access_status`: `aprovado`
+- Verificacao no SQL Editor retornou 1 linha para o e-mail com `admin_sme` e `aprovado`.

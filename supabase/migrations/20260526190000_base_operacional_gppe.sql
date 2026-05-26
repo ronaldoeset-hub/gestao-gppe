@@ -42,7 +42,23 @@ $$;
 
 alter table public.profiles
   add column if not exists email text,
+  add column if not exists access_status text not null default 'aprovado',
+  add column if not exists access_requested_at timestamptz not null default now(),
   add column if not exists updated_at timestamptz not null default now();
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'profiles_access_status_check'
+      and conrelid = 'public.profiles'::regclass
+  ) then
+    alter table public.profiles
+      add constraint profiles_access_status_check
+      check (access_status in ('pendente', 'aprovado', 'bloqueado'));
+  end if;
+end $$;
 
 alter table public.school_units
   add column if not exists cnpj text,
