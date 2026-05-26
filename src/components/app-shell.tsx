@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import {
+  Bell,
   ChevronDown,
   LayoutGrid,
   LogOut,
@@ -46,7 +47,7 @@ const topLinks = [
   }
 ];
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, pendingAccessCount = 0 }: { children: ReactNode; pendingAccessCount?: number }) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -156,7 +157,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                   )}
                 >
                   <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
-                  {item.label}
+                  <span className="min-w-0 flex-1">{item.label}</span>
+                  {item.href === "/perfis" && pendingAccessCount > 0 ? (
+                    <span className={cn("ml-auto rounded-full px-2 py-0.5 text-xs font-black", active ? "bg-white text-blue-800" : "bg-amber-300 text-blue-950")}>
+                      {pendingAccessCount}
+                    </span>
+                  ) : null}
                 </Link>
               );
             })}
@@ -172,6 +178,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <p className="truncate font-black text-blue-950">EDUCONECTA - Gestao Educacional Inteligente</p>
                 <p className="truncate text-xs font-semibold text-slate-500">Sistema independente em desenvolvimento, sem credenciamento ou intermediacao publica.</p>
               </div>
+              {pendingAccessCount > 0 ? (
+                <Link href="/perfis" className="hidden items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-black text-blue-950 hover:bg-amber-100 sm:inline-flex">
+                  <Bell className="h-4 w-4" aria-hidden="true" />
+                  {pendingAccessCount} pendente{pendingAccessCount > 1 ? "s" : ""}
+                </Link>
+              ) : null}
               <Link href="/administracao" className="hidden items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-black text-blue-800 hover:bg-blue-50 sm:inline-flex">
                 <LayoutGrid className="h-4 w-4" aria-hidden="true" />
                 Administracao

@@ -1,4 +1,5 @@
 import { ShieldCheck } from "lucide-react";
+import { AccessApprovalPanel } from "@/components/access-approval-panel";
 import { DataTable } from "@/components/data-table";
 import { ModuleHeader } from "@/components/module-header";
 import { ProfileManager } from "@/components/profile-manager";
@@ -16,8 +17,9 @@ export default async function RolesPage() {
         description="Matriz inicial de permissões para Administrador SME, Técnico GPPE, Gestor Escolar e Conselho Escolar."
         icon={ShieldCheck}
       />
+      <AccessApprovalPanel profiles={profiles} />
       <ProfileManager profiles={profiles} />
-      <section className="space-y-3">
+      <section id="usuarios-cadastrados" className="space-y-3 scroll-mt-24">
         <h2 className="text-lg font-bold text-sme-ink">Usuários cadastrados</h2>
         <DataTable
           rows={profiles}
@@ -25,7 +27,21 @@ export default async function RolesPage() {
             { key: "name", header: "Nome", render: (row) => <span className="font-semibold text-sme-ink">{row.fullName}</span> },
             { key: "role", header: "Perfil", render: (row) => roleLabels[row.role] },
             { key: "school", header: "Unidade", render: (row) => row.school },
-            { key: "access", header: "Acesso", render: (row) => row.accessStatus ?? "aprovado" },
+            {
+              key: "access",
+              header: "Acesso",
+              render: (row) => {
+                const access = row.accessStatus ?? "aprovado";
+                const color =
+                  access === "aprovado"
+                    ? "bg-emerald-100 text-emerald-800"
+                    : access === "bloqueado"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-amber-100 text-amber-800";
+
+                return <span className={`rounded-md px-2.5 py-1 text-xs font-black uppercase ${color}`}>{access}</span>;
+              }
+            },
             { key: "phone", header: "Telefone", render: (row) => row.phone || "-" },
             { key: "createdAt", header: "Criado em", render: (row) => formatDate(row.createdAt) }
           ]}
