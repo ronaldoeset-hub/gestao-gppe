@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import type { CookieOptions } from "@supabase/ssr";
+import { supabaseAnonKey, supabaseUrl } from "@/lib/supabase/config";
 
 type CookieToSet = {
   name: string;
@@ -12,8 +13,8 @@ export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
@@ -34,9 +35,10 @@ export async function middleware(request: NextRequest) {
 
   const isLogin = request.nextUrl.pathname.startsWith("/login");
   const isPasswordRecovery = request.nextUrl.pathname.startsWith("/nova-senha");
+  const isEducationalResourcesPortal = request.nextUrl.pathname.startsWith("/recursos-educacionais");
   const isAppRoute = !request.nextUrl.pathname.startsWith("/_next") && !request.nextUrl.pathname.includes(".");
 
-  if (!user && !isLogin && !isPasswordRecovery && isAppRoute) {
+  if (!user && !isLogin && !isPasswordRecovery && !isEducationalResourcesPortal && isAppRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
