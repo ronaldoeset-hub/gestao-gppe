@@ -119,7 +119,6 @@ https://github.com/ronaldoeset-hub/gestao-gppe/pull/new/feat-implementacao-gppe-
 
 ## Proximos Passos
 
-- Aplicar a migration `supabase/migrations/20260526190000_base_operacional_gppe.sql` no Supabase Studio/CLI.
 - Promover o primeiro usuario administrador para `admin_sme` via SQL seguro no Supabase.
 - Conferir variaveis de ambiente na Vercel.
 - Abrir PR da branch `feat/implementacao-gppe-completo` para `main`.
@@ -147,3 +146,11 @@ https://github.com/ronaldoeset-hub/gestao-gppe/pull/new/feat-implementacao-gppe-
   - `npm run lint`: passou.
   - `npm run build`: passou com 42 rotas.
   - Browser local verificou `/fnde-pdde`, `/transparencia`, `/ia-educacional`, `/arquivos`, `/organizacao-financeira`, `/regularidade-documental`, `/suporte-unidades` e `/recursos-educacionais` sem erro de aplicacao.
+
+## Aplicacao no Supabase Real
+
+- Migration `supabase/migrations/20260526190000_base_operacional_gppe.sql` aplicada no SQL Editor do Supabase do projeto `nebesbqmuwxgcrzugqfg`.
+- Resultado do SQL Editor: `Success. No rows returned`.
+- Verificacao via API REST do Supabase:
+  - `GET /rest/v1/recursos_educacionais?select=id&limit=1`
+  - Resultado: `200 OK`.
