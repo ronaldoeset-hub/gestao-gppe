@@ -8,8 +8,10 @@ import {
   CalendarClock,
   ClipboardCheck,
   FileArchive,
+  FileCheck2,
   FileText,
   Landmark,
+  LifeBuoy,
   Megaphone,
   MessageSquare,
   Network,
@@ -17,6 +19,7 @@ import {
   Settings,
   Share2,
   ShieldCheck,
+  WalletCards,
   UsersRound
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -37,6 +40,9 @@ export type EduModuleKey =
   | "feedback"
   | "redes-sociais"
   | "arquivos"
+  | "organizacao-financeira"
+  | "regularidade-documental"
+  | "suporte-unidades"
   | "administracao"
   | "auditoria";
 
@@ -85,7 +91,11 @@ export const eduMenuItems: EduMenuItem[] = [
   { href: "/feedback", label: "Feedback", icon: MessageSquare },
   { href: "/redes-sociais", label: "Redes Sociais", icon: Share2 },
   { href: "/arquivos", label: "Arquivos", icon: Archive },
-  { href: "/administracao", label: "Administracao", icon: Settings }
+  { href: "/organizacao-financeira", label: "Organizacao Financeira", icon: WalletCards },
+  { href: "/regularidade-documental", label: "Regularidade Documental", icon: FileCheck2 },
+  { href: "/suporte-unidades", label: "Suporte as Unidades", icon: LifeBuoy },
+  { href: "/administracao", label: "Administracao", icon: Settings },
+  { href: "/perfis", label: "Perfis", icon: ShieldCheck }
 ];
 
 export const dashboardCards: EduCard[] = [
@@ -393,6 +403,60 @@ export const modules: Record<Exclude<EduModuleKey, "dashboard">, EduModule> = {
       { Arquivo: "Modelo oficio.docx", Categoria: "SEI", Tamanho: "180 KB" }
     ],
     actions: ["Upload", "Nova pasta", "Exportar lista"]
+  },
+  "organizacao-financeira": {
+    key: "organizacao-financeira",
+    title: "Organizacao Financeira",
+    description: "Mapa financeiro, radar de risco, linha do tempo dos recursos e conciliacao rapida por unidade.",
+    icon: WalletCards,
+    cards: [
+      { label: "Unidades monitoradas", value: "55", detail: "Rede completa", tone: "blue" },
+      { label: "Risco financeiro", value: "12", detail: "Exigem acompanhamento", tone: "yellow" },
+      { label: "Conciliadas", value: "31", detail: "Saldo coerente", tone: "green" }
+    ],
+    columns: [{ key: "Unidade", header: "Unidade" }, { key: "Programa", header: "Programa" }, { key: "Risco", header: "Risco" }, { key: "Acao", header: "Acao" }],
+    rows: [
+      { Unidade: "Escola M. Acelina Alves", Programa: "PDDE", Risco: "Baixo", Acao: "Monitorar saldo" },
+      { Unidade: "Escola M. Joaquim Pedro", Programa: "FNDE", Risco: "Medio", Acao: "Conferir prestacao" },
+      { Unidade: "Creche Eliene Martins", Programa: "Educacao Conectada", Risco: "Alto", Acao: "Conciliar extrato" }
+    ],
+    actions: ["Mapa financeiro", "Radar de risco", "Conciliacao rapida"]
+  },
+  "regularidade-documental": {
+    key: "regularidade-documental",
+    title: "Regularidade Documental",
+    description: "Checklist de documentos, vencimentos e matriz de regularidade por unidade.",
+    icon: FileCheck2,
+    cards: [
+      { label: "Documentos validos", value: "148", detail: "Na base", tone: "green" },
+      { label: "Vencendo", value: "22", detail: "Proximos 30 dias", tone: "yellow" },
+      { label: "Pendentes", value: "17", detail: "Sem envio", tone: "red" }
+    ],
+    columns: [{ key: "Unidade", header: "Unidade" }, { key: "Documento", header: "Documento" }, { key: "Status", header: "Status" }],
+    rows: [
+      { Unidade: "Escola M. Acelina Alves", Documento: "Ata do conselho", Status: "Valido" },
+      { Unidade: "Escola M. Joaquim Pedro", Documento: "Extrato bancario", Status: "Pendente" },
+      { Unidade: "Creche Eliene Martins", Documento: "Protocolo de prestacao", Status: "Vencendo" }
+    ],
+    actions: ["Enviar documento", "Ver matriz", "Gerar alerta"]
+  },
+  "suporte-unidades": {
+    key: "suporte-unidades",
+    title: "Suporte as Unidades",
+    description: "Chamados, orientacoes e acompanhamento de atendimento as unidades escolares.",
+    icon: LifeBuoy,
+    cards: [
+      { label: "Chamados abertos", value: "8", detail: "Em atendimento", tone: "blue" },
+      { label: "Urgentes", value: "2", detail: "Prioridade alta", tone: "red" },
+      { label: "Resolvidos", value: "34", detail: "Ultimos 30 dias", tone: "green" }
+    ],
+    columns: [{ key: "Unidade", header: "Unidade" }, { key: "Assunto", header: "Assunto" }, { key: "Status", header: "Status" }],
+    rows: [
+      { Unidade: "Escola M. Acelina Alves", Assunto: "Duvida sobre PDDE", Status: "Respondido" },
+      { Unidade: "Escola M. Joaquim Pedro", Assunto: "Prestacao de contas", Status: "Aberto" },
+      { Unidade: "Creche Eliene Martins", Assunto: "Documento vencido", Status: "Urgente" }
+    ],
+    actions: ["Abrir chamado", "Atribuir responsavel", "Responder unidade"]
   },
   administracao: {
     key: "administracao",

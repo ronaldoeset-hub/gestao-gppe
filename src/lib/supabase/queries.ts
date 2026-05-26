@@ -68,8 +68,10 @@ type ProfileRow = {
   id: string;
   full_name: string;
   role: ProfileRecord["role"];
+  school_unit_id?: string | null;
   phone: string | null;
   created_at: string;
+  access_requested_at?: string | null;
   access_status?: ProfileRecord["accessStatus"] | null;
   school_units: { name: string } | { name: string }[] | null;
 };
@@ -286,10 +288,10 @@ export async function getProfiles(): Promise<ProfileRecord[]> {
     const supabase = createClient();
     let { data, error } = await supabase
       .from("profiles")
-      .select("id,full_name,role,phone,created_at,access_status,school_units(name)")
+      .select("id,full_name,role,school_unit_id,phone,created_at,access_requested_at,access_status,school_units(name)")
       .order("created_at", { ascending: false });
 
-    if (error?.message?.includes("access_status")) {
+    if (error?.message?.includes("access_status") || error?.message?.includes("access_requested_at") || error?.message?.includes("school_unit_id")) {
       const fallback = await supabase
         .from("profiles")
         .select("id,full_name,role,phone,created_at,school_units(name)")
@@ -307,11 +309,35 @@ export async function getProfiles(): Promise<ProfileRecord[]> {
       fullName: item.full_name,
       role: item.role,
       school: relatedSchoolName(item.school_units),
+      schoolUnitId: item.school_unit_id ?? null,
       phone: item.phone ?? "",
       createdAt: item.created_at,
+      accessRequestedAt: item.access_requested_at ?? null,
       accessStatus: item.access_status ?? "aprovado"
     }));
   } catch {
     return [];
+  }
+}
+
+export async function getPendingAccessCount(): Promise<number> {
+  if (!isSupabaseConfigured()) {
+    return 0;
+  }
+
+  try {
+    const supabase = createClient();
+    const { count, error } = await supabase
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("access_status", "pendente");
+
+    if (error) {
+      return 0;
+    }
+
+    return count ?? 0;
+  } catch {
+    return 0;
   }
 }

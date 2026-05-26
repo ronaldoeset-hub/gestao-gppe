@@ -70,7 +70,9 @@ export type ProfileRecord = {
   fullName: string;
   role: UserRole;
   school: string;
+  schoolUnitId?: string | null;
   phone: string;
   createdAt: string;
+  accessRequestedAt?: string | null;
   accessStatus?: "pendente" | "aprovado" | "bloqueado";
 };
