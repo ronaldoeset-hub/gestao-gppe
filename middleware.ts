@@ -39,6 +39,7 @@ export async function middleware(request: NextRequest) {
   const isPasswordRecovery = request.nextUrl.pathname.startsWith("/nova-senha");
   const isEducationalResourcesPortal = request.nextUrl.pathname.startsWith("/recursos-educacionais");
   const isInstitutionalNotice = request.nextUrl.pathname.startsWith("/aviso-institucional");
+  const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
   const isAppRoute = !request.nextUrl.pathname.startsWith("/_next") && !request.nextUrl.pathname.includes(".");
 
   if (!user && !isLogin && !isSignup && !isWaitingApproval && !isPasswordRecovery && !isEducationalResourcesPortal && !isInstitutionalNotice && isAppRoute) {
@@ -50,13 +51,19 @@ export async function middleware(request: NextRequest) {
   if (user && !isWaitingApproval && !request.nextUrl.pathname.startsWith("/auth/logout") && isAppRoute) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("access_status")
+      .select("access_status,role")
       .eq("id", user.id)
       .maybeSingle();
 
     if (profile?.access_status && profile.access_status !== "aprovado") {
       const url = request.nextUrl.clone();
       url.pathname = "/aguardando-aprovacao";
+      return NextResponse.redirect(url);
+    }
+
+    if (isAdminRoute && profile?.role !== "admin_sme" && profile?.role !== "tecnico_gppe") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
       return NextResponse.redirect(url);
     }
   }

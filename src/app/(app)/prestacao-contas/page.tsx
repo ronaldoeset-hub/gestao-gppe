@@ -8,7 +8,16 @@ import { getAccountabilities } from "@/lib/supabase/queries";
 import { formatDate } from "@/lib/utils";
 
 export default async function AccountabilityPage() {
-  const accountabilities = await getAccountabilities();
+  const accountabilities = (await getAccountabilities()).sort((a, b) => {
+    const aPending = a.status === "pendente" || a.status === "vencido" || !a.submittedAt;
+    const bPending = b.status === "pendente" || b.status === "vencido" || !b.submittedAt;
+
+    if (aPending !== bPending) {
+      return aPending ? -1 : 1;
+    }
+
+    return a.school.localeCompare(b.school, "pt-BR");
+  });
 
   return (
     <div className="space-y-6">

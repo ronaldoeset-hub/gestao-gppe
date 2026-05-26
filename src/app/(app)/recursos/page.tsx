@@ -1,7 +1,7 @@
 import { Landmark, Plus } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { ExportButtons } from "@/components/export-buttons";
-import { ResourceForm } from "@/components/linked-record-forms";
+import { FinancialMovementForm, ResourceForm } from "@/components/linked-record-forms";
 import { ModuleHeader } from "@/components/module-header";
 import { ResourcesOverview } from "@/components/resources-overview";
 import { StatusBadge } from "@/components/status-badge";
@@ -26,6 +26,10 @@ export default async function ResourcesPage() {
       />
       <section id="novo-recurso">
         <ResourceForm />
+      </section>
+      <section className="space-y-3">
+        <h2 className="text-lg font-bold text-sme-ink">Movimentacao financeira por programa</h2>
+        <FinancialMovementForm />
       </section>
       <ResourcesOverview resources={resources} />
       <ExportButtons

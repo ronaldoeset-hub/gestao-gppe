@@ -129,3 +129,21 @@ https://github.com/ronaldoeset-hub/gestao-gppe/pull/new/feat-implementacao-gppe-
 
 - A implementacao completa de todos os CRUDs reais ainda deve continuar em ciclos seguintes; esta etapa criou a fundacao de banco/design e entregou o dashboard operacional inicial.
 - O prompt original pedia push direto para `main`; a instrucao mais recente pediu branch de feature e PR. Foi registrada a decisao em `CHANGES.md`.
+
+## Complemento - Telas Operacionais Restantes
+
+- Implementadas telas operacionais para:
+  - `FNDE/PDDE`, com links oficiais vindos de `fnde_links` e fallback local.
+  - `Transparencia`, com saldo separado por programa e exportacao.
+  - `Arquivos`, com upload e listagem de documentos.
+  - `IA Educacional`, com Assistente GPPE Inteligente por templates locais.
+  - `Organizacao Financeira`, com movimentacao financeira, mapa de rede, radar de risco e conciliacao.
+  - `Regularidade Documental`, com checklist/matriz por unidade e upload.
+  - `Suporte as Unidades`, com abertura e fila de chamados.
+  - `Admin Recursos Educacionais`, em `/admin/recursos-educacionais`.
+- Portal publico `/recursos-educacionais` passou a consumir `recursos_educacionais` do Supabase com fallback local.
+- Middleware passou a restringir `/admin` a `admin_sme` e `tecnico_gppe`.
+- Validado novamente:
+  - `npm run lint`: passou.
+  - `npm run build`: passou com 42 rotas.
+  - Browser local verificou `/fnde-pdde`, `/transparencia`, `/ia-educacional`, `/arquivos`, `/organizacao-financeira`, `/regularidade-documental`, `/suporte-unidades` e `/recursos-educacionais` sem erro de aplicacao.

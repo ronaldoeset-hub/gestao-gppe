@@ -76,3 +76,30 @@ export type ProfileRecord = {
   accessRequestedAt?: string | null;
   accessStatus?: "pendente" | "aprovado" | "bloqueado";
 };
+
+export type FndeLink = {
+  id: string;
+  title: string;
+  url: string;
+  category: string;
+  description: string;
+};
+
+export type SupportTicket = {
+  id: string;
+  school: string;
+  title: string;
+  description: string;
+  priority: "baixa" | "media" | "alta" | "critica";
+  status: "aberto" | "em_atendimento" | "respondido" | "resolvido" | "cancelado";
+  createdAt: string;
+};
+
+export type EducationalResource = {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  url?: string | null;
+  imageUrl?: string | null;
+};

@@ -2,13 +2,16 @@ import Link from "next/link";
 import { ArrowRight, BookOpen, ExternalLink, FileText, GraduationCap, ShieldCheck } from "lucide-react";
 import { EducationalResourcesBrowser } from "@/components/educational-resources-browser";
 import { InstitutionalNotice } from "@/components/institutional-notice";
+import { getEducationalResources } from "@/lib/supabase/queries";
 
 export const metadata = {
   title: "Portal Recursos Educacionais - SME Aguas Lindas",
   description: "Portal publico para organizacao de materiais pedagogicos, documentos, formacoes e recursos educacionais."
 };
 
-export default function EducationalResourcesPortalPage() {
+export default async function EducationalResourcesPortalPage() {
+  const resources = await getEducationalResources();
+
   return (
     <main className="min-h-screen bg-[#f3f7fb] text-sme-ink">
       <header className="border-b border-white/20 bg-gradient-to-r from-[#003b7a] via-[#004a93] to-[#00326d] text-white shadow-lg shadow-sky-950/15">
@@ -81,7 +84,7 @@ export default function EducationalResourcesPortalPage() {
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
-        <EducationalResourcesBrowser />
+        <EducationalResourcesBrowser resources={resources} />
       </section>
 
       <section id="orientacoes" className="mx-auto max-w-[1500px] px-5 pb-10 lg:px-8">
