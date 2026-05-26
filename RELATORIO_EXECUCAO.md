@@ -111,7 +111,7 @@ Resumo:
 ## Commit
 
 - Branch: `feat-implementacao-gppe-completo`
-- Hash: `2d00a91`
+- Hash do commit de implementacao: `8a10999`
 
 ## URL para PR
 
