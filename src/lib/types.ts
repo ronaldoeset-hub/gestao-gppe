@@ -72,4 +72,5 @@ export type ProfileRecord = {
   school: string;
   phone: string;
   createdAt: string;
+  accessStatus?: "pendente" | "aprovado" | "bloqueado";
 };

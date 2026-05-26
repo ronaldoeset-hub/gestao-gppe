@@ -70,6 +70,7 @@ type ProfileRow = {
   role: ProfileRecord["role"];
   phone: string | null;
   created_at: string;
+  access_status?: ProfileRecord["accessStatus"] | null;
   school_units: { name: string } | { name: string }[] | null;
 };
 
@@ -283,10 +284,19 @@ export async function getProfiles(): Promise<ProfileRecord[]> {
 
   try {
     const supabase = createClient();
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("profiles")
-      .select("id,full_name,role,phone,created_at,school_units(name)")
+      .select("id,full_name,role,phone,created_at,access_status,school_units(name)")
       .order("created_at", { ascending: false });
+
+    if (error?.message?.includes("access_status")) {
+      const fallback = await supabase
+        .from("profiles")
+        .select("id,full_name,role,phone,created_at,school_units(name)")
+        .order("created_at", { ascending: false });
+      data = fallback.data as typeof data;
+      error = fallback.error;
+    }
 
     if (error || !data?.length) {
       return [];
@@ -298,7 +308,8 @@ export async function getProfiles(): Promise<ProfileRecord[]> {
       role: item.role,
       school: relatedSchoolName(item.school_units),
       phone: item.phone ?? "",
-      createdAt: item.created_at
+      createdAt: item.created_at,
+      accessStatus: item.access_status ?? "aprovado"
     }));
   } catch {
     return [];

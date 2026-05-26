@@ -34,18 +34,34 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const isLogin = request.nextUrl.pathname.startsWith("/login");
+  const isSignup = request.nextUrl.pathname.startsWith("/cadastro");
+  const isWaitingApproval = request.nextUrl.pathname.startsWith("/aguardando-aprovacao");
   const isPasswordRecovery = request.nextUrl.pathname.startsWith("/nova-senha");
   const isEducationalResourcesPortal = request.nextUrl.pathname.startsWith("/recursos-educacionais");
   const isInstitutionalNotice = request.nextUrl.pathname.startsWith("/aviso-institucional");
   const isAppRoute = !request.nextUrl.pathname.startsWith("/_next") && !request.nextUrl.pathname.includes(".");
 
-  if (!user && !isLogin && !isPasswordRecovery && !isEducationalResourcesPortal && !isInstitutionalNotice && isAppRoute) {
+  if (!user && !isLogin && !isSignup && !isWaitingApproval && !isPasswordRecovery && !isEducationalResourcesPortal && !isInstitutionalNotice && isAppRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
-  if (user && isLogin) {
+  if (user && !isWaitingApproval && !request.nextUrl.pathname.startsWith("/auth/logout") && isAppRoute) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("access_status")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profile?.access_status && profile.access_status !== "aprovado") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/aguardando-aprovacao";
+      return NextResponse.redirect(url);
+    }
+  }
+
+  if (user && (isLogin || isSignup)) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);

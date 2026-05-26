@@ -159,6 +159,12 @@ export default function LoginPage() {
           >
             {isRecovering ? "Enviando..." : "Esqueci minha senha"}
           </button>
+          <Link
+            href="/cadastro"
+            className="mt-3 inline-flex h-10 w-full items-center justify-center rounded-md border border-sme-blue bg-blue-50 px-4 text-sm font-bold text-sme-blue transition hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2"
+          >
+            Criar cadastro de acesso
+          </Link>
           {message ? <p className="mt-4 text-sm text-slate-600">{message}</p> : null}
           <div className="mt-5">
             <InstitutionalNotice compact />

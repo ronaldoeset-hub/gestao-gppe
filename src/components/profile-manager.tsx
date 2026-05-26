@@ -21,6 +21,7 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
   const [selectedUser, setSelectedUser] = useState("");
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState<UserRole>("gestor_escolar");
+  const [accessStatus, setAccessStatus] = useState<"pendente" | "aprovado" | "bloqueado">("aprovado");
   const [schoolUnitId, setSchoolUnitId] = useState("");
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState("");
@@ -43,6 +44,7 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
     setFullName(profile.fullName);
     setRole(profile.role);
     setPhone(profile.phone);
+    setAccessStatus(profile.accessStatus ?? "aprovado");
     setSchoolUnitId("");
   }, [profiles, selectedUser]);
 
@@ -57,6 +59,7 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
       .update({
         full_name: fullName,
         role,
+        access_status: accessStatus,
         school_unit_id: schoolUnitId || null,
         phone: phone || null
       })
@@ -106,6 +109,18 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
                 {roleLabels[item]}
               </option>
             ))}
+          </select>
+        </label>
+        <label className="block text-sm font-semibold text-slate-700">
+          Acesso
+          <select
+            value={accessStatus}
+            onChange={(event) => setAccessStatus(event.target.value as "pendente" | "aprovado" | "bloqueado")}
+            className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow"
+          >
+            <option value="pendente">Pendente</option>
+            <option value="aprovado">Aprovado</option>
+            <option value="bloqueado">Bloqueado</option>
           </select>
         </label>
         <label className="block text-sm font-semibold text-slate-700 xl:col-span-2">

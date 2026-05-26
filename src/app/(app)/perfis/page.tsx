@@ -25,6 +25,7 @@ export default async function RolesPage() {
             { key: "name", header: "Nome", render: (row) => <span className="font-semibold text-sme-ink">{row.fullName}</span> },
             { key: "role", header: "Perfil", render: (row) => roleLabels[row.role] },
             { key: "school", header: "Unidade", render: (row) => row.school },
+            { key: "access", header: "Acesso", render: (row) => row.accessStatus ?? "aprovado" },
             { key: "phone", header: "Telefone", render: (row) => row.phone || "-" },
             { key: "createdAt", header: "Criado em", render: (row) => formatDate(row.createdAt) }
           ]}
