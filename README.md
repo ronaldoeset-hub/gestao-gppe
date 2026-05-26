@@ -1,107 +1,79 @@
-# Gestão de Recursos e Conselhos - GPPE
+# EDUCONECTA - Gestao Educacional Inteligente
 
-Aplicação web independente para a Secretaria Municipal de Educação de Águas Lindas de Goiás, preparada para futura publicação em domínio próprio, como `gppeaguaslindassme.com`, `recursos.smeaguaslindas.com` ou `smeaguaslindas.com/gestao-recursos`.
+Slogan: **Transformando informacao educacional em gestao inteligente**
+
+Plataforma SaaS em prototipo para organizar informacoes educacionais, com foco em escolas, conselhos, recursos, prazos, documentos, relatorios, analytics, feedback, mural, arquivos e administracao.
+
+## Aviso de independencia
+
+O EduConecta e uma plataforma independente de orgaos publicos. Este prototipo usa dados simulados e nao deve receber dados sensiveis ate validacao tecnica e administrativa.
+
+Nao ha indicacao de fornecedores, comissao, credenciamento, exclusividade, intermediacao de contratacao publica ou favorecimento.
+
+Na area de parceiros, a regra e:
+
+> A presenca da empresa possui finalidade exclusivamente publicitaria e nao representa recomendacao oficial, credenciamento, preferencia ou garantia de contratacao.
 
 ## Stack
 
 - Next.js App Router
+- TypeScript
 - Tailwind CSS
-- Supabase Auth
-- Supabase Database
-- Supabase Storage
-- Exportação Excel/PDF no navegador
+- Supabase Auth preparado
+- Supabase Database/Storage preparados
+- Dados mockados em `src/data/educonecta.ts`
 
-## Módulos criados
+## Modulos
 
-- Login com Supabase Auth
-- Dashboard geral
-- Cadastro das 55 unidades escolares com formulário conectado ao Supabase
-- Controle de Conselhos Escolares com formulário conectado ao Supabase
-- Controle de Recursos com formulário conectado ao Supabase
-- Prestação de Contas com formulário conectado ao Supabase
-- Upload de Documentos
-- Alertas com formulário conectado ao Supabase
-- Exportação Excel/PDF
-- Perfis de acesso
+- Dashboard
+- Escolas
+- Conselhos
+- Recursos
+- Biblioteca SEI
+- FNDE/PDDE
+- Central de Prazos
+- IA Educacional
+- Parceiros
+- Analytics
+- Relatorios
+- Mural
+- Feedback
+- Redes Sociais
+- Arquivos
+- Administracao
 
-## Configuração local
-
-1. Instale as dependências:
+## Como rodar localmente
 
 ```bash
 npm install
-```
-
-2. Copie o arquivo de variáveis:
-
-```bash
-cp .env.example .env.local
-```
-
-3. Preencha:
-
-```bash
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-NEXT_PUBLIC_APP_URL=https://gppeaguaslindassme.com
-```
-
-4. No Supabase SQL Editor, execute:
-
-```text
-supabase/schema.sql
-supabase/storage.sql
-```
-
-Opcionalmente, para criar alguns dados de teste em recursos, conselhos, prestações e alertas, execute:
-
-```text
-supabase/seed-sample.sql
-```
-
-5. Crie usuários no Supabase Auth. Para definir perfil no cadastro, use metadata:
-
-```json
-{
-  "full_name": "Nome do usuário",
-  "role": "admin_sme"
-}
-```
-
-Perfis aceitos:
-
-- `admin_sme`
-- `tecnico_gppe`
-- `gestor_escolar`
-- `conselho_escolar`
-
-6. Rode a aplicação:
-
-```bash
 npm run dev
 ```
 
-7. Para desenvolvimento local, acesse:
+Acesse:
 
 ```text
 http://localhost:3000
 ```
 
-Sem `.env.local`, o app mantém dados locais de demonstração para leitura. Com Supabase configurado, o dashboard e as páginas de unidades, conselhos, recursos, prestações e alertas passam a ler as tabelas reais.
+## Variaveis de ambiente
 
-## Fontes dos nomes das unidades
+Para login com Supabase em producao:
 
-- Escolas municipais: https://smeaguaslindas.com/endescolas/
-- Creches municipais: https://smeaguaslindas.com/endecreches/
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_APP_URL=https://gestao-gppe.vercel.app
+```
 
-## Observações de implantação
+## Publicacao
 
-- A aplicação não integra nem altera o site oficial atual.
-- `localhost:3000` é apenas o endereço de teste no computador.
-- Para usar `gppeaguaslindassme.com`, é necessário registrar o domínio, contratar/configurar uma hospedagem e apontar o DNS para o deploy.
-- Para publicar em subdomínio, configure o domínio `recursos.smeaguaslindas.com` no provedor de hospedagem.
-- Para publicar em subcaminho, configure o proxy/rewrite para `smeaguaslindas.com/gestao-recursos`.
-- O bucket `documentos-gppe` é privado e exige usuário autenticado.
-- As 55 unidades foram semeadas com nomes reais a partir das páginas públicas de escolas e creches da SME. INEPs, gestores e endereços completos devem ser conferidos antes do uso em produção.
-- Consulte [docs/dados.md](docs/dados.md) para entender onde alimentar cada tipo de informação.
+O projeto esta preparado para Vercel e pode usar:
+
+- `https://gestao-gppe.vercel.app`
+- dominio proprio futuro, como `gppeaguaslindassme.com.br`
+
+Depois de alterar arquivos, suba ao GitHub a pasta preparada:
+
+```text
+C:\Users\Admin\Documents\SITE - GPPE\PUBLICAR_GITHUB_GESTAO_GPPE
+```

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, ExternalLink, FileText, GraduationCap, ShieldCheck } from "lucide-react";
 import { EducationalResourcesBrowser } from "@/components/educational-resources-browser";
+import { InstitutionalNotice } from "@/components/institutional-notice";
 
 export const metadata = {
   title: "Portal Recursos Educacionais - SME Aguas Lindas",
@@ -67,6 +68,9 @@ export default function EducationalResourcesPortalPage() {
       </section>
 
       <section id="materiais" className="mx-auto max-w-[1500px] px-5 py-8 lg:px-8">
+        <div className="mb-6">
+          <InstitutionalNotice />
+        </div>
         <div className="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-black uppercase text-amber-500">Biblioteca inicial</p>

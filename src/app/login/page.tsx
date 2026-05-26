@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { FileCheck2, Lock, Mail } from "lucide-react";
+import { InstitutionalNotice } from "@/components/institutional-notice";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -91,16 +93,16 @@ export default function LoginPage() {
             <FileCheck2 className="h-7 w-7" aria-hidden="true" />
           </div>
           <div>
-            <p className="font-bold">SME Aguas Lindas de Goias</p>
-            <p className="text-sm text-sky-100">Gerencia GPPE</p>
+            <p className="font-bold">EDUCONECTA</p>
+            <p className="text-sm text-sky-100">Gestao Educacional Inteligente</p>
           </div>
         </div>
         <div className="max-w-2xl">
-          <p className="mb-3 inline-flex rounded-md bg-white/12 px-3 py-1 text-sm font-semibold">Sistema interno</p>
-          <h1 className="text-4xl font-bold leading-tight lg:text-5xl">Gestao de Recursos e Conselhos - GPPE</h1>
+          <p className="mb-3 inline-flex rounded-md bg-white/12 px-3 py-1 text-sm font-semibold">Plataforma SaaS independente</p>
+          <h1 className="text-4xl font-bold leading-tight lg:text-5xl">EDUCONECTA</h1>
           <p className="mt-4 max-w-xl text-base leading-7 text-sky-50">
-            Acompanhamento de unidades escolares, conselhos, repasses, documentos e prestacoes de contas em uma
-            aplicacao independente preparada para publicacao institucional.
+            Transformando informacao educacional em gestao inteligente, com escolas, conselhos, recursos,
+            prazos, arquivos, relatorios e indicadores em um unico ambiente.
           </p>
         </div>
         <div className="h-2 w-40 rounded-full bg-gradient-to-r from-sme-yellow via-white to-sme-red" />
@@ -158,6 +160,12 @@ export default function LoginPage() {
             {isRecovering ? "Enviando..." : "Esqueci minha senha"}
           </button>
           {message ? <p className="mt-4 text-sm text-slate-600">{message}</p> : null}
+          <div className="mt-5">
+            <InstitutionalNotice compact />
+          </div>
+          <Link href="/aviso-institucional" className="mt-4 inline-flex text-sm font-bold text-sme-blue hover:text-sme-navy">
+            Ler aviso institucional
+          </Link>
         </form>
       </section>
     </main>

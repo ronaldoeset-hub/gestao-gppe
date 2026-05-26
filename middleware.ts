@@ -36,9 +36,10 @@ export async function middleware(request: NextRequest) {
   const isLogin = request.nextUrl.pathname.startsWith("/login");
   const isPasswordRecovery = request.nextUrl.pathname.startsWith("/nova-senha");
   const isEducationalResourcesPortal = request.nextUrl.pathname.startsWith("/recursos-educacionais");
+  const isInstitutionalNotice = request.nextUrl.pathname.startsWith("/aviso-institucional");
   const isAppRoute = !request.nextUrl.pathname.startsWith("/_next") && !request.nextUrl.pathname.includes(".");
 
-  if (!user && !isLogin && !isPasswordRecovery && !isEducationalResourcesPortal && isAppRoute) {
+  if (!user && !isLogin && !isPasswordRecovery && !isEducationalResourcesPortal && !isInstitutionalNotice && isAppRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
