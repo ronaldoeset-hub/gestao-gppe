@@ -33,3 +33,9 @@ Pergunta objetiva: quais prazos padrão o GPPE deseja usar para alertas automát
 O prompt pede consolidar todas as unidades e conselhos a partir de imports/seeds. A auditoria não encontrou fonte única confiável com schema final validado para substituir dados existentes sem risco.
 
 Pergunta objetiva: qual arquivo oficial deve ser tratado como fonte única de unidades e conselhos?
+
+## 5. Aplicação automática da migration corretiva no Supabase
+
+A migration corretiva foi criada e versionada, mas o navegador interno bloqueou a colagem/digitação automática no editor SQL do Supabase com erro de clipboard virtual. A página está autenticada, porém a automação não conseguiu inserir o SQL no editor.
+
+Pergunta objetiva: autorizar a aplicação manual pelo Supabase Studio colando o arquivo `supabase/migrations/20260526213000_auditoria_rls_profiles_storage.sql` no SQL Editor e clicando em Run.

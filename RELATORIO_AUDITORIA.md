@@ -7,8 +7,8 @@ Data: 2026-05-26
 - Cobertura antes da auditoria: 75% (54/72 itens).
 - Cobertura depois da auditoria: 86% (62/72 itens).
 - Itens corrigidos nesta execucao: 8.
-- Bloqueios registrados: 4.
-- Status geral: auditoria tecnica concluida com bloqueios de regra de negocio/documentacao.
+- Bloqueios registrados: 5.
+- Status geral: auditoria tecnica concluida com bloqueios de regra de negocio/documentacao e um bloqueio tecnico de automacao no SQL Editor.
 
 ## Tabela de Achados
 
@@ -66,6 +66,7 @@ Aplicar depois da migration operacional ja aplicada.
   - 42 rotas geradas.
   - Status: sucesso.
   - Observacao: webpack emitiu aviso de cache local `Unable to snapshot resolve dependencies`, sem quebrar o build.
+- Aplicacao da migration corretiva no Supabase real: pendente por bloqueio tecnico de clipboard no navegador interno.
 
 ## Bloqueios
 
@@ -77,6 +78,7 @@ Bloqueios principais:
 - Autorizar ou nao inclusao de `zod` como dependencia.
 - Definir prazos de alertas automaticos.
 - Indicar fonte unica oficial de unidades e conselhos.
+- Aplicar manualmente no Supabase Studio a migration `20260526213000_auditoria_rls_profiles_storage.sql`.
 
 ## Proximos Passos
 
@@ -89,4 +91,4 @@ Bloqueios principais:
 
 - Hash do commit de auditoria: `3a3ecce1323a9b2596c55ade41f7d52570bf2db8`.
 
-AUDITORIA CONCLUIDA COM 4 BLOQUEIOS — VER BLOQUEIOS.md
+AUDITORIA CONCLUIDA COM 5 BLOQUEIOS — VER BLOQUEIOS.md
