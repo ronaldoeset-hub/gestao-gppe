@@ -87,6 +87,6 @@ Bloqueios principais:
 
 ## Commit
 
-- Hash do commit de auditoria: `606210c5b9254c7d1b9eb12161a953ec6920c341`.
+- Hash do commit de auditoria: `3a3ecce1323a9b2596c55ade41f7d52570bf2db8`.
 
 AUDITORIA CONCLUIDA COM 4 BLOQUEIOS — VER BLOQUEIOS.md
