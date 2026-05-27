@@ -1,5 +1,6 @@
 import { accountabilities, alerts, councils, resources, schoolUnits } from "@/lib/data";
 import type { Accountability, Alert, Council, DocumentRecord, EducationalResource, FndeLink, ProfileRecord, ResourceTransfer, SchoolUnit, SupportTicket } from "@/lib/types";
+import { hasSupabaseConfig } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 
 type SchoolUnitRow = {
@@ -178,7 +179,7 @@ function relatedSchoolName(value: { name: string } | { name: string }[] | null) 
 }
 
 export function isSupabaseConfigured() {
-  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  return hasSupabaseConfig();
 }
 
 export async function getSchoolUnits(): Promise<SchoolUnit[]> {

@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import type { CookieOptions } from "@supabase/ssr";
-import { supabaseAnonKey, supabaseUrl } from "@/lib/supabase/config";
+import { hasSupabaseConfig, supabaseAnonKey, supabaseUrl } from "@/lib/supabase/config";
 
 type CookieToSet = {
   name: string;
@@ -11,6 +11,11 @@ type CookieToSet = {
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
+  const isAppRoute = !request.nextUrl.pathname.startsWith("/_next") && !request.nextUrl.pathname.includes(".");
+
+  if (!hasSupabaseConfig()) {
+    return response;
+  }
 
   const supabase = createServerClient(
     supabaseUrl,
@@ -40,7 +45,6 @@ export async function middleware(request: NextRequest) {
   const isEducationalResourcesPortal = request.nextUrl.pathname.startsWith("/recursos-educacionais");
   const isInstitutionalNotice = request.nextUrl.pathname.startsWith("/aviso-institucional");
   const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
-  const isAppRoute = !request.nextUrl.pathname.startsWith("/_next") && !request.nextUrl.pathname.includes(".");
 
   if (!user && !isLogin && !isSignup && !isWaitingApproval && !isPasswordRecovery && !isEducationalResourcesPortal && !isInstitutionalNotice && isAppRoute) {
     const url = request.nextUrl.clone();

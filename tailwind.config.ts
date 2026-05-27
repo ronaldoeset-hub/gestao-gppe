@@ -44,13 +44,13 @@ const config: Config = {
         danger: "hsl(var(--color-danger) / <alpha-value>)",
         info: "hsl(var(--color-info) / <alpha-value>)",
         sme: {
-          blue: "#048DC1",
-          navy: "#075985",
-          yellow: "#FFCB00",
-          red: "#E20613",
-          green: "#138A36",
-          ink: "#172033",
-          surface: "#F4F8FB"
+          blue: "hsl(var(--color-info) / <alpha-value>)",
+          navy: "hsl(var(--color-primary-600) / <alpha-value>)",
+          yellow: "hsl(var(--color-warning) / <alpha-value>)",
+          red: "hsl(var(--color-danger) / <alpha-value>)",
+          green: "hsl(var(--color-success) / <alpha-value>)",
+          ink: "hsl(var(--color-neutral-900) / <alpha-value>)",
+          surface: "hsl(var(--color-neutral-50) / <alpha-value>)"
         }
       },
       boxShadow: {
