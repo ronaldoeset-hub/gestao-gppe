@@ -19,6 +19,7 @@ import {
   Settings,
   Share2,
   ShieldCheck,
+  TableProperties,
   WalletCards,
   UsersRound
 } from "lucide-react";
@@ -91,6 +92,7 @@ export const eduMenuItems: EduMenuItem[] = [
   { href: "/feedback", label: "Feedback", icon: MessageSquare },
   { href: "/redes-sociais", label: "Redes Sociais", icon: Share2 },
   { href: "/arquivos", label: "Arquivos", icon: Archive },
+  { href: "/pdde-controle", label: "Controle PDDE", icon: TableProperties },
   { href: "/organizacao-financeira", label: "Organizacao Financeira", icon: WalletCards },
   { href: "/regularidade-documental", label: "Regularidade Documental", icon: FileCheck2 },
   { href: "/suporte-unidades", label: "Suporte as Unidades", icon: LifeBuoy },

@@ -1,5 +1,5 @@
 import { accountabilities, alerts, councils, resources, schoolUnits } from "@/lib/data";
-import type { Accountability, Alert, Council, DocumentRecord, EducationalResource, FndeLink, ProfileRecord, ResourceTransfer, SchoolUnit, SupportTicket } from "@/lib/types";
+import type { Accountability, Alert, Council, DocumentRecord, EducationalResource, FndeLink, PddeBalance, PddeProgram, ProfileRecord, ResourceTransfer, SchoolUnit, SupportTicket } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
 
 type SchoolUnitRow = {
@@ -548,6 +548,56 @@ export async function getSupportTickets(): Promise<SupportTicket[]> {
       priority: item.priority,
       status: item.status,
       createdAt: item.created_at
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function getPddePrograms(): Promise<PddeProgram[]> {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("pdde_programs")
+      .select("id,group_name,program_name,sort_order")
+      .eq("active", true)
+      .order("sort_order");
+    if (error || !data?.length) return [];
+    return data.map((r) => ({
+      id: r.id,
+      groupName: r.group_name,
+      programName: r.program_name,
+      sortOrder: r.sort_order
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function getPddeBalances(schoolUnitId: string, year: number): Promise<PddeBalance[]> {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("pdde_balances")
+      .select("id,school_unit_id,program_id,exercise_year,saldo_anterior_c,saldo_anterior_k,valor_creditado_c,valor_creditado_k,rendimento_c,rendimento_k,valor_gasto_c,valor_gasto_k")
+      .eq("school_unit_id", schoolUnitId)
+      .eq("exercise_year", year);
+    if (error || !data?.length) return [];
+    return data.map((r) => ({
+      id: r.id,
+      schoolUnitId: r.school_unit_id,
+      programId: r.program_id,
+      exerciseYear: r.exercise_year,
+      saldoAnteriorC: Number(r.saldo_anterior_c),
+      saldoAnteriorK: Number(r.saldo_anterior_k),
+      valorCreditadoC: Number(r.valor_creditado_c),
+      valorCreditadoK: Number(r.valor_creditado_k),
+      rendimentoC: Number(r.rendimento_c),
+      rendimentoK: Number(r.rendimento_k),
+      valorGastoC: Number(r.valor_gasto_c),
+      valorGastoK: Number(r.valor_gasto_k)
     }));
   } catch {
     return [];

@@ -95,6 +95,28 @@ export type SupportTicket = {
   createdAt: string;
 };
 
+export type PddeProgram = {
+  id: string;
+  groupName: string;
+  programName: string;
+  sortOrder: number;
+};
+
+export type PddeBalance = {
+  id?: string;
+  schoolUnitId: string;
+  programId: string;
+  exerciseYear: number;
+  saldoAnteriorC: number;
+  saldoAnteriorK: number;
+  valorCreditadoC: number;
+  valorCreditadoK: number;
+  rendimentoC: number;
+  rendimentoK: number;
+  valorGastoC: number;
+  valorGastoK: number;
+};
+
 export type EducationalResourceStatus = "publico" | "rascunho" | "arquivado";
 
 export type EducationalResource = {
