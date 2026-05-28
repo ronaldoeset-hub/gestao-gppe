@@ -95,11 +95,19 @@ export type SupportTicket = {
   createdAt: string;
 };
 
+export type EducationalResourceStatus = "publico" | "rascunho" | "arquivado";
+
 export type EducationalResource = {
   id: string;
   title: string;
   category: string;
-  description: string;
-  url?: string | null;
-  imageUrl?: string | null;
+  stage?: string;
+  modality?: string;
+  type: string;
+  description?: string;
+  tags: string[];
+  filePath?: string;
+  externalUrl?: string;
+  status: EducationalResourceStatus;
+  createdAt: string;
 };

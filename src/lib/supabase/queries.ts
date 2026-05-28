@@ -94,15 +94,6 @@ type SupportTicketRow = {
   school_units: { name: string } | { name: string }[] | null;
 };
 
-type EducationalResourceRow = {
-  id: string;
-  title: string;
-  description: string | null;
-  category: string;
-  url: string | null;
-  image_url: string | null;
-};
-
 export const officialFndeLinks: FndeLink[] = [
   {
     id: "fnde",
@@ -365,6 +356,62 @@ export async function getDocuments(): Promise<DocumentRecord[]> {
   }
 }
 
+type EducationalResourceRow = {
+  id: string;
+  title: string;
+  category: string;
+  stage: string | null;
+  modality: string | null;
+  type: string;
+  description: string | null;
+  tags: string[];
+  file_path: string | null;
+  external_url: string | null;
+  status: string;
+  created_at: string;
+};
+
+export async function getEducationalResources(onlyPublic = true): Promise<EducationalResource[]> {
+  if (!isSupabaseConfigured()) {
+    return [];
+  }
+
+  try {
+    const supabase = createClient();
+    let query = supabase
+      .from("educational_resources")
+      .select("id,title,category,stage,modality,type,description,tags,file_path,external_url,status,created_at")
+      .order("created_at", { ascending: false });
+
+    if (onlyPublic) {
+      query = query.eq("status", "publico");
+    }
+
+    const { data, error } = await query;
+
+    if (error || !data?.length) {
+      return [];
+    }
+
+    return (data as EducationalResourceRow[]).map((item) => ({
+      id: item.id,
+      title: item.title,
+      category: item.category,
+      stage: item.stage ?? undefined,
+      modality: item.modality ?? undefined,
+      type: item.type,
+      description: item.description ?? undefined,
+      tags: item.tags ?? [],
+      filePath: item.file_path ?? undefined,
+      externalUrl: item.external_url ?? undefined,
+      status: item.status as EducationalResource["status"],
+      createdAt: item.created_at
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export async function getProfiles(): Promise<ProfileRecord[]> {
   if (!isSupabaseConfigured()) {
     return [];
@@ -507,59 +554,3 @@ export async function getSupportTickets(): Promise<SupportTicket[]> {
   }
 }
 
-export async function getEducationalResources(): Promise<EducationalResource[]> {
-  const fallback: EducationalResource[] = [
-    {
-      id: "alfabetizacao",
-      title: "Sequencia didatica de alfabetizacao",
-      category: "Alfabetizacao",
-      description: "Modelo inicial para organizar objetivos, habilidades, atividades e avaliacao.",
-      url: null,
-      imageUrl: null
-    },
-    {
-      id: "matematica",
-      title: "Banco de atividades de matematica",
-      category: "Matematica",
-      description: "Sugestao de atividades por eixo: numeros, geometria, grandezas e problemas.",
-      url: null,
-      imageUrl: null
-    },
-    {
-      id: "inclusao",
-      title: "Roteiro de atendimento educacional especializado",
-      category: "Inclusao",
-      description: "Checklist para acompanhar adaptacoes, relatorios e plano de atendimento.",
-      url: null,
-      imageUrl: null
-    }
-  ];
-
-  if (!isSupabaseConfigured()) {
-    return fallback;
-  }
-
-  try {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from("recursos_educacionais")
-      .select("id,title,description,category,url,image_url")
-      .eq("active", true)
-      .order("created_at", { ascending: false });
-
-    if (error || !data?.length) {
-      return fallback;
-    }
-
-    return (data as EducationalResourceRow[]).map((item) => ({
-      id: item.id,
-      title: item.title,
-      description: item.description ?? "",
-      category: item.category,
-      url: item.url,
-      imageUrl: item.image_url
-    }));
-  } catch {
-    return fallback;
-  }
-}

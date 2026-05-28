@@ -5,6 +5,7 @@ import {
   Building2,
   ClipboardCheck,
   FileArchive,
+  GraduationCap,
   Landmark,
   ShieldCheck,
   UsersRound
@@ -47,6 +48,12 @@ const dataActions = [
     title: "Enviar documentos",
     description: "Anexe atas, editais, notas, pareceres, comprovantes e documentos obrigatorios.",
     icon: FileArchive
+  },
+  {
+    href: "/recursos-educacionais-cadastro",
+    title: "Cadastrar recurso educacional",
+    description: "Publique materiais pedagogicos, orientacoes, modelos e links no portal publico.",
+    icon: GraduationCap
   },
   {
     href: "/alertas#novo-alerta",

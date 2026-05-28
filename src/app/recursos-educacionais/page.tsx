@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function EducationalResourcesPortalPage() {
-  const resources = await getEducationalResources();
+  const resources = await getEducationalResources(true);
 
   return (
     <main className="min-h-screen bg-[#f3f7fb] text-sme-ink">
@@ -84,7 +84,7 @@ export default async function EducationalResourcesPortalPage() {
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
-        <EducationalResourcesBrowser resources={resources} />
+        <EducationalResourcesBrowser initialResources={resources} />
       </section>
 
       <section id="orientacoes" className="mx-auto max-w-[1500px] px-5 pb-10 lg:px-8">
