@@ -36,6 +36,7 @@ export async function middleware(request: NextRequest) {
   const isLogin = request.nextUrl.pathname.startsWith("/login");
   const isSignup = request.nextUrl.pathname.startsWith("/cadastro");
   const isWaitingApproval = request.nextUrl.pathname.startsWith("/aguardando-aprovacao");
+  const isAccessBlocked = request.nextUrl.pathname.startsWith("/acesso-bloqueado");
   const isPasswordRecovery = request.nextUrl.pathname.startsWith("/nova-senha");
   const isEducationalResourcesPortal =
     request.nextUrl.pathname === "/recursos-educacionais" ||
@@ -44,18 +45,24 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
   const isAppRoute = !request.nextUrl.pathname.startsWith("/_next") && !request.nextUrl.pathname.includes(".");
 
-  if (!user && !isLogin && !isSignup && !isWaitingApproval && !isPasswordRecovery && !isEducationalResourcesPortal && !isInstitutionalNotice && isAppRoute) {
+  if (!user && !isLogin && !isSignup && !isWaitingApproval && !isAccessBlocked && !isPasswordRecovery && !isEducationalResourcesPortal && !isInstitutionalNotice && isAppRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
-  if (user && !isWaitingApproval && !request.nextUrl.pathname.startsWith("/auth/logout") && isAppRoute) {
+  if (user && !isWaitingApproval && !isAccessBlocked && !request.nextUrl.pathname.startsWith("/auth/logout") && isAppRoute) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("access_status,role")
       .eq("id", user.id)
       .maybeSingle();
+
+    if (profile?.access_status === "bloqueado") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/acesso-bloqueado";
+      return NextResponse.redirect(url);
+    }
 
     if (profile?.access_status && profile.access_status !== "aprovado") {
       const url = request.nextUrl.clone();
