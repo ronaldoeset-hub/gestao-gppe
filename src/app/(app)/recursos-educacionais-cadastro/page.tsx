@@ -23,23 +23,52 @@ async function salvarRecurso(formData: FormData) {
   const status = (formData.get("status") as string)?.trim() || "rascunho";
   const tagsRaw = (formData.get("tags") as string)?.trim() || "";
   const tags = tagsRaw ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean) : [];
+  const file = formData.get("file");
 
   if (!title || !category || !type) {
     redirect("/recursos-educacionais-cadastro?erro=campos-obrigatorios");
   }
 
-  await supabase.from("educational_resources").insert({
+  let file_path: string | null = null;
+
+  if (file instanceof File && file.size > 0) {
+    const safeName = file.name
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .toLowerCase();
+    file_path = `portal-recursos-educacionais/${user.id}/${Date.now()}-${safeName || "arquivo"}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("documentos-gppe")
+      .upload(file_path, file, {
+        contentType: file.type || undefined,
+        upsert: false
+      });
+
+    if (uploadError) {
+      redirect("/recursos-educacionais-cadastro?erro=upload");
+    }
+  }
+
+  const { error } = await supabase.from("educational_resources").insert({
     title,
     category,
     type,
     stage,
     modality,
     description,
+    file_path,
     external_url,
     status,
     tags,
     created_by: user.id
   });
+
+  if (error) {
+    redirect("/recursos-educacionais-cadastro?erro=salvar");
+  }
 
   redirect("/recursos-educacionais-cadastro?salvo=1");
 }
@@ -86,11 +115,15 @@ export default async function RecursosEducacionaisCadastroPage({
 
       {searchParams.erro && (
         <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-800">
-          Preencha os campos obrigatorios: titulo, categoria e tipo.
+          {searchParams.erro === "upload"
+            ? "Nao foi possivel enviar o arquivo. Verifique o formato e tente novamente."
+            : searchParams.erro === "salvar"
+              ? "Nao foi possivel salvar o recurso no banco de dados."
+              : "Preencha os campos obrigatorios: titulo, categoria e tipo."}
         </div>
       )}
 
-      <form action={salvarRecurso} className="space-y-5 rounded-md border border-slate-200 bg-white p-5 shadow-soft">
+      <form action={salvarRecurso} encType="multipart/form-data" className="space-y-5 rounded-md border border-slate-200 bg-white p-5 shadow-soft">
         <h2 className="font-black text-sme-ink">Informações do recurso</h2>
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -210,6 +243,21 @@ export default async function RecursosEducacionaisCadastroPage({
 
         <div>
           <label className="block text-sm font-bold text-slate-700">
+            Arquivo do recurso
+          </label>
+          <input
+            name="file"
+            type="file"
+            accept=".pdf,.png,.jpg,.jpeg,.xlsx,application/pdf,image/png,image/jpeg,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            className="mt-1.5 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-sme-blue file:px-3 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-sme-navy focus:outline-none focus:ring-2 focus:ring-sme-yellow"
+          />
+          <p className="mt-1 text-xs text-slate-500">
+            Use PDF, imagem ou planilha. O arquivo sera salvo no Supabase Storage e publicado junto com o recurso.
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold text-slate-700">
             Tags (palavras-chave)
           </label>
           <input
@@ -242,8 +290,7 @@ export default async function RecursosEducacionaisCadastroPage({
       <section className="rounded-md border border-amber-200 bg-amber-50 p-4 shadow-soft">
         <p className="text-sm font-bold text-amber-800">Sobre o upload de arquivos</p>
         <p className="mt-1 text-sm leading-6 text-amber-700">
-          Por enquanto, faca o upload do arquivo em um servico como Google Drive ou YouTube e cole o link no campo &ldquo;Link externo&rdquo;.
-          O upload direto de arquivos sera disponibilizado em uma proxima versao.
+          Voce pode informar um link externo, enviar um arquivo direto, ou usar os dois. Recursos publicados ficam disponiveis no portal publico.
         </p>
       </section>
     </div>

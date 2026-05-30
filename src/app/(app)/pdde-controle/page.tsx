@@ -15,14 +15,18 @@ async function savePddeBalances(formData: FormData) {
   if (!user) redirect("/login");
 
   const raw = formData.get("data") as string;
-  const schoolId = formData.get("schoolId") as string;
-  const year = parseInt(formData.get("year") as string);
+  const schoolId = String(formData.get("schoolId") ?? "");
+  const year = parseInt(String(formData.get("year") ?? ""), 10);
+
+  if (!raw || !schoolId || Number.isNaN(year)) {
+    redirect("/pdde-controle?erro=1");
+  }
 
   let balances: PddeBalance[] = [];
   try { balances = JSON.parse(raw); } catch { redirect(`/pdde-controle?escola=${schoolId}&ano=${year}&erro=1`); }
 
   for (const b of balances) {
-    await supabase.from("pdde_balances").upsert(
+    const { error } = await supabase.from("pdde_balances").upsert(
       {
         school_unit_id: b.schoolUnitId,
         program_id: b.programId,
@@ -39,6 +43,10 @@ async function savePddeBalances(formData: FormData) {
       },
       { onConflict: "school_unit_id,program_id,exercise_year" }
     );
+
+    if (error) {
+      redirect(`/pdde-controle?escola=${schoolId}&ano=${year}&erro=1`);
+    }
   }
 
   redirect(`/pdde-controle?escola=${schoolId}&ano=${year}&salvo=1`);
@@ -112,7 +120,7 @@ export default async function PddeControlePage({
             <WalletCards className="h-5 w-5 text-primary-700 shrink-0" aria-hidden="true" />
             <div className="min-w-0 flex-1">
               <p className="truncate text-base font-black text-neutral-900">{selectedSchool?.name ?? "Escola selecionada"}</p>
-              <p className="text-xs font-semibold text-neutral-500">Exercicio {year} · C = Custeio · K = Capital</p>
+              <p className="text-xs font-semibold text-neutral-500">Exercício {year} · C = Custeio · K = Capital</p>
             </div>
           </div>
 

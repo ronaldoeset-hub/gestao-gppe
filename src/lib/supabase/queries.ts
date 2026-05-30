@@ -393,20 +393,33 @@ export async function getEducationalResources(onlyPublic = true): Promise<Educat
       return [];
     }
 
-    return (data as EducationalResourceRow[]).map((item) => ({
-      id: item.id,
-      title: item.title,
-      category: item.category,
-      stage: item.stage ?? undefined,
-      modality: item.modality ?? undefined,
-      type: item.type,
-      description: item.description ?? undefined,
-      tags: item.tags ?? [],
-      filePath: item.file_path ?? undefined,
-      externalUrl: item.external_url ?? undefined,
-      status: item.status as EducationalResource["status"],
-      createdAt: item.created_at
-    }));
+    return Promise.all(
+      (data as EducationalResourceRow[]).map(async (item) => {
+        let fileUrl: string | undefined;
+
+        if (item.file_path) {
+          const { data: signedFile } = await supabase.storage
+            .from("documentos-gppe")
+            .createSignedUrl(item.file_path, 60 * 60);
+          fileUrl = signedFile?.signedUrl;
+        }
+
+        return {
+          id: item.id,
+          title: item.title,
+          category: item.category,
+          stage: item.stage ?? undefined,
+          modality: item.modality ?? undefined,
+          type: item.type,
+          description: item.description ?? undefined,
+          tags: item.tags ?? [],
+          filePath: item.file_path ?? undefined,
+          externalUrl: item.external_url ?? fileUrl,
+          status: item.status as EducationalResource["status"],
+          createdAt: item.created_at
+        };
+      })
+    );
   } catch {
     return [];
   }

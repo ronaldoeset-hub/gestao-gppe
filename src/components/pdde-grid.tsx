@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Save, TrendingDown, TrendingUp } from "lucide-react";
 import type { PddeBalance, PddeProgram } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
@@ -159,7 +159,7 @@ export function PddeGrid({ programs, initialBalances, schoolUnitId, year, saveAc
             <tr className="bg-neutral-900 text-white">
               <th className="px-3 py-2.5 text-left text-xs font-bold uppercase w-52">Programa</th>
               <th colSpan={2} className="px-2 py-2.5 text-center text-xs font-bold uppercase border-l border-neutral-700">Saldo Anterior</th>
-              <th colSpan={2} className="px-2 py-2.5 text-center text-xs font-bold uppercase border-l border-neutral-700">Creditado 2026</th>
+              <th colSpan={2} className="px-2 py-2.5 text-center text-xs font-bold uppercase border-l border-neutral-700">Creditado {year}</th>
               <th colSpan={2} className="px-2 py-2.5 text-center text-xs font-bold uppercase border-l border-neutral-700">Rendimento</th>
               <th colSpan={2} className="px-2 py-2.5 text-center text-xs font-bold uppercase border-l border-neutral-700">Valor Gasto</th>
               <th colSpan={2} className="px-2 py-2.5 text-center text-xs font-bold uppercase border-l border-neutral-700 bg-slate-700">Saldo Final</th>
@@ -168,10 +168,10 @@ export function PddeGrid({ programs, initialBalances, schoolUnitId, year, saveAc
             <tr className="bg-neutral-800 text-neutral-300">
               <th className="px-3 py-1.5 text-left text-xs"></th>
               {["Saldo Ant.", "Creditado", "Rendimento", "Gasto"].map((g) => (
-                <>
-                  <th key={`${g}-c`} className="px-2 py-1.5 text-center text-xs border-l border-neutral-700 w-24">C</th>
-                  <th key={`${g}-k`} className="px-2 py-1.5 text-center text-xs w-24">K</th>
-                </>
+                <Fragment key={g}>
+                  <th className="px-2 py-1.5 text-center text-xs border-l border-neutral-700 w-24">C</th>
+                  <th className="px-2 py-1.5 text-center text-xs w-24">K</th>
+                </Fragment>
               ))}
               <th className="px-2 py-1.5 text-center text-xs border-l border-neutral-700 w-24 bg-slate-700">C</th>
               <th className="px-2 py-1.5 text-center text-xs w-24 bg-slate-700">K</th>
@@ -185,7 +185,7 @@ export function PddeGrid({ programs, initialBalances, schoolUnitId, year, saveAc
               const color = groupColors[groupName] ?? "bg-slate-700";
 
               return (
-                <>
+                <Fragment key={groupName}>
                   <tr key={`group-${groupName}`} className={`${color} text-white`}>
                     <td colSpan={12} className="px-3 py-1.5 text-xs font-black uppercase tracking-wide">
                       {groupName}
@@ -266,7 +266,7 @@ export function PddeGrid({ programs, initialBalances, schoolUnitId, year, saveAc
                     <td className={`${cellCls} ${gt.saldoFinalK < 0 ? "text-red-700" : "text-emerald-700"}`}>{fmt(gt.saldoFinalK)}</td>
                     <td className={`${cellCls} border-l border-neutral-100 font-black ${gt.total < 0 ? "text-red-800" : "text-emerald-800"}`}>{fmt(gt.total)}</td>
                   </tr>
-                </>
+                </Fragment>
               );
             })}
 
