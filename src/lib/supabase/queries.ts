@@ -709,7 +709,7 @@ export async function getFinanceiroUnidade(filters: {
     const supabase = createClient();
     let query = supabase
       .from("financeiro_unidade")
-      .select("id,unidade_id,programa_id,exercicio,saldo_anterior_custeio,saldo_anterior_capital,creditado_custeio,creditado_capital,rendimento_custeio,rendimento_capital,despesa_custeio,despesa_capital,observacao,atualizado_por,created_at,updated_at");
+      .select("id,unidade_id,programa_id,exercicio,saldo_anterior_custeio,saldo_anterior_capital,creditado_custeio,creditado_capital,rendimento_custeio,rendimento_capital,despesa_custeio,despesa_capital,fonte_recurso_id,situacao_programa,tipo_programa,observacao_tecnica,created_at,updated_at");
     if (filters.exercicio) query = query.eq("exercicio", filters.exercicio);
     if (filters.programaId) query = query.eq("programa_id", filters.programaId);
     if (filters.unidadeId) query = query.eq("unidade_id", filters.unidadeId);
@@ -728,8 +728,10 @@ export async function getFinanceiroUnidade(filters: {
       rendimentoCapital:    Number(r.rendimento_capital),
       despesaCusteio:       Number(r.despesa_custeio),
       despesaCapital:       Number(r.despesa_capital),
-      observacao:           r.observacao ?? undefined,
-      atualizadoPor:        r.atualizado_por ?? undefined,
+      fonteRecursoId:       r.fonte_recurso_id ?? undefined,
+      situacaoPrograma:     r.situacao_programa ?? undefined,
+      tipoPrograma:         r.tipo_programa ?? "Custeio e Capital",
+      observacaoTecnica:    r.observacao_tecnica ?? undefined,
       createdAt:            r.created_at,
       updatedAt:            r.updated_at
     }));
@@ -750,5 +752,28 @@ export async function getExercicios(): Promise<import("@/lib/types").Exercicio[]
       .order("ano", { ascending: false });
     if (error || !data) return [];
     return data as import("@/lib/types").Exercicio[];
+  } catch { return []; }
+}
+
+export async function getFontesRecurso(): Promise<import("@/lib/types").FonteRecurso[]> {
+  if (!isSupabaseConfigured()) return [
+    { id: "1", nome: "Federal",                      ativo: true },
+    { id: "2", nome: "Estadual",                     ativo: true },
+    { id: "3", nome: "Municipal",                    ativo: true },
+    { id: "4", nome: "FNDE",                         ativo: true },
+    { id: "5", nome: "Emenda Parlamentar Federal",   ativo: true },
+    { id: "6", nome: "Emenda Parlamentar Estadual",  ativo: true },
+    { id: "7", nome: "Recursos Próprios",            ativo: true },
+    { id: "8", nome: "Outros",                       ativo: true }
+  ];
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("fontes_recurso")
+      .select("id,nome,ativo")
+      .eq("ativo", true)
+      .order("nome");
+    if (error || !data) return [];
+    return data as import("@/lib/types").FonteRecurso[];
   } catch { return []; }
 }

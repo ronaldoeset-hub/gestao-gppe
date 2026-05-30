@@ -123,6 +123,12 @@ export type Exercicio = {
   status: "aberto" | "encerrado";
 };
 
+export type FonteRecurso = {
+  id: string;
+  nome: string;
+  ativo: boolean;
+};
+
 export type GestaoPrograma = {
   id: string;
   nome: string;
@@ -144,8 +150,10 @@ export type FinanceiroUnidade = {
   rendimentoCapital: number;
   despesaCusteio: number;
   despesaCapital: number;
-  observacao?: string;
-  atualizadoPor?: string;
+  fonteRecursoId?: string;
+  situacaoPrograma?: string;
+  tipoPrograma?: string;
+  observacaoTecnica?: string;
   createdAt?: string;
   updatedAt?: string;
 };

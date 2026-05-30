@@ -106,3 +106,19 @@ export function heatMapClasses(saldoGeral: number): string {
 // ── Constantes ────────────────────────────────────────────────────────────────
 
 export const ANOS_DISPONIVEIS = [2024, 2025, 2026];
+
+export const SITUACAO_PROGRAMA = [
+  "Em Execução",
+  "Encerrado",
+  "Reprogramado",
+  "Aguardando Utilização"
+] as const;
+
+export const TIPO_PROGRAMA = [
+  "Custeio e Capital",
+  "Custeio",
+  "Capital"
+] as const;
+
+export type SituacaoPrograma = typeof SITUACAO_PROGRAMA[number];
+export type TipoPrograma     = typeof TIPO_PROGRAMA[number];
