@@ -735,3 +735,20 @@ export async function getFinanceiroUnidade(filters: {
     }));
   } catch { return []; }
 }
+
+export async function getExercicios(): Promise<import("@/lib/types").Exercicio[]> {
+  if (!isSupabaseConfigured()) return [
+    { id: "1", ano: 2024, status: "encerrado" },
+    { id: "2", ano: 2025, status: "encerrado" },
+    { id: "3", ano: 2026, status: "aberto" }
+  ];
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("exercicios")
+      .select("id,ano,status")
+      .order("ano", { ascending: false });
+    if (error || !data) return [];
+    return data as import("@/lib/types").Exercicio[];
+  } catch { return []; }
+}

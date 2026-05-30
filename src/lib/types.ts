@@ -117,6 +117,12 @@ export type PddeBalance = {
   valorGastoK: number;
 };
 
+export type Exercicio = {
+  id: string;
+  ano: number;
+  status: "aberto" | "encerrado";
+};
+
 export type GestaoPrograma = {
   id: string;
   nome: string;

@@ -93,6 +93,8 @@ export const eduMenuItems: EduMenuItem[] = [
   { href: "/redes-sociais", label: "Redes Sociais", icon: Share2 },
   { href: "/arquivos", label: "Arquivos", icon: Archive },
   { href: "/gestao-recursos", label: "Gestao de Recursos", icon: BarChart3 },
+  { href: "/gestao-recursos/alertas", label: "Alertas Financeiros", icon: Bell },
+  { href: "/gestao-recursos/programas", label: "Programas", icon: PieChart },
   { href: "/financeiro", label: "Controle Financeiro", icon: WalletCards },
   { href: "/pdde-controle", label: "Controle PDDE", icon: TableProperties },
   { href: "/organizacao-financeira", label: "Organizacao Financeira", icon: WalletCards },
