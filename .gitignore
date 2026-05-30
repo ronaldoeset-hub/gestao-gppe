@@ -1,4 +1,5 @@
 node_modules
+PROMPT_*.md
 .next
 out
 dist

@@ -37,7 +37,9 @@ export async function middleware(request: NextRequest) {
   const isSignup = request.nextUrl.pathname.startsWith("/cadastro");
   const isWaitingApproval = request.nextUrl.pathname.startsWith("/aguardando-aprovacao");
   const isPasswordRecovery = request.nextUrl.pathname.startsWith("/nova-senha");
-  const isEducationalResourcesPortal = request.nextUrl.pathname.startsWith("/recursos-educacionais");
+  const isEducationalResourcesPortal =
+    request.nextUrl.pathname === "/recursos-educacionais" ||
+    request.nextUrl.pathname.startsWith("/recursos-educacionais/");
   const isInstitutionalNotice = request.nextUrl.pathname.startsWith("/aviso-institucional");
   const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
   const isAppRoute = !request.nextUrl.pathname.startsWith("/_next") && !request.nextUrl.pathname.includes(".");

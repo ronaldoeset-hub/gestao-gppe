@@ -5,10 +5,13 @@ create table if not exists public.pdde_programs (
   group_name text not null,
   program_name text not null,
   sort_order integer not null default 0,
-  active boolean not null default true
+  active boolean not null default true,
+  constraint pdde_programs_group_program_unique unique (group_name, program_name)
 );
 
 create index if not exists pdde_programs_sort_idx on public.pdde_programs(sort_order);
+create unique index if not exists pdde_programs_group_program_uidx
+on public.pdde_programs(group_name, program_name);
 
 alter table public.pdde_programs enable row level security;
 
@@ -85,4 +88,6 @@ insert into public.pdde_programs (group_name, program_name, sort_order) values
 ('PDDE ESTRUTURA', 'CAMPO',         110),
 ('PDDE ESTRUTURA', 'SALA DE RECURSO',120),
 ('PDDE-INTEGRAL', 'INTEGRAL',       130)
-on conflict do nothing;
+on conflict (group_name, program_name) do update set
+  sort_order = excluded.sort_order,
+  active = true;
