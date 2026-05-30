@@ -4,7 +4,8 @@ export const roleLabels: Record<UserRole, string> = {
   admin_sme: "Administrador SME",
   tecnico_gppe: "Técnico GPPE",
   gestor_escolar: "Gestor Escolar",
-  conselho_escolar: "Conselho Escolar"
+  conselho_escolar: "Conselho Escolar",
+  funcionario_escola: "Funcionário Escolar"
 };
 
 export const rolePermissions = [
@@ -19,6 +20,10 @@ export const rolePermissions = [
   {
     role: "Gestor Escolar",
     permissions: ["Atualizar dados da unidade", "Enviar documentos", "Acompanhar recursos da escola"]
+  },
+  {
+    role: "Funcionário Escolar",
+    permissions: ["Alimentar dados da própria unidade", "Enviar documentos", "Consultar prazos e comunicados"]
   },
   {
     role: "Conselho Escolar",

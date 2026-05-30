@@ -14,7 +14,7 @@ export default async function RolesPage() {
     <div className="space-y-6">
       <ModuleHeader
         title="Perfis de acesso"
-        description="Matriz inicial de permissões para Administrador SME, Técnico GPPE, Gestor Escolar e Conselho Escolar."
+        description="Gerencie perfis de acesso: Administrador SME, Técnico GPPE, Gestor Escolar, Funcionário Escolar e Conselho Escolar."
         icon={ShieldCheck}
       />
       <AccessApprovalPanel profiles={profiles} />

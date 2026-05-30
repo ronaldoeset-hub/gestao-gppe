@@ -16,7 +16,7 @@ type ProfileManagerProps = {
   profiles: ProfileRecord[];
 };
 
-const roles: UserRole[] = ["admin_sme", "tecnico_gppe", "gestor_escolar", "conselho_escolar"];
+const roles: UserRole[] = ["admin_sme", "tecnico_gppe", "gestor_escolar", "funcionario_escola", "conselho_escolar"];
 
 export function ProfileManager({ profiles }: ProfileManagerProps) {
   const router = useRouter();

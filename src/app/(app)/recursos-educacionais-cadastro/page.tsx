@@ -45,19 +45,19 @@ async function salvarRecurso(formData: FormData) {
 }
 
 const categorias = [
-  "Alfabetizacao",
-  "Matematica",
-  "Inclusao",
-  "Gestao pedagogica",
-  "Formacao",
+  "Alfabetização",
+  "Matemática",
+  "Inclusão",
+  "Gestão pedagógica",
+  "Formação",
   "Documentos",
   "Outro"
 ];
 
-const tipos = ["PDF", "Video", "Link", "Modelo", "Outro"];
+const tipos = ["PDF", "Vídeo", "Link", "Modelo", "Outro"];
 
 const etapas = [
-  "Educacao Infantil",
+  "Educação Infantil",
   "Ensino Fundamental - Anos Iniciais",
   "Ensino Fundamental - Anos Finais",
   "EJA",
@@ -74,7 +74,7 @@ export default async function RecursosEducacionaisCadastroPage({
     <div className="space-y-6">
       <ModuleHeader
         title="Cadastrar recurso educacional"
-        description="Adicione materiais pedagogicos, orientacoes, modelos e links para o portal publico da SME."
+        description="Adicione materiais pedagógicos, orientações, modelos e links para o portal público da SME."
         icon={GraduationCap}
       />
 
@@ -91,18 +91,18 @@ export default async function RecursosEducacionaisCadastroPage({
       )}
 
       <form action={salvarRecurso} className="space-y-5 rounded-md border border-slate-200 bg-white p-5 shadow-soft">
-        <h2 className="font-black text-sme-ink">Informacoes do recurso</h2>
+        <h2 className="font-black text-sme-ink">Informações do recurso</h2>
 
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <label className="block text-sm font-bold text-slate-700">
-              Titulo <span className="text-red-500">*</span>
+              Título <span className="text-red-500">*</span>
             </label>
             <input
               name="title"
               required
               maxLength={200}
-              placeholder="Ex: Sequencia didatica de leitura"
+              placeholder="Ex: Sequência didática de leitura"
               className="mt-1.5 h-11 w-full rounded-md border border-slate-300 px-3 text-sm outline-none focus:ring-2 focus:ring-sme-yellow"
             />
           </div>
@@ -148,8 +148,8 @@ export default async function RecursosEducacionaisCadastroPage({
               defaultValue="rascunho"
               className="mt-1.5 h-11 w-full rounded-md border border-slate-300 px-3 text-sm outline-none focus:ring-2 focus:ring-sme-yellow"
             >
-              <option value="rascunho">Rascunho (nao aparece no portal)</option>
-              <option value="publico">Publico (aparece no portal)</option>
+              <option value="rascunho">Rascunho (não aparece no portal)</option>
+              <option value="publico">Público (aparece no portal)</option>
               <option value="arquivado">Arquivado</option>
             </select>
           </div>
@@ -176,7 +176,7 @@ export default async function RecursosEducacionaisCadastroPage({
             <input
               name="modality"
               maxLength={100}
-              placeholder="Ex: Inclusao, EJA, Regular"
+              placeholder="Ex: Inclusão, EJA, Regular"
               className="mt-1.5 h-11 w-full rounded-md border border-slate-300 px-3 text-sm outline-none focus:ring-2 focus:ring-sme-yellow"
             />
           </div>
@@ -184,13 +184,13 @@ export default async function RecursosEducacionaisCadastroPage({
 
         <div>
           <label className="block text-sm font-bold text-slate-700">
-            Descricao
+            Descrição
           </label>
           <textarea
             name="description"
             rows={3}
             maxLength={500}
-            placeholder="Descreva brevemente o conteudo e finalidade do recurso."
+            placeholder="Descreva brevemente o conteúdo e finalidade do recurso."
             className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-sme-yellow"
           />
         </div>
@@ -234,7 +234,7 @@ export default async function RecursosEducacionaisCadastroPage({
             rel="noreferrer"
             className="inline-flex h-11 items-center gap-2 rounded-md border border-slate-300 bg-white px-4 text-sm font-bold text-sme-ink hover:bg-blue-50"
           >
-            Ver portal publico
+            Ver portal público
           </a>
         </div>
       </form>

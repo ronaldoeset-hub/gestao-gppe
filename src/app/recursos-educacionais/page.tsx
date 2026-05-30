@@ -27,7 +27,7 @@ export default async function EducationalResourcesPortalPage() {
           </Link>
           <nav className="flex flex-wrap items-center gap-3 text-sm font-bold">
             <a href="#materiais" className="rounded-md px-3 py-2 hover:bg-white/10">Materiais</a>
-            <a href="#orientacoes" className="rounded-md px-3 py-2 hover:bg-white/10">Orientacoes</a>
+            <a href="#orientacoes" className="rounded-md px-3 py-2 hover:bg-white/10">Orientações</a>
             <Link href="/login" className="inline-flex items-center gap-2 rounded-md bg-sme-yellow px-4 py-2 font-black text-[#003b7a]">
               Area administrativa
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -43,10 +43,10 @@ export default async function EducationalResourcesPortalPage() {
               Recursos para apoiar a rede municipal
             </p>
             <h2 className="mt-5 max-w-4xl text-4xl font-black leading-tight text-sme-ink lg:text-5xl">
-              Materiais pedagogicos, orientacoes e documentos em um unico portal.
+              Materiais pedagógicos, orientações e documentos em um único portal.
             </h2>
             <p className="mt-5 max-w-3xl text-base leading-7 text-slate-600">
-              Um espaco publico para organizar materiais de apoio, trilhas de formacao, modelos de documentos, atividades e referencias para professores, gestores e equipes pedagogicas.
+              Um espaço público para organizar materiais de apoio, trilhas de formação, modelos de documentos, atividades e referências para professores, gestores e equipes pedagógicas.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a href="#materiais" className="inline-flex h-11 items-center gap-2 rounded-md bg-sme-blue px-4 text-sm font-black text-white hover:bg-sme-navy">
@@ -62,9 +62,9 @@ export default async function EducationalResourcesPortalPage() {
 
           <div className="rounded-md border border-slate-200 bg-[#f8fbff] p-5 shadow-soft">
             <div className="grid gap-3">
-              <PortalMetric icon={FileText} title="Documentos" value="Modelos e orientacoes" />
-              <PortalMetric icon={GraduationCap} title="Formacao" value="Trilhas para professores" />
-              <PortalMetric icon={BookOpen} title="Praticas pedagogicas" value="Atividades por etapa" />
+              <PortalMetric icon={FileText} title="Documentos" value="Modelos e orientações" />
+              <PortalMetric icon={GraduationCap} title="Formação" value="Trilhas para professores" />
+              <PortalMetric icon={BookOpen} title="Práticas pedagógicas" value="Atividades por etapa" />
             </div>
           </div>
         </div>
@@ -77,10 +77,10 @@ export default async function EducationalResourcesPortalPage() {
         <div className="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-black uppercase text-amber-500">Biblioteca inicial</p>
-            <h2 className="text-2xl font-black text-sme-ink">Materiais disponiveis</h2>
+            <h2 className="text-2xl font-black text-sme-ink">Materiais disponíveis</h2>
           </div>
           <Link href="/alimentar-dados" className="inline-flex h-10 items-center gap-2 rounded-md border border-slate-300 bg-white px-3 text-sm font-bold text-[#003b7a] hover:bg-blue-50">
-            Alimentar conteudo
+            Alimentar conteúdo
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
@@ -99,7 +99,7 @@ export default async function EducationalResourcesPortalPage() {
         <div className="mx-auto flex max-w-[1500px] flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-lg font-black">Secretaria Municipal de Educacao</p>
-            <p className="text-sm text-blue-100">Aguas Lindas de Goias - GO</p>
+            <p className="text-sm text-blue-100">Águas Lindas de Goiás - GO</p>
           </div>
           <Link href="https://smeaguaslindas.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-sme-yellow">
             Portal oficial da SME

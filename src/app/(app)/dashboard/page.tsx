@@ -33,36 +33,36 @@ export default async function DashboardPage() {
   }, {});
 
   const quickActions = [
-    { label: "Alimentar recurso", href: "/recursos", icon: Landmark },
-    { label: "Registrar prestacao", href: "/prestacao-contas", icon: ClipboardCheck },
+    { label: "Alimentar dados", href: "/alimentar-dados", icon: Landmark },
+    { label: "Registrar prestação", href: "/prestacao-contas", icon: ClipboardCheck },
     { label: "Enviar documento", href: "/arquivos", icon: FileUp },
-    { label: "Gerar diagnostico", href: "/ia-educacional", icon: Bot }
+    { label: "Gerar diagnóstico", href: "/ia-educacional", icon: Bot }
   ];
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Dashboard GPPE"
-        description="Painel operacional para acompanhar recursos, prestacoes, conselhos, documentos e alertas da rede municipal."
-        breadcrumbs={[{ label: "Inicio" }, { label: "Dashboard" }]}
+        title="Dashboard"
+        description="Painel operacional para acompanhar recursos, prestações, conselhos, documentos e alertas da rede municipal."
+        breadcrumbs={[{ label: "Início" }, { label: "Dashboard" }]}
       />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Unidades mapeadas" value={String(units.length)} detail="Escolas, creches, CEMEI e conveniadas" icon={School} tone="info" />
-        <MetricCard label="Prestacoes pendentes" value={String(pendingAccountabilities.length)} detail="Nao entregues ou vencidas" icon={ShieldAlert} tone="warning" />
+        <MetricCard label="Prestações pendentes" value={String(pendingAccountabilities.length)} detail="Não entregues ou vencidas" icon={ShieldAlert} tone="warning" />
         <MetricCard label="Saldo monitorado" value={formatCurrency(totalBalance)} detail={`${formatCurrency(totalSpent)} executados`} icon={Banknote} tone="success" />
-        <MetricCard label="Alertas criticos" value={String(criticalAlerts.length)} detail={`${alerts.length} alertas ativos no total`} icon={AlertTriangle} tone="danger" />
+        <MetricCard label="Alertas críticos" value={String(criticalAlerts.length)} detail={`${alerts.length} alertas ativos no total`} icon={AlertTriangle} tone="danger" />
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
         <Card>
           <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <CardTitle>Unidades pendentes de prestacao de contas</CardTitle>
-              <p className="mt-1 text-sm text-neutral-600">Lista em ordem alfabetica para priorizar cobrancas e acompanhamento tecnico.</p>
+              <CardTitle>Unidades pendentes de prestação de contas</CardTitle>
+              <p className="mt-1 text-sm text-neutral-600">Lista em ordem alfabética para priorizar cobranças e acompanhamento técnico.</p>
             </div>
             <Link href="/prestacao-contas" className="inline-flex items-center gap-1 text-sm font-bold text-primary-700 hover:text-primary-900">
-              Ver prestacoes
+              Ver prestações
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </CardHeader>
@@ -83,15 +83,15 @@ export default async function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <EmptyState title="Nenhuma pendencia encontrada" description="Quando uma unidade ficar sem entrega registrada, ela aparecera aqui automaticamente." />
+              <EmptyState title="Nenhuma pendência encontrada" description="Quando uma unidade ficar sem entrega registrada, ela aparecerá aqui automaticamente." />
             )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Acoes rapidas</CardTitle>
-            <p className="text-sm text-neutral-600">Atalhos para as rotinas mais usadas pelo GPPE.</p>
+            <CardTitle>Ações rápidas</CardTitle>
+            <p className="text-sm text-neutral-600">Atalhos para as rotinas mais usadas no sistema.</p>
           </CardHeader>
           <CardContent className="grid gap-2">
             {quickActions.map((action) => {
@@ -133,8 +133,8 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Conselhos em atencao</CardTitle>
-            <p className="text-sm text-neutral-600">Mandatos vencidos ou proximos do vencimento.</p>
+            <CardTitle>Conselhos em atenção</CardTitle>
+            <p className="text-sm text-neutral-600">Mandatos vencidos ou próximos do vencimento.</p>
           </CardHeader>
           <CardContent className="space-y-3">
             {overdueCouncils.slice(0, 6).map((item) => (
@@ -147,7 +147,7 @@ export default async function DashboardPage() {
                 <Badge tone={item.status === "vencido" ? "danger" : "warning"}>{item.status}</Badge>
               </div>
             ))}
-            {!overdueCouncils.length ? <EmptyState title="Conselhos regulares" description="Nenhum conselho vencido ou em atencao foi localizado." /> : null}
+            {!overdueCouncils.length ? <EmptyState title="Conselhos regulares" description="Nenhum conselho vencido ou em atenção foi localizado." /> : null}
           </CardContent>
         </Card>
 

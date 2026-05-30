@@ -1,4 +1,4 @@
-export type UserRole = "admin_sme" | "tecnico_gppe" | "gestor_escolar" | "conselho_escolar";
+export type UserRole = "admin_sme" | "tecnico_gppe" | "gestor_escolar" | "conselho_escolar" | "funcionario_escola";
 
 export type Status = "regular" | "atencao" | "pendente" | "vencido";
 

@@ -15,7 +15,7 @@ import { ModuleHeader } from "@/components/module-header";
 const dataActions = [
   {
     href: "/diagnostico-dados",
-    title: "Ver diagnostico dos dados",
+    title: "Ver diagnóstico dos dados",
     description: "Confira automaticamente o que falta completar por unidade escolar.",
     icon: ClipboardCheck
   },
@@ -39,8 +39,8 @@ const dataActions = [
   },
   {
     href: "/prestacao-contas#nova-prestacao",
-    title: "Registrar prestacao de contas",
-    description: "Controle referencia, prazo, envio, protocolo e status de analise.",
+    title: "Registrar prestação de contas",
+    description: "Controle referência, prazo, envio, protocolo e status de análise.",
     icon: ClipboardCheck
   },
   {
@@ -52,7 +52,7 @@ const dataActions = [
   {
     href: "/recursos-educacionais-cadastro",
     title: "Cadastrar recurso educacional",
-    description: "Publique materiais pedagogicos, orientacoes, modelos e links no portal publico.",
+    description: "Publique materiais pedagógicos, orientações, modelos e links no portal público.",
     icon: GraduationCap
   },
   {
@@ -73,8 +73,8 @@ export default function FeedDataPage() {
   return (
     <div className="space-y-6">
       <ModuleHeader
-        title="Alimentar e alterar informacoes"
-        description="Central de acesso rapido para inserir, complementar e manter os dados do sistema GPPE atualizados."
+        title="Alimentar e alterar informações"
+        description="Central de acesso rápido para inserir, complementar e manter os dados do EduConecta atualizados."
         icon={ClipboardCheck}
       />
 
@@ -106,7 +106,7 @@ export default function FeedDataPage() {
       <section className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
         <h2 className="text-lg font-black text-sme-ink">Fluxo recomendado</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-4">
-          {["Unidade", "Conselho", "Recurso", "Prestacao e documentos"].map((step, index) => (
+          {["Unidade", "Conselho", "Recurso", "Prestação e documentos"].map((step, index) => (
             <div key={step} className="rounded-md bg-blue-50 p-4">
               <p className="text-xs font-black uppercase text-sme-blue">Etapa {index + 1}</p>
               <p className="mt-2 font-bold text-sme-ink">{step}</p>
