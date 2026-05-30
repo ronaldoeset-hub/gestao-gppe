@@ -676,3 +676,62 @@ export async function getFinanceiroBalances(schoolUnitId: string, year: number):
     }));
   } catch { return []; }
 }
+
+// ── Gestão de Recursos ────────────────────────────────────────────────────────
+
+export async function getGestaoPrograms(): Promise<import("@/lib/types").GestaoPrograma[]> {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("gestao_programas")
+      .select("id,nome,descricao,ativo,created_at")
+      .eq("ativo", true)
+      .order("nome");
+    if (error || !data) return [];
+    return data.map((r) => ({
+      id: r.id,
+      nome: r.nome,
+      descricao: r.descricao ?? undefined,
+      ativo: r.ativo,
+      createdAt: r.created_at
+    }));
+  } catch { return []; }
+}
+
+export async function getFinanceiroUnidade(filters: {
+  exercicio?: number;
+  programaId?: string;
+  unidadeId?: string;
+} = {}): Promise<import("@/lib/types").FinanceiroUnidade[]> {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    const supabase = createClient();
+    let query = supabase
+      .from("financeiro_unidade")
+      .select("id,unidade_id,programa_id,exercicio,saldo_anterior_custeio,saldo_anterior_capital,creditado_custeio,creditado_capital,rendimento_custeio,rendimento_capital,despesa_custeio,despesa_capital,observacao,atualizado_por,created_at,updated_at");
+    if (filters.exercicio) query = query.eq("exercicio", filters.exercicio);
+    if (filters.programaId) query = query.eq("programa_id", filters.programaId);
+    if (filters.unidadeId) query = query.eq("unidade_id", filters.unidadeId);
+    const { data, error } = await query;
+    if (error || !data) return [];
+    return data.map((r) => ({
+      id: r.id,
+      unidadeId: r.unidade_id,
+      programaId: r.programa_id,
+      exercicio: r.exercicio,
+      saldoAnteriorCusteio: Number(r.saldo_anterior_custeio),
+      saldoAnteriorCapital: Number(r.saldo_anterior_capital),
+      creditadoCusteio:     Number(r.creditado_custeio),
+      creditadoCapital:     Number(r.creditado_capital),
+      rendimentoCusteio:    Number(r.rendimento_custeio),
+      rendimentoCapital:    Number(r.rendimento_capital),
+      despesaCusteio:       Number(r.despesa_custeio),
+      despesaCapital:       Number(r.despesa_capital),
+      observacao:           r.observacao ?? undefined,
+      atualizadoPor:        r.atualizado_por ?? undefined,
+      createdAt:            r.created_at,
+      updatedAt:            r.updated_at
+    }));
+  } catch { return []; }
+}

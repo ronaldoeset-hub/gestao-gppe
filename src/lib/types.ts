@@ -117,6 +117,41 @@ export type PddeBalance = {
   valorGastoK: number;
 };
 
+export type GestaoPrograma = {
+  id: string;
+  nome: string;
+  descricao?: string;
+  ativo: boolean;
+  createdAt: string;
+};
+
+export type FinanceiroUnidade = {
+  id?: string;
+  unidadeId: string;
+  programaId: string;
+  exercicio: number;
+  saldoAnteriorCusteio: number;
+  saldoAnteriorCapital: number;
+  creditadoCusteio: number;
+  creditadoCapital: number;
+  rendimentoCusteio: number;
+  rendimentoCapital: number;
+  despesaCusteio: number;
+  despesaCapital: number;
+  observacao?: string;
+  atualizadoPor?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type FinanceiroCalculado = {
+  totalCusteio: number;
+  totalCapital: number;
+  saldoFinalCusteio: number;
+  saldoFinalCapital: number;
+  saldoGeral: number;
+};
+
 export type FinanceiroBalance = {
   id?: string;
   schoolUnitId: string;
