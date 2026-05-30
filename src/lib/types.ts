@@ -117,6 +117,22 @@ export type PddeBalance = {
   valorGastoK: number;
 };
 
+export type FinanceiroBalance = {
+  id?: string;
+  schoolUnitId: string;
+  programaCodigo: string;
+  exerciseYear: number;
+  saldoAnteriorC: number;
+  saldoAnteriorK: number;
+  valorCreditadoC: number;
+  valorCreditadoK: number;
+  rendimentoC: number;
+  rendimentoK: number;
+  valorGastoC: number;
+  valorGastoK: number;
+  updatedAt?: string;
+};
+
 export type EducationalResourceStatus = "publico" | "rascunho" | "arquivado";
 
 export type EducationalResource = {

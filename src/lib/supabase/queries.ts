@@ -1,5 +1,5 @@
 import { accountabilities, alerts, councils, resources, schoolUnits } from "@/lib/data";
-import type { Accountability, Alert, Council, DocumentRecord, EducationalResource, FndeLink, PddeBalance, PddeProgram, ProfileRecord, ResourceTransfer, SchoolUnit, SupportTicket } from "@/lib/types";
+import type { Accountability, Alert, Council, DocumentRecord, EducationalResource, FinanceiroBalance, FndeLink, PddeBalance, PddeProgram, ProfileRecord, ResourceTransfer, SchoolUnit, SupportTicket } from "@/lib/types";
 import { createClient } from "@/lib/supabase/server";
 
 type SchoolUnitRow = {
@@ -647,3 +647,32 @@ export async function getPddeBalancesByYear(year: number): Promise<PddeBalance[]
   }
 }
 
+
+
+export async function getFinanceiroBalances(schoolUnitId: string, year: number): Promise<FinanceiroBalance[]> {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("financeiro_balances")
+      .select("id,school_unit_id,programa_codigo,exercise_year,saldo_anterior_c,saldo_anterior_k,valor_creditado_c,valor_creditado_k,rendimento_c,rendimento_k,valor_gasto_c,valor_gasto_k,updated_at")
+      .eq("school_unit_id", schoolUnitId)
+      .eq("exercise_year", year);
+    if (error || !data) return [];
+    return data.map((r) => ({
+      id: r.id,
+      schoolUnitId: r.school_unit_id,
+      programaCodigo: r.programa_codigo,
+      exerciseYear: r.exercise_year,
+      saldoAnteriorC: Number(r.saldo_anterior_c),
+      saldoAnteriorK: Number(r.saldo_anterior_k),
+      valorCreditadoC: Number(r.valor_creditado_c),
+      valorCreditadoK: Number(r.valor_creditado_k),
+      rendimentoC: Number(r.rendimento_c),
+      rendimentoK: Number(r.rendimento_k),
+      valorGastoC: Number(r.valor_gasto_c),
+      valorGastoK: Number(r.valor_gasto_k),
+      updatedAt: r.updated_at
+    }));
+  } catch { return []; }
+}

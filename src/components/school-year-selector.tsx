@@ -9,14 +9,15 @@ type Props = {
   schools: SchoolUnit[];
   selectedSchoolId?: string;
   year: number;
+  basePath?: string;
 };
 
-export function SchoolYearSelector({ schools, selectedSchoolId, year }: Props) {
+export function SchoolYearSelector({ schools, selectedSchoolId, year, basePath = "/pdde-controle" }: Props) {
   const router = useRouter();
 
   function navigate(schoolId: string, y: number) {
     if (schoolId) {
-      router.push(`/pdde-controle?escola=${schoolId}&ano=${y}`);
+      router.push(`${basePath}?escola=${schoolId}&ano=${y}`);
     }
   }
 
