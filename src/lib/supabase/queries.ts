@@ -617,3 +617,33 @@ export async function getPddeBalances(schoolUnitId: string, year: number): Promi
   }
 }
 
+export async function getPddeBalancesByYear(year: number): Promise<PddeBalance[]> {
+  if (!isSupabaseConfigured()) return [];
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("pdde_balances")
+      .select("id,school_unit_id,program_id,exercise_year,saldo_anterior_c,saldo_anterior_k,valor_creditado_c,valor_creditado_k,rendimento_c,rendimento_k,valor_gasto_c,valor_gasto_k")
+      .eq("exercise_year", year);
+
+    if (error || !data?.length) return [];
+
+    return data.map((r) => ({
+      id: r.id,
+      schoolUnitId: r.school_unit_id,
+      programId: r.program_id,
+      exerciseYear: r.exercise_year,
+      saldoAnteriorC: Number(r.saldo_anterior_c),
+      saldoAnteriorK: Number(r.saldo_anterior_k),
+      valorCreditadoC: Number(r.valor_creditado_c),
+      valorCreditadoK: Number(r.valor_creditado_k),
+      rendimentoC: Number(r.rendimento_c),
+      rendimentoK: Number(r.rendimento_k),
+      valorGastoC: Number(r.valor_gasto_c),
+      valorGastoK: Number(r.valor_gasto_k)
+    }));
+  } catch {
+    return [];
+  }
+}
+
