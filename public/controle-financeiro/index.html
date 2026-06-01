@@ -1012,7 +1012,7 @@
         buildOverview();
       } catch (error) {
         remoteReady = false;
-        setSyncStatus("Supabase: tabela pendente", false);
+        setSyncStatus("Salvo local; Supabase pendente", false);
         console.warn("Falha ao sincronizar Supabase", error);
       }
     }
@@ -1037,7 +1037,7 @@
         setSyncStatus("Supabase: salvo online");
       } catch (error) {
         remoteReady = false;
-        setSyncStatus("Supabase: não sincronizou", false);
+        setSyncStatus("Salvo local; Supabase sem sync", false);
         console.warn("Falha ao salvar no Supabase", error);
       } finally {
         syncing = false;
