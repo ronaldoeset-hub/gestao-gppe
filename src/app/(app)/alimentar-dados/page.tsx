@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
   AlertTriangle,
   ArrowRight,
@@ -10,6 +11,11 @@ import {
   UsersRound
 } from "lucide-react";
 import { ModuleHeader } from "@/components/module-header";
+
+export const metadata: Metadata = {
+  title: "Alimentar dados",
+  description: "Central de atalhos para cadastrar, complementar e corrigir informações do GPPE."
+};
 
 const dataActions = [
   {

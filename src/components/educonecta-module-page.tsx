@@ -1,4 +1,7 @@
 import { ArrowRight, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { DataTable } from "@/components/data-table";
 import { EduConectaCards } from "@/components/educonecta-cards";
 import { MockChart } from "@/components/mock-chart";
 import type { EduModule } from "@/data/educonecta";
@@ -8,10 +11,10 @@ export function EduConectaModulePage({ module }: { module: EduModule }) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
+      <Card className="p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-white">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-sme-blue text-white">
               <Icon className="h-7 w-7" aria-hidden="true" />
             </div>
             <div>
@@ -22,17 +25,17 @@ export function EduConectaModulePage({ module }: { module: EduModule }) {
           </div>
           <div className="flex flex-wrap gap-2">
             {module.actions.slice(0, 4).map((action) => (
-              <button key={action} className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-blue-700 hover:bg-blue-50">
+              <Button key={action} variant="secondary" className="px-3">
                 {action}
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </button>
+              </Button>
             ))}
           </div>
         </div>
-      </section>
+      </Card>
 
       {module.key === "parceiros" ? (
-        <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-950">
+        <section className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-950">
           A presenca da empresa possui finalidade exclusivamente publicitaria e nao representa recomendacao oficial, credenciamento, preferencia ou garantia de contratacao.
         </section>
       ) : null}
@@ -51,13 +54,14 @@ export function EduConectaModulePage({ module }: { module: EduModule }) {
         />
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+      <Card>
         <div className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
-          <div className="flex h-11 items-center gap-2 rounded-xl border border-slate-300 px-3">
+          <label className="flex h-11 items-center gap-2 rounded-md border border-slate-300 px-3 focus-within:ring-2 focus-within:ring-sme-yellow">
+            <span className="sr-only">Buscar</span>
             <Search className="h-4 w-4 text-slate-400" aria-hidden="true" />
             <input className="w-full border-0 outline-none" placeholder={`Buscar em ${module.title.toLowerCase()}`} />
-          </div>
-          <select className="h-11 rounded-xl border border-slate-300 px-3 text-sm font-semibold text-slate-700">
+          </label>
+          <select aria-label="Filtrar por status" className="h-11 rounded-md border border-slate-300 px-3 text-sm font-semibold text-slate-700">
             <option>Todos os status</option>
             <option>Vigente</option>
             <option>Pendente</option>
@@ -65,35 +69,23 @@ export function EduConectaModulePage({ module }: { module: EduModule }) {
           </select>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50">
-              <tr>
-                {module.columns.map((column) => (
-                  <th key={column.key} className="whitespace-nowrap px-4 py-3 text-left text-xs font-black uppercase text-slate-500">
-                    {column.header}
-                  </th>
-                ))}
-                <th className="px-4 py-3 text-left text-xs font-black uppercase text-slate-500">Acoes</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {module.rows.map((row, index) => (
-                <tr key={index} className="hover:bg-slate-50">
-                  {module.columns.map((column) => (
-                    <td key={column.key} className="whitespace-nowrap px-4 py-3 text-slate-700">
-                      {row[column.key] ?? "-"}
-                    </td>
-                  ))}
-                  <td className="whitespace-nowrap px-4 py-3">
-                    <button className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-black text-blue-700">Detalhes</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+        <DataTable
+          rows={module.rows}
+          emptyDescription={`Nenhum registro encontrado em ${module.title.toLowerCase()}.`}
+          columns={[
+            ...module.columns.map((column) => ({
+              key: column.key,
+              header: column.header,
+              render: (row: Record<string, string | number>) => row[column.key] ?? "-"
+            })),
+            {
+              key: "actions",
+              header: "Acoes",
+              render: () => <Button variant="ghost" className="h-8 px-3 text-xs">Detalhes</Button>
+            }
+          ]}
+        />
+      </Card>
     </div>
   );
 }

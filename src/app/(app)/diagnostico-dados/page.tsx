@@ -1,8 +1,14 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { AlertTriangle, ArrowRight, BarChart3, CheckCircle2, FileWarning, ShieldAlert } from "lucide-react";
 import { ModuleHeader } from "@/components/module-header";
 import { getAccountabilities, getCouncils, getDocuments, getResources, getSchoolUnits } from "@/lib/supabase/queries";
 import type { SchoolUnit } from "@/lib/types";
+
+export const metadata: Metadata = {
+  title: "Diagnóstico de dados",
+  description: "Leitura automática de pendências, inconsistências e prioridades de preenchimento."
+};
 
 type DataIssue = {
   unit: SchoolUnit;

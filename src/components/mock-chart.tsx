@@ -1,3 +1,5 @@
+import { Card } from "@/components/ui/card";
+
 type MockChartProps = {
   title: string;
   values: Array<{ label: string; value: number; color?: string }>;
@@ -9,7 +11,7 @@ export function MockChart({ title, values, type = "bars" }: MockChartProps) {
 
   if (type === "donut") {
     return (
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+      <Card>
         <h2 className="font-black text-slate-950">{title}</h2>
         <div className="mt-5 flex items-center gap-6">
           <div className="flex h-36 w-36 items-center justify-center rounded-full bg-[conic-gradient(#0ea5e9_0_45%,#22c55e_45%_72%,#f59e0b_72%_88%,#ef4444_88%_100%)]">
@@ -25,12 +27,12 @@ export function MockChart({ title, values, type = "bars" }: MockChartProps) {
             ))}
           </div>
         </div>
-      </section>
+      </Card>
     );
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+    <Card>
       <h2 className="font-black text-slate-950">{title}</h2>
       <div className="mt-5 flex h-52 items-end gap-3 border-b border-l border-slate-200 px-3">
         {values.map((item) => (
@@ -44,6 +46,6 @@ export function MockChart({ title, values, type = "bars" }: MockChartProps) {
         ))}
       </div>
       {type === "line" ? <p className="mt-3 text-xs font-semibold text-slate-500">Linha mockada representada por barras temporarias.</p> : null}
-    </section>
+    </Card>
   );
 }

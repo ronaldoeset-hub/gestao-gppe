@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { Info } from "lucide-react";
 import { EduConectaModulePage } from "@/components/educonecta-module-page";
 import { modules } from "@/data/educonecta";
+
+export const metadata: Metadata = {
+  title: "Parceiros",
+  description: "Área publicitária independente com avisos de responsabilidade e sem credenciamento oficial."
+};
 
 export default function ParceirosPage() {
   return (

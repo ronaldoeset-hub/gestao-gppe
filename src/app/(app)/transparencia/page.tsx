@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { Download, FileText, Landmark, ShieldCheck } from "lucide-react";
 import { ExportButtons } from "@/components/export-buttons";
 import { InfoCard } from "@/components/info-card";
 import { ModuleHeader } from "@/components/module-header";
 import { getAccountabilities, getResources, getSchoolUnits } from "@/lib/supabase/queries";
+
+export const metadata: Metadata = {
+  title: "Transparência",
+  description: "Consolidação de dados de recursos, saldos, prestações e unidades escolares."
+};
 
 export default async function TransparenciaPage() {
   const [units, resources, accountabilities] = await Promise.all([

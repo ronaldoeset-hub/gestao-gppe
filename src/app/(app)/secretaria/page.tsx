@@ -1,7 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Building2, ExternalLink, FileCheck2, Landmark } from "lucide-react";
 import { InfoCard } from "@/components/info-card";
 import { ModuleHeader } from "@/components/module-header";
+
+export const metadata: Metadata = {
+  title: "A Secretaria e a GPPE",
+  description: "Contexto institucional da GPPE e seu papel no acompanhamento das unidades escolares."
+};
 
 export default function SecretariaPage() {
   return (

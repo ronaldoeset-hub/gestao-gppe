@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { Button } from "@/components/ui/button";
 import { approveUser, blockUser } from "@/lib/actions/profiles";
 import type { ProfileRecord } from "@/lib/types";
 
@@ -32,13 +33,13 @@ function ActionButton({
   };
 
   return (
-    <button
+    <Button
       disabled={pending}
       onClick={() => startTransition(onClick)}
-      className={`rounded-lg px-3 py-1.5 text-xs font-black transition-colors disabled:opacity-50 ${colors[variant]}`}
+      className={`h-8 px-3 text-xs font-black ${colors[variant]}`}
     >
       {pending ? "Aguarde..." : label}
-    </button>
+    </Button>
   );
 }
 
@@ -52,7 +53,7 @@ export function UserManagementTable({
   if (profiles.length === 0) return null;
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-soft">
+    <div className="overflow-x-auto rounded-md border border-slate-200 bg-white shadow-soft">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-slate-100 bg-slate-50 text-left">

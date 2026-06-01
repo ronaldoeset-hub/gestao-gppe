@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { AlertTriangle, ClipboardCheck, FileArchive, FileText, Landmark, UsersRound } from "lucide-react";
 import { InfoCard } from "@/components/info-card";
 import { ModuleHeader } from "@/components/module-header";
+
+export const metadata: Metadata = {
+  title: "Serviços",
+  description: "Serviços de acompanhamento de recursos, conselhos, documentos e prazos da GPPE."
+};
 
 export default function ServicosPage() {
   return (

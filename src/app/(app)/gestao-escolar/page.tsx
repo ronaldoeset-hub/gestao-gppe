@@ -1,7 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowRight, BarChart3, Building2, ClipboardCheck, Landmark, UsersRound } from "lucide-react";
 import { InfoCard } from "@/components/info-card";
 import { ModuleHeader } from "@/components/module-header";
+
+export const metadata: Metadata = {
+  title: "Gestão escolar",
+  description: "Visão operacional de dados escolares, unidades e acompanhamento administrativo."
+};
 
 const links = [
   { href: "/dashboard", label: "Painel geral", description: "Resumo municipal de unidades, conselhos, recursos e pendencias." },
