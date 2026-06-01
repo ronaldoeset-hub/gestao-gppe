@@ -69,6 +69,7 @@ export default async function AccountabilityPage() {
       />
       <DataTable
         rows={accountabilities}
+        emptyDescription="Nenhuma prestação de contas cadastrada foi encontrada."
         columns={[
           { key: "id", header: "Protocolo", render: (row) => row.id },
           { key: "school", header: "Unidade", render: (row) => row.school },

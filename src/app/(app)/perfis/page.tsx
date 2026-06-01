@@ -27,6 +27,7 @@ export default async function RolesPage() {
         <h2 className="text-lg font-bold text-sme-ink">Usuários cadastrados</h2>
         <DataTable
           rows={profiles}
+          emptyDescription="Nenhum perfil cadastrado foi encontrado."
           columns={[
             { key: "name", header: "Nome", render: (row) => <span className="font-semibold text-sme-ink">{row.fullName}</span> },
             { key: "role", header: "Perfil", render: (row) => roleLabels[row.role] },

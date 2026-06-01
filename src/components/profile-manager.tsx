@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { FormMessage } from "@/components/ui/form-message";
 import { roleLabels } from "@/lib/data";
 import { createClient } from "@/lib/supabase/client";
 import type { ProfileRecord, UserRole } from "@/lib/types";
@@ -25,6 +27,8 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
   const [schoolUnitId, setSchoolUnitId] = useState("");
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState("");
+  const [tone, setTone] = useState<"neutral" | "success" | "error">("neutral");
+  const [submitting, setSubmitting] = useState(false);
   const [schools, setSchools] = useState<SchoolOption[]>([]);
 
   useEffect(() => {
@@ -52,9 +56,21 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!selectedUser) return;
+    if (!selectedUser) {
+      setStatus("Selecione um usuario para atualizar.");
+      setTone("error");
+      return;
+    }
+
+    if (fullName.trim().length < 3) {
+      setStatus("Informe um nome com pelo menos 3 caracteres.");
+      setTone("error");
+      return;
+    }
 
     setStatus("Atualizando perfil...");
+    setTone("neutral");
+    setSubmitting(true);
     const supabase = createClient();
     const { error } = await supabase
       .from("profiles")
@@ -67,7 +83,16 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
       })
       .eq("id", selectedUser);
 
-    setStatus(error ? `Erro ao atualizar: ${error.message}` : "Perfil atualizado com sucesso.");
+    if (error) {
+      setStatus(`Erro ao atualizar: ${error.message}`);
+      setTone("error");
+      setSubmitting(false);
+      return;
+    }
+
+    setStatus("Perfil atualizado com sucesso.");
+    setTone("success");
+    setSubmitting(false);
   }
 
   return (
@@ -151,14 +176,11 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
         </label>
       </div>
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-slate-600">{status || "O login deve ser criado antes em Authentication > Users no Supabase."}</p>
-        <button
-          type="submit"
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-sme-blue px-4 text-sm font-semibold text-white hover:bg-sme-navy focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2"
-        >
+        <FormMessage tone={tone}>{status || "O login deve ser criado antes em Authentication > Users no Supabase."}</FormMessage>
+        <Button type="submit" disabled={submitting}>
           <Save className="h-4 w-4" aria-hidden="true" />
-          Salvar perfil
-        </button>
+          {submitting ? "Salvando" : "Salvar perfil"}
+        </Button>
       </div>
     </form>
   );

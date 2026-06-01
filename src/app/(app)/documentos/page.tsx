@@ -64,6 +64,7 @@ export default async function DocumentsPage() {
         <h2 className="text-lg font-bold text-sme-ink">Documentos enviados</h2>
         <DataTable
           rows={documents}
+          emptyDescription="Nenhum documento enviado foi encontrado."
           columns={[
             { key: "title", header: "Titulo", render: (row) => <span className="font-semibold text-sme-ink">{row.title}</span> },
             { key: "category", header: "Categoria", render: (row) => row.category },

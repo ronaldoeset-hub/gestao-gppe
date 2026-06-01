@@ -65,6 +65,7 @@ export default async function ResourcesPage() {
       />
       <DataTable
         rows={resources}
+        emptyDescription="Nenhum recurso cadastrado foi encontrado."
         columns={[
           { key: "id", header: "Codigo", render: (row) => row.id },
           { key: "program", header: "Programa", render: (row) => <span className="font-semibold text-sme-ink">{row.program}</span> },

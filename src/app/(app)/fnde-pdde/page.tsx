@@ -26,6 +26,7 @@ export default async function FndePddePage() {
         </div>
         <DataTable
           rows={pddeRows}
+          emptyDescription="Nenhum repasse PDDE foi encontrado no controle financeiro."
           columns={[
             { key: "school", header: "Unidade", render: (row) => row.school },
             { key: "period", header: "Periodo", render: (row) => row.period },

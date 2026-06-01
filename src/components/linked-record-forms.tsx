@@ -57,18 +57,31 @@ function SchoolSelect({ allowEmpty = false }: { allowEmpty?: boolean }) {
   );
 }
 
-function SubmitRow({ status, idleText, label, ok = false }: { status: string; idleText: string; label: string; ok?: boolean }) {
+function SubmitRow({
+  status,
+  idleText,
+  label,
+  ok = false,
+  pendingOverride = false
+}: {
+  status: string;
+  idleText: string;
+  label: string;
+  ok?: boolean;
+  pendingOverride?: boolean;
+}) {
   const { pending } = useFormStatus();
+  const isPending = pending || pendingOverride;
 
   return (
     <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <FormMessage tone={ok ? "success" : status.startsWith("Erro") ? "error" : "neutral"}>{pending ? "Salvando..." : status || idleText}</FormMessage>
+      <FormMessage tone={ok ? "success" : status.startsWith("Erro") ? "error" : "neutral"}>{isPending ? "Salvando..." : status || idleText}</FormMessage>
       <Button
         type="submit"
-        disabled={pending}
+        disabled={isPending}
       >
         <Save className="h-4 w-4" aria-hidden="true" />
-        {pending ? "Salvando" : label}
+        {isPending ? "Salvando" : label}
       </Button>
     </div>
   );
@@ -120,12 +133,32 @@ export function CouncilForm() {
 
 export function ResourceForm() {
   const [status, setStatus] = useState("");
+  const [ok, setOk] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setStatus("Salvando recurso...");
-    const formData = new FormData(event.currentTarget);
+    setOk(false);
+    setSubmitting(true);
+    const formData = new FormData(form);
     const amount = Number(formData.get("amount") ?? 0);
+    const balanceValue = formData.get("balance");
+    const balance = balanceValue === null || String(balanceValue) === "" ? amount : Number(balanceValue);
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setStatus("Informe um valor maior que zero.");
+      setSubmitting(false);
+      return;
+    }
+
+    if (!Number.isFinite(balance) || balance < 0) {
+      setStatus("Informe um saldo valido.");
+      setSubmitting(false);
+      return;
+    }
+
     const supabase = createClient();
     const { error } = await supabase.from("resource_transfers").insert({
       school_unit_id: String(formData.get("school_unit_id")),
@@ -133,17 +166,20 @@ export function ResourceForm() {
       source: String(formData.get("source") ?? "") || null,
       amount,
       released_at: String(formData.get("released_at")),
-      balance: Number(formData.get("balance") ?? amount),
+      balance,
       status: String(formData.get("status") ?? "regular")
     });
 
     if (error) {
       setStatus(`Erro ao salvar: ${error.message}`);
+      setSubmitting(false);
       return;
     }
 
-    event.currentTarget.reset();
+    form.reset();
     setStatus("Recurso cadastrado com sucesso.");
+    setOk(true);
+    setSubmitting(false);
   }
 
   return (
@@ -182,18 +218,31 @@ export function ResourceForm() {
           </select>
         </label>
       </div>
-      <SubmitRow status={status} idleText="Os dados serão gravados na tabela resource_transfers." label="Salvar recurso" />
+      <SubmitRow status={status} ok={ok} pendingOverride={submitting} idleText="Os dados serão gravados na tabela resource_transfers." label="Salvar recurso" />
     </form>
   );
 }
 
 export function AccountabilityForm() {
   const [status, setStatus] = useState("");
+  const [ok, setOk] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setStatus("Salvando prestação...");
-    const formData = new FormData(event.currentTarget);
+    setOk(false);
+    setSubmitting(true);
+    const formData = new FormData(form);
+    const submittedAt = String(formData.get("submitted_at") ?? "");
+
+    if (submittedAt && new Date(submittedAt) > new Date()) {
+      setStatus("A data de envio nao pode ser futura.");
+      setSubmitting(false);
+      return;
+    }
+
     const supabase = createClient();
     const { error } = await supabase.from("accountabilities").insert({
       school_unit_id: String(formData.get("school_unit_id")),
@@ -206,11 +255,14 @@ export function AccountabilityForm() {
 
     if (error) {
       setStatus(`Erro ao salvar: ${error.message}`);
+      setSubmitting(false);
       return;
     }
 
-    event.currentTarget.reset();
+    form.reset();
     setStatus("Prestação cadastrada com sucesso.");
+    setOk(true);
+    setSubmitting(false);
   }
 
   return (
@@ -246,7 +298,7 @@ export function AccountabilityForm() {
           <input name="technical_opinion" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
         </label>
       </div>
-      <SubmitRow status={status} idleText="Os dados serão gravados na tabela accountabilities." label="Salvar prestação" />
+      <SubmitRow status={status} ok={ok} pendingOverride={submitting} idleText="Os dados serão gravados na tabela accountabilities." label="Salvar prestação" />
     </form>
   );
 }

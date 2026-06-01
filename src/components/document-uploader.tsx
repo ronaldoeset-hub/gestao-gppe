@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Save, UploadCloud } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { FormMessage } from "@/components/ui/form-message";
 import { createClient } from "@/lib/supabase/client";
 
 type SchoolOption = {
@@ -36,6 +38,8 @@ const categories = [
 
 export function DocumentUploader() {
   const [status, setStatus] = useState<string>("");
+  const [tone, setTone] = useState<"neutral" | "success" | "error">("neutral");
+  const [submitting, setSubmitting] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [schools, setSchools] = useState<SchoolOption[]>([]);
 
@@ -51,14 +55,33 @@ export function DocumentUploader() {
 
   async function handleUpload(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!file) return;
+    if (!file) {
+      setStatus("Selecione um arquivo antes de enviar.");
+      setTone("error");
+      return;
+    }
 
-    const formData = new FormData(event.currentTarget);
+    if (file.size > 25 * 1024 * 1024) {
+      setStatus("O arquivo deve ter no máximo 25 MB.");
+      setTone("error");
+      return;
+    }
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
     const schoolUnitId = String(formData.get("school_unit_id") ?? "");
-    const title = String(formData.get("title") ?? "");
+    const title = String(formData.get("title") ?? "").trim();
     const category = String(formData.get("category") ?? "");
 
+    if (title.length < 3) {
+      setStatus("Informe um titulo com pelo menos 3 caracteres.");
+      setTone("error");
+      return;
+    }
+
     setStatus("Enviando...");
+    setTone("neutral");
+    setSubmitting(true);
     const supabase = createClient();
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
     const path = `${schoolUnitId || "geral"}/${Date.now()}-${safeName}`;
@@ -66,6 +89,8 @@ export function DocumentUploader() {
 
     if (uploadError) {
       setStatus(`Erro no upload: ${uploadError.message}`);
+      setTone("error");
+      setSubmitting(false);
       return;
     }
 
@@ -80,12 +105,16 @@ export function DocumentUploader() {
 
     if (insertError) {
       setStatus(`Arquivo enviado, mas houve erro ao salvar registro: ${insertError.message}`);
+      setTone("error");
+      setSubmitting(false);
       return;
     }
 
-    event.currentTarget.reset();
+    form.reset();
     setFile(null);
     setStatus("Documento enviado e registrado com sucesso.");
+    setTone("success");
+    setSubmitting(false);
   }
 
   return (
@@ -137,14 +166,11 @@ export function DocumentUploader() {
         <input type="file" required className="sr-only" onChange={(event) => setFile(event.target.files?.[0] ?? null)} />
       </label>
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-slate-600">{status || "O arquivo será enviado ao Storage e registrado na tabela documents."}</p>
-        <button
-          type="submit"
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-sme-blue px-4 text-sm font-semibold text-white hover:bg-sme-navy focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2"
-        >
+        <FormMessage tone={tone}>{status || "O arquivo será enviado ao Storage e registrado na tabela documents."}</FormMessage>
+        <Button type="submit" disabled={submitting}>
           <Save className="h-4 w-4" aria-hidden="true" />
-          Enviar documento
-        </button>
+          {submitting ? "Enviando" : "Enviar documento"}
+        </Button>
       </div>
     </form>
   );

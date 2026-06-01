@@ -32,6 +32,7 @@ export default async function AlertsPage() {
       </section>
       <DataTable
         rows={alerts}
+        emptyDescription="Nenhum alerta aberto foi encontrado."
         columns={[
           { key: "id", header: "Código", render: (row) => row.id },
           { key: "title", header: "Alerta", render: (row) => <span className="font-semibold text-sme-ink">{row.title}</span> },

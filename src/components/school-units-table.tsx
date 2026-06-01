@@ -80,6 +80,7 @@ export function SchoolUnitsTable({ rows }: SchoolUnitsTableProps) {
       </p>
       <DataTable
         rows={filteredRows}
+        emptyDescription="Nenhuma unidade corresponde aos filtros aplicados."
         columns={[
           { key: "id", header: "Código", render: (row) => row.id },
           {

@@ -50,6 +50,7 @@ export default async function CouncilsPage() {
       />
       <DataTable
         rows={councils}
+        emptyDescription="Nenhum conselho escolar cadastrado foi encontrado."
         columns={[
           { key: "id", header: "Codigo", render: (row) => row.id },
           { key: "school", header: "Unidade", render: (row) => row.school },
