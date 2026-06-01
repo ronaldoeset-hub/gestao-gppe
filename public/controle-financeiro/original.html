@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle Financeiro 2026 — Versão Web</title>
+<style>
+  :root{
+    --azul:#1F4E78;
+    --azul-claro:#2E6CA4;
+    --amarelo:#FFE699;
+    --amarelo-forte:#FFD24D;
+    --cinza-linha:#D9D9D9;
+    --verde:#C6EFCE;
+    --verde-txt:#1E6B2F;
+    --vermelho:#FFC7CE;
+    --vermelho-txt:#B00020;
+    --borda:#9BB3C9;
+    --fundo:#EEF3F8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',Tahoma,sans-serif;
+    background:var(--fundo);
+    color:#1a2733;
+    padding:18px;
+  }
+  .barra-topo{
+    max-width:1180px;margin:0 auto 14px;
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  }
+  .barra-topo h1{
+    font-size:15px;margin:0;color:var(--azul);font-weight:700;letter-spacing:.3px;
+  }
+  .acoes{display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{
+    border:none;border-radius:7px;padding:8px 14px;font-size:13px;font-weight:600;
+    cursor:pointer;transition:.15s;background:var(--azul);color:#fff;
+  }
+  .btn:hover{background:var(--azul-claro);}
+  .btn.sec{background:#fff;color:var(--azul);border:1px solid var(--borda);}
+  .btn.sec:hover{background:#f3f7fb;}
+
+  .folha{
+    max-width:1180px;margin:0 auto;background:#fff;border-radius:10px;
+    box-shadow:0 6px 24px rgba(31,78,120,.12);overflow:hidden;
+    border:1px solid #dce6f0;
+  }
+  /* Cabeçalho institucional */
+  .cab{
+    text-align:center;padding:16px 20px 6px;font-family:'Times New Roman',Georgia,serif;
+  }
+  .cab .org{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+  .cab .titulo{
+    font-size:21px;font-weight:700;margin:8px 0 2px;color:var(--azul);
+  }
+  .linha-escola{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;
+    padding:6px 20px 4px;font-family:'Times New Roman',serif;
+  }
+  .linha-escola label{font-weight:700;font-size:13px;}
+  .linha-escola input.escola{
+    border:1px solid var(--borda);background:var(--amarelo);border-radius:5px;
+    padding:5px 10px;font-size:14px;font-weight:700;color:#7a3b00;text-align:center;
+    font-family:'Times New Roman',serif;min-width:280px;
+  }
+  .sub-cab{
+    display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;
+    padding:2px 22px 12px;font-family:'Times New Roman',serif;
+  }
+  .sub-cab .exerc{font-weight:700;font-size:13px;}
+  .data-atu{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;}
+  .data-atu input{
+    border:1px solid var(--borda);background:var(--amarelo);border-radius:5px;
+    padding:4px 8px;font-size:13px;color:var(--vermelho-txt);font-weight:700;
+  }
+
+  .blocos{padding:0 16px 20px;}
+  .bloco{margin-top:18px;}
+  .bloco-tit{
+    background:var(--azul);color:#fff;font-weight:700;font-size:13px;letter-spacing:.5px;
+    padding:8px 12px;border-radius:7px 7px 0 0;text-transform:uppercase;
+  }
+  table{border-collapse:collapse;width:100%;font-size:12.5px;}
+  th,td{border:1px solid var(--cinza-linha);padding:5px 6px;text-align:center;}
+  thead.grupo th{
+    background:#E8EEF5;color:var(--azul);font-weight:700;font-size:11.5px;
+    text-transform:uppercase;letter-spacing:.2px;
+  }
+  thead.ck th{
+    background:#F4F8FC;color:#41617e;font-weight:700;font-size:11px;
+  }
+  td.rotulo{
+    text-align:left;font-weight:600;background:var(--amarelo);color:#5a4300;
+    white-space:nowrap;
+  }
+  tr.linha-total td{background:#FFF7DA;font-weight:700;}
+  tr.linha-total td.rotulo{background:var(--amarelo-forte);color:#5a4300;}
+  tr.linha-cmais td{background:#EAF1F8;font-weight:700;color:var(--azul);font-style:italic;}
+  input.num{
+    width:100%;border:none;background:transparent;text-align:right;
+    font-size:12.5px;font-family:inherit;padding:2px 4px;color:#143a5c;
+  }
+  input.num:focus{outline:2px solid var(--amarelo-forte);background:#fffdf0;border-radius:3px;}
+  td.calc{background:#F6FAFE;color:#0d3a5c;font-weight:600;}
+  td.saldo-pos{color:var(--verde-txt);}
+  td.saldo-neg{color:var(--vermelho-txt);}
+  td.total-final{background:#E3EEF9;font-weight:700;color:var(--azul);}
+  .legenda{
+    max-width:1180px;margin:12px auto 0;font-size:11.5px;color:#5b7088;
+    display:flex;gap:18px;flex-wrap:wrap;padding:0 4px;
+  }
+  .legenda b{color:var(--azul);}
+  .nota{
+    max-width:1180px;margin:14px auto 0;font-size:12px;color:#5b7088;
+    background:#fff;border:1px dashed var(--borda);border-radius:8px;padding:10px 14px;
+  }
+  @media print{
+    body{background:#fff;padding:0;}
+    .barra-topo,.legenda,.nota{display:none;}
+    .folha{box-shadow:none;border:none;max-width:100%;}
+    input.escola,.data-atu input{border:none;background:transparent;}
+  }
+</style>
+</head>
+<body>
+
+<div class="barra-topo">
+  <h1>Controle Financeiro 2026 — protótipo web (visualização)</h1>
+  <div class="acoes">
+    <button class="btn sec" onclick="zerar()">Zerar valores</button>
+    <button class="btn" onclick="window.print()">Imprimir / PDF</button>
+  </div>
+</div>
+
+<div class="folha">
+  <div class="cab">
+    <div class="org">Diretoria de Projetos e Programas Educacionais</div>
+    <div class="titulo">CONTROLE FINANCEIRO</div>
+  </div>
+  <div class="linha-escola">
+    <label for="escola">ESCOLA:</label>
+    <input id="escola" class="escola" value="ESCOLA MUNICIPAL XXXXXX">
+  </div>
+  <div class="sub-cab">
+    <span class="exerc">EXERCÍCIO 2026</span>
+    <span class="data-atu">Data da Atualização:
+      <input type="date" id="dataAtu" value="2026-01-19">
+    </span>
+  </div>
+
+  <div class="blocos" id="blocos"></div>
+</div>
+
+<div class="legenda">
+  <span><b>C</b> = Custeio &nbsp;|&nbsp; <b>K</b> = Capital &nbsp;|&nbsp; <b>C+K</b> = soma dos dois</span>
+  <span><b>Saldo Final</b> = Saldo Anterior + Creditado + Rendimento − Gasto</span>
+</div>
+
+<div class="nota">
+  Este é um <b>protótipo visual</b> de como a planilha funcionaria na web. Os campos amarelos são editáveis:
+  digite os valores e as colunas de <b>Saldo Final</b>, <b>Total</b> e <b>Totais</b> recalculam sozinhas, igual ao Excel.
+  Nada é enviado para a internet — tudo roda no seu navegador.
+</div>
+
+<script>
+// Estrutura dos blocos, fiel à planilha original
+const BLOCOS = [
+  { titulo:'PDDE', itens:['PDDE BÁSICO (ATUAL)','PDDE BÁSICO (VELHO)','DESEMPENHO'] },
+  { titulo:'QUALIDADE', itens:['ED. CONECTADA','CANTINHO DA LEITURA','EDUCAÇÃO E FAMÍLIA','ESCOLA E COMUNIDADE','TEMPO DE APRENDER','MAIS ALFABETIZAÇÃO','EMERGENCIAL'] },
+  { titulo:'PDDE ESTRUTURA', itens:['CAMPO','SALA DE RECURSO'] },
+  { titulo:'PDDE-INTEGRAL', itens:['INTEGRAL'] },
+];
+
+const GRUPOS = [
+  {nome:'SALDO ANTERIOR 2025', span:2},
+  {nome:'VALOR CREDITADO 2026', span:2},
+  {nome:'RENDIMENTO', span:2},
+  {nome:'VALOR GASTO', span:2},
+  {nome:'SALDO FINAL', span:2},
+  {nome:'TOTAL', span:1},
+];
+// 5 grupos de C/K (entrada) + saldo final (calc C/K) + total (calc C+K)
+
+function fmt(v){
+  if(isNaN(v)) v=0;
+  return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function montar(){
+  const cont = document.getElementById('blocos');
+  cont.innerHTML='';
+  BLOCOS.forEach((bloco,bi)=>{
+    const div=document.createElement('div');
+    div.className='bloco';
+    let html=`<div class="bloco-tit">${bloco.titulo}</div>`;
+    html+='<table><thead class="grupo"><tr>';
+    html+='<th rowspan="2" style="background:#1F4E78;color:#fff;min-width:170px">'+bloco.titulo+'</th>';
+    GRUPOS.forEach(g=>{ html+=`<th colspan="${g.span}">${g.nome}</th>`; });
+    html+='</tr></thead><thead class="ck"><tr>';
+    // C/K subheaders: 5 grupos x (C,K), depois saldo final (C,K) já incluso, e total (C+K)
+    ['C','K','C','K','C','K','C','K','C','K','C+K'].forEach(s=>{ html+=`<th>${s}</th>`; });
+    html+='</tr></thead><tbody>';
+
+    bloco.itens.forEach((item,ii)=>{
+      html+=`<tr data-b="${bi}" data-i="${ii}">`;
+      html+=`<td class="rotulo">${item}</td>`;
+      // 4 grupos editáveis x C,K = 8 inputs (Saldo Ant, Creditado, Rendimento, Gasto)
+      for(let k=0;k<8;k++){
+        html+=`<td><input class="num" type="text" inputmode="decimal" value="0" oninput="recalc()"></td>`;
+      }
+      // Saldo Final C, K (calculado)
+      html+=`<td class="calc sf-c">0,00</td><td class="calc sf-k">0,00</td>`;
+      // Total C+K (calculado)
+      html+=`<td class="total-final tot">0,00</td>`;
+      html+='</tr>';
+    });
+
+    // Linha TOTAL do bloco
+    html+='<tr class="linha-total">';
+    html+='<td class="rotulo">TOTAL</td>';
+    for(let c=0;c<11;c++){ html+=`<td class="bt bt-${c}">0,00</td>`; }
+    html+='</tr>';
+    // Linha C+K consolidada (soma C+K por grupo)
+    html+='<tr class="linha-cmais">';
+    html+='<td class="rotulo" style="background:#EAF1F8;font-style:italic">C + K</td>';
+    // mostra C+K para os 5 grupos (saldo ant, cred, rend, gasto, saldo final) + vazio no total
+    for(let g=0;g<5;g++){ html+=`<td colspan="2" class="ck-${g}">0,00</td>`; }
+    html+='<td></td>';
+    html+='</tr>';
+
+    html+='</tbody></table>';
+    div.innerHTML=html;
+    cont.appendChild(div);
+  });
+  recalc();
+}
+
+function recalc(){
+  document.querySelectorAll('tr[data-b]').forEach(tr=>{
+    const inp=tr.querySelectorAll('input.num');
+    const v=[...inp].map(x=>parseFloat((x.value||'0').replace(/\./g,'').replace(',','.'))||0);
+    // ordem: 0SAc 1SAk 2CRc 3CRk 4RE c 5REk 6GAc 7GAk
+    const sfC=v[0]+v[2]+v[4]-v[6];
+    const sfK=v[1]+v[3]+v[5]-v[7];
+    const tot=sfC+sfK;
+    const sfcEl=tr.querySelector('.sf-c'), sfkEl=tr.querySelector('.sf-k'), totEl=tr.querySelector('.tot');
+    sfcEl.textContent=fmt(sfC); sfkEl.textContent=fmt(sfK); totEl.textContent=fmt(tot);
+    sfcEl.className='calc sf-c '+(sfC<0?'saldo-neg':'saldo-pos');
+    sfkEl.className='calc sf-k '+(sfK<0?'saldo-neg':'saldo-pos');
+  });
+  // Totais por bloco
+  document.querySelectorAll('.bloco table').forEach(tb=>{
+    const linhas=tb.querySelectorAll('tr[data-b]');
+    const soma=new Array(11).fill(0);
+    linhas.forEach(tr=>{
+      const inp=tr.querySelectorAll('input.num');
+      const v=[...inp].map(x=>parseFloat((x.value||'0').replace(/\./g,'').replace(',','.'))||0);
+      for(let c=0;c<8;c++) soma[c]+=v[c];
+      const sfC=v[0]+v[2]+v[4]-v[6], sfK=v[1]+v[3]+v[5]-v[7];
+      soma[8]+=sfC; soma[9]+=sfK; soma[10]+=sfC+sfK;
+    });
+    const bt=tb.querySelectorAll('.linha-total .bt');
+    bt.forEach((el,c)=>{ el.textContent=fmt(soma[c]); if(c>=8){el.style.color='#1F4E78';} });
+    // C+K por grupo (saldo ant, cred, rend, gasto, saldo final)
+    const ckPares=[[0,1],[2,3],[4,5],[6,7],[8,9]];
+    ckPares.forEach((par,g)=>{
+      const el=tb.querySelector('.linha-cmais .ck-'+g);
+      if(el) el.textContent=fmt(soma[par[0]]+soma[par[1]]);
+    });
+  });
+}
+
+function zerar(){
+  document.querySelectorAll('input.num').forEach(i=>i.value='0');
+  recalc();
+}
+
+montar();
+</script>
+</body>
+</html>

@@ -1,283 +1,1473 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Controle Financeiro 2026 — Versão Web</title>
-<style>
-  :root{
-    --azul:#1F4E78;
-    --azul-claro:#2E6CA4;
-    --amarelo:#FFE699;
-    --amarelo-forte:#FFD24D;
-    --cinza-linha:#D9D9D9;
-    --verde:#C6EFCE;
-    --verde-txt:#1E6B2F;
-    --vermelho:#FFC7CE;
-    --vermelho-txt:#B00020;
-    --borda:#9BB3C9;
-    --fundo:#EEF3F8;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    font-family:'Segoe UI',Tahoma,sans-serif;
-    background:var(--fundo);
-    color:#1a2733;
-    padding:18px;
-  }
-  .barra-topo{
-    max-width:1180px;margin:0 auto 14px;
-    display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
-  }
-  .barra-topo h1{
-    font-size:15px;margin:0;color:var(--azul);font-weight:700;letter-spacing:.3px;
-  }
-  .acoes{display:flex;gap:8px;flex-wrap:wrap;}
-  .btn{
-    border:none;border-radius:7px;padding:8px 14px;font-size:13px;font-weight:600;
-    cursor:pointer;transition:.15s;background:var(--azul);color:#fff;
-  }
-  .btn:hover{background:var(--azul-claro);}
-  .btn.sec{background:#fff;color:var(--azul);border:1px solid var(--borda);}
-  .btn.sec:hover{background:#f3f7fb;}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Controle Financeiro 2026 - GPPE | Visual Moderno</title>
+  <style>
+    :root {
+      --azul: #1F4E78;
+      --azul-escuro: #143a5b;
+      --azul-claro: #e8f1f8;
+      --amarelo: #FFF1B8;
+      --amarelo-forte: #FFD24D;
+      --borda: #b7c3cf;
+      --borda-forte: #7d8c9b;
+      --texto: #172033;
+      --muted: #5b6778;
+      --verde: #137333;
+      --vermelho: #b42318;
+      --fundo: #edf2f7;
+      --linha: #f9fbfd;
+      --linha-hover: #eef6ff;
+    }
 
-  .folha{
-    max-width:1180px;margin:0 auto;background:#fff;border-radius:10px;
-    box-shadow:0 6px 24px rgba(31,78,120,.12);overflow:hidden;
-    border:1px solid #dce6f0;
-  }
-  /* Cabeçalho institucional */
-  .cab{
-    text-align:center;padding:16px 20px 6px;font-family:'Times New Roman',Georgia,serif;
-  }
-  .cab .org{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
-  .cab .titulo{
-    font-size:21px;font-weight:700;margin:8px 0 2px;color:var(--azul);
-  }
-  .linha-escola{
-    display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;
-    padding:6px 20px 4px;font-family:'Times New Roman',serif;
-  }
-  .linha-escola label{font-weight:700;font-size:13px;}
-  .linha-escola input.escola{
-    border:1px solid var(--borda);background:var(--amarelo);border-radius:5px;
-    padding:5px 10px;font-size:14px;font-weight:700;color:#7a3b00;text-align:center;
-    font-family:'Times New Roman',serif;min-width:280px;
-  }
-  .sub-cab{
-    display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;
-    padding:2px 22px 12px;font-family:'Times New Roman',serif;
-  }
-  .sub-cab .exerc{font-weight:700;font-size:13px;}
-  .data-atu{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;}
-  .data-atu input{
-    border:1px solid var(--borda);background:var(--amarelo);border-radius:5px;
-    padding:4px 8px;font-size:13px;color:var(--vermelho-txt);font-weight:700;
-  }
+    * { box-sizing: border-box; }
 
-  .blocos{padding:0 16px 20px;}
-  .bloco{margin-top:18px;}
-  .bloco-tit{
-    background:var(--azul);color:#fff;font-weight:700;font-size:13px;letter-spacing:.5px;
-    padding:8px 12px;border-radius:7px 7px 0 0;text-transform:uppercase;
-  }
-  table{border-collapse:collapse;width:100%;font-size:12.5px;}
-  th,td{border:1px solid var(--cinza-linha);padding:5px 6px;text-align:center;}
-  thead.grupo th{
-    background:#E8EEF5;color:var(--azul);font-weight:700;font-size:11.5px;
-    text-transform:uppercase;letter-spacing:.2px;
-  }
-  thead.ck th{
-    background:#F4F8FC;color:#41617e;font-weight:700;font-size:11px;
-  }
-  td.rotulo{
-    text-align:left;font-weight:600;background:var(--amarelo);color:#5a4300;
-    white-space:nowrap;
-  }
-  tr.linha-total td{background:#FFF7DA;font-weight:700;}
-  tr.linha-total td.rotulo{background:var(--amarelo-forte);color:#5a4300;}
-  tr.linha-cmais td{background:#EAF1F8;font-weight:700;color:var(--azul);font-style:italic;}
-  input.num{
-    width:100%;border:none;background:transparent;text-align:right;
-    font-size:12.5px;font-family:inherit;padding:2px 4px;color:#143a5c;
-  }
-  input.num:focus{outline:2px solid var(--amarelo-forte);background:#fffdf0;border-radius:3px;}
-  td.calc{background:#F6FAFE;color:#0d3a5c;font-weight:600;}
-  td.saldo-pos{color:var(--verde-txt);}
-  td.saldo-neg{color:var(--vermelho-txt);}
-  td.total-final{background:#E3EEF9;font-weight:700;color:var(--azul);}
-  .legenda{
-    max-width:1180px;margin:12px auto 0;font-size:11.5px;color:#5b7088;
-    display:flex;gap:18px;flex-wrap:wrap;padding:0 4px;
-  }
-  .legenda b{color:var(--azul);}
-  .nota{
-    max-width:1180px;margin:14px auto 0;font-size:12px;color:#5b7088;
-    background:#fff;border:1px dashed var(--borda);border-radius:8px;padding:10px 14px;
-  }
-  @media print{
-    body{background:#fff;padding:0;}
-    .barra-topo,.legenda,.nota{display:none;}
-    .folha{box-shadow:none;border:none;max-width:100%;}
-    input.escola,.data-atu input{border:none;background:transparent;}
-  }
-</style>
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, #dfeaf3 0, #edf2f7 220px, #edf2f7 100%);
+      color: var(--texto);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+    }
+
+    .app {
+      width: min(1680px, calc(100% - 24px));
+      margin: 14px auto 40px;
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 18px 45px rgba(15, 35, 55, 0.16);
+    }
+
+    .topbar, .actions, .overview-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: end;
+      padding: 12px;
+      background: #f7fafc;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    .field {
+      display: grid;
+      gap: 5px;
+      min-width: 160px;
+    }
+
+    .field.grow { flex: 1 1 320px; }
+
+    label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #344255;
+      letter-spacing: .02em;
+    }
+
+    select, input, button {
+      height: 34px;
+      border: 1px solid #a8b5c2;
+      border-radius: 6px;
+      font: inherit;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 5px 9px;
+      background: #fff;
+      color: var(--texto);
+    }
+
+    input.money, input.header-input { background: var(--amarelo); }
+    input.money:focus, input.header-input:focus, select:focus, input:focus {
+      outline: 2px solid rgba(255, 210, 77, .7);
+      outline-offset: 1px;
+    }
+
+    button {
+      cursor: pointer;
+      padding: 0 12px;
+      background: var(--azul);
+      color: #fff;
+      border-color: var(--azul-escuro);
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .2) inset;
+    }
+
+    button.secondary { background: #fff; color: var(--azul); }
+    button.warn { background: var(--amarelo-forte); color: #1f2937; border-color: #c99700; }
+    button.danger { background: #fff; color: var(--vermelho); border-color: var(--vermelho); }
+
+    .saved {
+      min-width: 110px;
+      color: var(--verde);
+      font-weight: 700;
+      padding: 8px 10px;
+      background: #ecfdf3;
+      border: 1px solid #b7e4c7;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .sync-status {
+      min-width: 170px;
+      color: var(--azul);
+      font-weight: 700;
+      padding: 8px 10px;
+      background: #eef6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .header {
+      border-bottom: 3px solid var(--azul-escuro);
+      color: #fff;
+      background: var(--azul);
+      text-align: center;
+      font-family: "Times New Roman", Times, serif;
+      padding: 14px 10px;
+    }
+
+    .header h1, .header h2, .header h3, .header p { margin: 2px 0; }
+    .header h1 { font-size: 19px; text-transform: uppercase; }
+    .header h2 { font-size: 16px; text-transform: uppercase; }
+    .header h3 { font-size: 15px; text-transform: uppercase; }
+    .header .unit-line { margin-top: 8px; font-size: 14px; }
+
+    .unit-meta {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 10px;
+      padding: 12px;
+      border-bottom: 1px solid #cbd5e1;
+      background: #fbfdff;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 10px 12px 0;
+      background: #e8eef5;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    .tab {
+      height: 36px;
+      border-radius: 8px 8px 0 0;
+      background: #fff;
+      color: var(--azul);
+      border: 1px solid #cbd5e1;
+      border-bottom: 0;
+      margin-top: 0;
+    }
+
+    .tab.active { background: var(--azul); color: #fff; }
+    .panel { display: none; padding: 12px; }
+    .panel.active { display: block; }
+
+    .block {
+      margin-bottom: 16px;
+      overflow-x: auto;
+      border: 1px solid #d5dde6;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      background: #fff;
+    }
+
+    .block table { min-width: 1320px; }
+    .overview-table { min-width: 1820px; }
+
+    th, td {
+      border: 1px solid var(--borda);
+      padding: 6px 6px;
+      text-align: center;
+      vertical-align: middle;
+      height: 38px;
+    }
+
+    th {
+      background: var(--azul);
+      color: #fff;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    th.block-title {
+      text-align: left;
+      font-size: 15px;
+      letter-spacing: .02em;
+      padding: 9px 10px;
+    }
+
+    .program {
+      text-align: left;
+      font-weight: 700;
+      width: 240px;
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: #fff;
+      box-shadow: 1px 0 0 #d5dde6;
+    }
+
+    th.program, .subhead th.program { background: var(--azul); color: #fff; }
+    tbody tr:nth-child(odd) td { background: var(--linha); }
+    tbody tr:hover td { background: var(--linha-hover); }
+    tbody tr:nth-child(odd) .program { background: var(--linha); }
+    tbody tr:hover .program { background: var(--linha-hover); }
+    .subhead th { background: var(--azul-claro); color: #0f172a; }
+    .total-row td, .total-row .program { background: #dbeafe; font-weight: 800; }
+    .ck-row td, .ck-row .program { background: #eef2f7; font-weight: 800; }
+    .computed { background: #f4f7fb; font-weight: 800; }
+    .positive { color: var(--verde); }
+    .negative { color: var(--vermelho); }
+    tr.alert td, tr.alert .program { background: #fff1f2; }
+
+    .money {
+      text-align: right;
+      min-width: 92px;
+      height: 30px;
+      border-radius: 5px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    td, .computed, .money { font-variant-numeric: tabular-nums; }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 14px 0 2px;
+    }
+
+    .summary-card {
+      border: 1px solid #cfd8e3;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfdff;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, .06);
+    }
+
+    .summary-card strong {
+      display: block;
+      color: var(--azul);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .summary-card span {
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .backup-note {
+      margin-left: auto;
+      color: #7c2d12;
+      font-weight: 700;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      padding: 8px 10px;
+      border-radius: 6px;
+    }
+
+    .overview-table th, .overview-table td { font-size: 12px; }
+    .hidden-file { display: none; }
+
+    .fnde-alert {
+      margin: 12px;
+      border: 1px solid #fecaca;
+      border-left: 6px solid #b42318;
+      border-radius: 8px;
+      background: #fff1f2;
+      padding: 12px 14px;
+      color: #521b1b;
+    }
+
+    .fnde-alert h3 {
+      margin: 0 0 6px;
+      color: #991b1b;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .fnde-alert p {
+      margin: 5px 0;
+      line-height: 1.35;
+    }
+
+    .indicator-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+      gap: 10px;
+      padding: 0 12px 12px;
+      background: #fff;
+      border-bottom: 1px solid #d7e0ea;
+    }
+
+    .indicator-card {
+      border: 1px solid #cfd8e3;
+      border-radius: 8px;
+      background: #fbfdff;
+      padding: 10px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, .05);
+    }
+
+    .indicator-card strong {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .indicator-card span {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--azul);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .risk-section {
+      margin-top: 14px;
+    }
+
+    .risk-section h3 {
+      margin: 0;
+      color: var(--azul);
+      font-size: 15px;
+      text-transform: uppercase;
+    }
+
+    .risk-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 92px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .badge.regular { background: var(--verde); }
+    .badge.baixa { background: #d97706; }
+    .badge.parado { background: var(--vermelho); }
+    .badge.critico { background: #111827; }
+
+    .notification-box {
+      width: 100%;
+      min-height: 240px;
+      margin-top: 8px;
+      padding: 10px;
+      border: 1px solid #a8b5c2;
+      border-radius: 8px;
+      font: 13px/1.45 Arial, Helvetica, sans-serif;
+      resize: vertical;
+      background: #fff;
+    }
+
+    .balance-chart {
+      margin: 14px 0 16px;
+      border: 1px solid #d5dde6;
+      border-radius: 10px;
+      background: #fbfdff;
+      padding: 14px;
+      box-shadow: 0 8px 18px rgba(15, 35, 55, .08);
+    }
+
+    .chart-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .chart-head h3 {
+      margin: 0;
+      color: var(--azul);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .legend-dot.custeio { background: #1f77b4; }
+    .legend-dot.capital { background: #f59e0b; }
+
+    .chart-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: 170px 1fr 104px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chart-label {
+      font-weight: 800;
+      color: #253247;
+    }
+
+    .chart-bars {
+      display: grid;
+      gap: 5px;
+    }
+
+    .bar-track {
+      position: relative;
+      height: 20px;
+      border-radius: 999px;
+      background: #e9eff6;
+      overflow: hidden;
+      border: 1px solid #d8e0ea;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: var(--w);
+      min-width: 2px;
+      border-radius: 999px;
+    }
+
+    .bar-fill.custeio { background: linear-gradient(90deg, #1f77b4, #4da3df); }
+    .bar-fill.capital { background: linear-gradient(90deg, #f59e0b, #facc15); }
+    .bar-fill.negative { background: linear-gradient(90deg, #b42318, #ef4444); }
+
+    .chart-value {
+      text-align: right;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 900px) {
+      .unit-meta { grid-template-columns: 1fr 1fr; }
+      .indicator-grid { grid-template-columns: 1fr 1fr; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .app { width: 100%; margin: 0; }
+    }
+
+    @media (max-width: 760px) {
+      .chart-row { grid-template-columns: 1fr; gap: 5px; }
+      .chart-value { text-align: left; }
+    }
+
+    @media print {
+      body { background: #fff; font-size: 10px; }
+      .app { width: 100%; margin: 0; border: 0; box-shadow: none; }
+      .topbar, .actions, .tabs, .overview-tools, .no-print { display: none !important; }
+      .panel { display: none !important; padding: 0; }
+      #financePanel.active { display: block !important; }
+      body.print-overview #financePanel { display: none !important; }
+      body.print-overview #overviewPanel { display: block !important; }
+      .header { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .unit-meta { grid-template-columns: repeat(4, 1fr); padding: 6px 0; }
+      .block { overflow: visible; break-inside: avoid; page-break-inside: avoid; margin-bottom: 8px; }
+      th, td { padding: 2px; }
+      input { border: 0; background: transparent !important; padding: 0; height: auto; }
+      input.money { text-align: right; }
+      @page { size: A4 landscape; margin: 8mm; }
+    }
+  </style>
 </head>
 <body>
+  <main class="app">
+    <section class="topbar no-print">
+      <div class="field grow">
+        <label for="unitSelect">Unidade escolar</label>
+        <select id="unitSelect"></select>
+      </div>
+      <div class="field">
+        <label for="searchUnit">Buscar</label>
+        <input id="searchUnit" type="search" placeholder="Nome, INEP ou bairro">
+      </div>
+      <div class="field">
+        <label for="operatorName">Responsável</label>
+        <input id="operatorName" placeholder="Nome do técnico">
+      </div>
+      <div class="saved" id="savedStatus">Salvo</div>
+      <div class="sync-status" id="syncStatus">Supabase: aguardando</div>
+    </section>
 
-<div class="barra-topo">
-  <h1>Controle Financeiro 2026 — protótipo web (visualização)</h1>
-  <div class="acoes">
-    <button class="btn sec" onclick="zerar()">Zerar valores</button>
-    <button class="btn" onclick="window.print()">Imprimir / PDF</button>
-  </div>
-</div>
+    <section class="actions no-print">
+      <button id="printBtn">Gerar PDF / Imprimir desta escola</button>
+      <button class="secondary" id="exportSchoolBtn">Exportar esta escola</button>
+      <button class="warn" id="exportAllBtn">Exportar backup (todas as escolas)</button>
+      <button class="secondary" id="importBtn">Importar backup</button>
+      <button class="secondary" id="syncNowBtn">Sincronizar agora</button>
+      <button class="danger" id="clearSchoolBtn">Limpar dados desta escola</button>
+      <input class="hidden-file" id="importFile" type="file" accept="application/json">
+      <span class="backup-note">Lembrete: exporte o backup ao fim do uso.</span>
+    </section>
 
-<div class="folha">
-  <div class="cab">
-    <div class="org">Diretoria de Projetos e Programas Educacionais</div>
-    <div class="titulo">CONTROLE FINANCEIRO</div>
-  </div>
-  <div class="linha-escola">
-    <label for="escola">ESCOLA:</label>
-    <input id="escola" class="escola" value="ESCOLA MUNICIPAL XXXXXX">
-  </div>
-  <div class="sub-cab">
-    <span class="exerc">EXERCÍCIO 2026</span>
-    <span class="data-atu">Data da Atualização:
-      <input type="date" id="dataAtu" value="2026-01-19">
-    </span>
-  </div>
+    <header class="header">
+      <h1>Secretaria Municipal de Educação de Águas Lindas de Goiás</h1>
+      <h2>Gerência de Projetos e Programas Educacionais - GPPE</h2>
+      <h2>Controle Financeiro</h2>
+      <h3>Exercício 2026</h3>
+      <p class="unit-line" id="headerUnit">Unidade escolar</p>
+      <p id="headerDetails">CNPJ: Não informado | INEP: Não informado | Data da Atualização: --/--/----</p>
+    </header>
 
-  <div class="blocos" id="blocos"></div>
-</div>
+    <section class="unit-meta">
+      <div class="field">
+        <label for="unitNameView">Unidade</label>
+        <input id="unitNameView" readonly>
+      </div>
+      <div class="field">
+        <label for="cnpjInput">CNPJ</label>
+        <input id="cnpjInput" class="header-input" placeholder="00.000.000/0000-00">
+      </div>
+      <div class="field">
+        <label for="inepInput">INEP</label>
+        <input id="inepInput" class="header-input" placeholder="Código INEP">
+      </div>
+      <div class="field">
+        <label for="updateDate">Data da Atualização</label>
+        <input id="updateDate" class="header-input" type="date">
+      </div>
+    </section>
 
-<div class="legenda">
-  <span><b>C</b> = Custeio &nbsp;|&nbsp; <b>K</b> = Capital &nbsp;|&nbsp; <b>C+K</b> = soma dos dois</span>
-  <span><b>Saldo Final</b> = Saldo Anterior + Creditado + Rendimento − Gasto</span>
-</div>
+    <section class="fnde-alert">
+      <h3>Monitoramento de Saldos Reprogramados FNDE 2026/2027</h3>
+      <p><strong>Base de controle:</strong> Resolução CD/FNDE nº 18, de 27 de novembro de 2025.</p>
+      <p>Toda unidade com saldo disponível e sem execução financeira no exercício vigente será classificada como <strong>Saldo Parado - Notificação Obrigatória</strong>, independentemente do valor.</p>
+      <p>Os saldos financeiros reprogramados poderão ser utilizados até o 10º dia útil de fevereiro de 2027. Após esse prazo, os valores não executados poderão estar sujeitos a estorno/recolhimento, conforme as normas aplicáveis.</p>
+    </section>
 
-<div class="nota">
-  Este é um <b>protótipo visual</b> de como a planilha funcionaria na web. Os campos amarelos são editáveis:
-  digite os valores e as colunas de <b>Saldo Final</b>, <b>Total</b> e <b>Totais</b> recalculam sozinhas, igual ao Excel.
-  Nada é enviado para a internet — tudo roda no seu navegador.
-</div>
+    <section class="indicator-grid" id="indicatorCards"></section>
 
-<script>
-// Estrutura dos blocos, fiel à planilha original
-const BLOCOS = [
-  { titulo:'PDDE', itens:['PDDE BÁSICO (ATUAL)','PDDE BÁSICO (VELHO)','DESEMPENHO'] },
-  { titulo:'QUALIDADE', itens:['ED. CONECTADA','CANTINHO DA LEITURA','EDUCAÇÃO E FAMÍLIA','ESCOLA E COMUNIDADE','TEMPO DE APRENDER','MAIS ALFABETIZAÇÃO','EMERGENCIAL'] },
-  { titulo:'PDDE ESTRUTURA', itens:['CAMPO','SALA DE RECURSO'] },
-  { titulo:'PDDE-INTEGRAL', itens:['INTEGRAL'] },
-];
+    <nav class="tabs no-print">
+      <button class="tab active" data-tab="financePanel">Controle por escola</button>
+      <button class="tab" data-tab="overviewPanel">Visão geral consolidada</button>
+    </nav>
 
-const GRUPOS = [
-  {nome:'SALDO ANTERIOR 2025', span:2},
-  {nome:'VALOR CREDITADO 2026', span:2},
-  {nome:'RENDIMENTO', span:2},
-  {nome:'VALOR GASTO', span:2},
-  {nome:'SALDO FINAL', span:2},
-  {nome:'TOTAL', span:1},
-];
-// 5 grupos de C/K (entrada) + saldo final (calc C/K) + total (calc C+K)
+    <section id="financePanel" class="panel active">
+      <div id="tables"></div>
+      <section class="block" id="schoolBalanceSummary"></section>
+      <section class="balance-chart" id="schoolBalanceChart"></section>
+      <section class="summary-grid" id="generalSummary"></section>
+    </section>
 
-function fmt(v){
-  if(isNaN(v)) v=0;
-  return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-}
+    <section id="overviewPanel" class="panel">
+      <div class="overview-tools">
+        <button id="printOverviewBtn">Imprimir consolidado</button>
+        <button class="secondary" id="exportOverviewBtn">Exportar consolidado CSV</button>
+      </div>
+      <div class="block">
+        <table class="overview-table">
+          <thead>
+            <tr>
+              <th>Unidade</th>
+              <th>Tipo</th>
+              <th>Bairro/Setor</th>
+              <th>CNPJ</th>
+              <th>INEP</th>
+              <th>Saldo Ant. C</th>
+              <th>Saldo Ant. K</th>
+              <th>Creditado C</th>
+              <th>Creditado K</th>
+              <th>Rendim. C</th>
+              <th>Rendim. K</th>
+              <th>Despesa C</th>
+              <th>Despesa K</th>
+              <th>Saldo Final C</th>
+              <th>Saldo Final K</th>
+              <th>Total C+K</th>
+            </tr>
+          </thead>
+          <tbody id="overviewBody"></tbody>
+        </table>
+      </div>
+      <section class="risk-section">
+        <div class="risk-head">
+          <h3>Ranking de Risco e Notificações</h3>
+          <button id="generateNotificationsBtn">Gerar notificações do ranking</button>
+        </div>
+        <div class="block">
+          <table class="overview-table">
+            <thead>
+              <tr>
+                <th>Posição</th>
+                <th>Unidade escolar</th>
+                <th>Saldo final</th>
+                <th>Percentual executado</th>
+                <th>Situação</th>
+                <th>Notificação</th>
+              </tr>
+            </thead>
+            <tbody id="riskRankingBody"></tbody>
+          </table>
+        </div>
+        <textarea id="notificationText" class="notification-box" readonly placeholder="As notificações geradas aparecerão aqui."></textarea>
+        <div class="overview-tools">
+          <button class="secondary" id="copyNotificationBtn">Copiar notificação</button>
+          <button class="secondary" id="printNotificationBtn">Imprimir notificação</button>
+          <button id="printNotificationScreenBtn">Gerar PDF / Imprimir tela</button>
+        </div>
+      </section>
+    </section>
+  </main>
 
-function montar(){
-  const cont = document.getElementById('blocos');
-  cont.innerHTML='';
-  BLOCOS.forEach((bloco,bi)=>{
-    const div=document.createElement('div');
-    div.className='bloco';
-    let html=`<div class="bloco-tit">${bloco.titulo}</div>`;
-    html+='<table><thead class="grupo"><tr>';
-    html+='<th rowspan="2" style="background:#1F4E78;color:#fff;min-width:170px">'+bloco.titulo+'</th>';
-    GRUPOS.forEach(g=>{ html+=`<th colspan="${g.span}">${g.nome}</th>`; });
-    html+='</tr></thead><thead class="ck"><tr>';
-    // C/K subheaders: 5 grupos x (C,K), depois saldo final (C,K) já incluso, e total (C+K)
-    ['C','K','C','K','C','K','C','K','C','K','C+K'].forEach(s=>{ html+=`<th>${s}</th>`; });
-    html+='</tr></thead><tbody>';
+  <script>
+    const STORAGE_PREFIX = "gppe-controle-financeiro-2026:";
+    const STORAGE_ALL = "gppe-controle-financeiro-2026:all";
+    const OPERATOR_STORAGE_KEY = "gppe-controle-financeiro-2026:operator";
+    const SUPABASE_URL = "https://nebesbqmuwxgcrzugqfg.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_87xPNk9HacddVl5xfrppMg_-E97XK5o";
+    const SYNC_TABLE = "gppe_financial_control_sync";
 
-    bloco.itens.forEach((item,ii)=>{
-      html+=`<tr data-b="${bi}" data-i="${ii}">`;
-      html+=`<td class="rotulo">${item}</td>`;
-      // 4 grupos editáveis x C,K = 8 inputs (Saldo Ant, Creditado, Rendimento, Gasto)
-      for(let k=0;k<8;k++){
-        html+=`<td><input class="num" type="text" inputmode="decimal" value="0" oninput="recalc()"></td>`;
+    const units = [
+      { id: "UE-01", nome: "Escola M. Acelina Alves de Araújo", tipo: "Escola", bairro: "Camping Clube", gestor: "ALCILENE ALVES CONDE MONTEIRO", inep: "52095070", cnpj: "08.715.232/0001-38" },
+      { id: "UE-02", nome: "Escola M. Ana Lúcia Oliveira da Silva", tipo: "Escola", bairro: "Jardim América II", gestor: "KELLY OLIVEIRA RODRIGUES DE SOUSA", inep: "52095061", cnpj: "08.715.249/0001-95" },
+      { id: "UE-03", nome: "Escola M. Antônio Cícero Araújo da Costa", tipo: "Escola", bairro: "Mansões Odisséia", gestor: "GLEIS SANTOS LACERDA DE SOUZA", inep: "52286355", cnpj: "13.833.403/0001-63" },
+      { id: "UE-04", nome: "Escola Municipal Antônio de Jesus Leite", tipo: "Escola", bairro: "Jardim Querência", gestor: "ANA LIGIA FERREIRA DE BRITO", inep: "52071553", cnpj: "01.932.619/0001-05" },
+      { id: "UE-05", nome: "Escola Municipal Antônio Luiz Gonzaga", tipo: "Escola", bairro: "Parque da Barragem Setor 11", gestor: "VERA APARECIDA CHAVES QUEIROZ", inep: "52085929", cnpj: "07.447.574/0001-51" },
+      { id: "UE-06", nome: "Escola Municipal Camargo II", tipo: "Escola", bairro: "Zona Rural", gestor: "MARIA DE FATIMA DUARTE DOS SANTOS", inep: "52051285", cnpj: "02.966.350/0001-32" },
+      { id: "UE-07", nome: "Escola Municipal Darci Ribeiro", tipo: "Escola", bairro: "Parque da Barragem Setor 08", gestor: "ANGELA MARIA ROCHA DA TRINDADE LIMA", inep: "52051170", cnpj: "01.932.625/0001-54" },
+      { id: "UE-08", nome: "Escola M. Domingos Simão de Oliveira", tipo: "Escola", bairro: "Jardim América IV", gestor: "ZELIA MARIA MACEDO VAZ", inep: "52051463", cnpj: "01.932.609/0001-61" },
+      { id: "UE-09", nome: "Escola Municipal Edinaldo Pereira", tipo: "Escola", bairro: "Mansões Coimbra", gestor: "JAQUELINE DA SILVA PEREIRA DANTAS", inep: "52051382", cnpj: "01.932.628/0001-98" },
+      { id: "UE-10", nome: "Escola M. Ednalda Guedes de Souza", tipo: "Escola", bairro: "Parque Águas Bonitas I", gestor: "MARLUCE LOURENCO ALVES", inep: "52081869", cnpj: "03.827.690/0001-45" },
+      { id: "UE-11", nome: "Escola M. Ednalva Valdevino dos Santos", tipo: "Escola", bairro: "Jardim Santa Lúcia", gestor: "DANNIELLY FATIMA DE AZEVEDO", inep: "52088790", cnpj: "05.906.223/0001-36" },
+      { id: "UE-12", nome: "Escola M. Emília Ferreira de Souza", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "MARIA DO CARMO DOS ANJOS SOARES", inep: "52070476", cnpj: "01.932.606/0001-28" },
+      { id: "UE-13", nome: "Escola Municipal Erotides Dias da Costa", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "ELIZANDRA JUSTINO DA SILVA NASCIMENTO", inep: "52091090", cnpj: "09.010.217/0001-57" },
+      { id: "UE-14", nome: "Escola M. Fernando Cunha Junior", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "MARCOS CLEITON DA SILVA", inep: "52098320", cnpj: "19.158.844/0001-93" },
+      { id: "UE-15", nome: "Escola M. Francisca Ferreira da Silva", tipo: "Escola", bairro: "Jardim Barragem V", gestor: "PATRICIA LEMES DE MENDONCA", inep: "52070468", cnpj: "01.932.614/0001-74" },
+      { id: "UE-16", nome: "Escola M. Geracina Pereira da Silva", tipo: "Escola", bairro: "Parque da Barragem Setor 02", gestor: "GERALDO BATISTA FURTADO FILHO", inep: "52095053", cnpj: "09.010.291/0001-73" },
+      { id: "UE-17", nome: "Escola M. Inácio Carneiro da Costa", tipo: "Escola", bairro: "Jardim Barragem II", gestor: "USIAS SANTANA OLIVEIRA DE MORAIS", inep: "52283380", cnpj: "14.526.930/0001-98" },
+      { id: "UE-18", nome: "Escola Municipal Jardim das Oliveiras", tipo: "Escola", bairro: "Jardim das Oliveiras", gestor: "VANESSA OLIVEIRA NERES", inep: "52078566", cnpj: "03.818.921/0001-54" },
+      { id: "UE-19", nome: "Escola M. João Elízio Lima Pessoa", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "CRISTIANE CONCEICAO DE SOUZA", inep: "52085937", cnpj: "04.696.087/0001-34" },
+      { id: "UE-20", nome: "Escola M. José A. de Araújo - Zé Chevrolet", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "CHAYENE LELIS FLORENCIO AZEVEDO", inep: "52078531", cnpj: "03.827.731/0001-01" },
+      { id: "UE-21", nome: "Escola Municipal José Vitorino de Souza", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "LEILA MARTINS DE SOUSA", inep: "52051471", cnpj: "01.932.612/0001-85" },
+      { id: "UE-22", nome: "Escola Municipal Juliana Eloy da Silva", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "JANAINA APARECIDA DE MESQUITA", inep: "52095860", cnpj: "14.526.903/0001-15" },
+      { id: "UE-23", nome: "Escola Municipal Luiza Tereza", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "JUCIVANE DE JESUS LOBO ALVES", inep: "52092615", cnpj: "08.715.242/0001-73" },
+      { id: "UE-24", nome: "Escola Municipal Maria de Fátima Alves", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "MARISSOL DE MATOS GARCIA", inep: "52078582", cnpj: "03.818.961/0001-04" },
+      { id: "UE-25", nome: "Escola M. Maria do Livramento Felipe", tipo: "Escola", bairro: "Quinta das Angélicas", gestor: "DALMO COELHO DA SILVA", inep: "52099296", cnpj: "19.422.941/0001-41" },
+      { id: "UE-26", nome: "Escola Municipal Maria José Costa Lima", tipo: "Escola", bairro: "Recreio Águas Lindas III", gestor: "DENISE ARAUJO MOREIRA", inep: "52097293", cnpj: "19.047.947/0001-86" },
+      { id: "UE-27", nome: "Escola M. Maria Machado de Matos", tipo: "Escola", bairro: "Jardim Guaíra", gestor: "RUBIAN CRISTINA FEIJO", inep: "52285359", cnpj: "13.833.377/0001-73" },
+      { id: "UE-28", nome: "Escola Municipal Maristela Regina Neris", tipo: "Escola", bairro: "Jardim Pérola I", gestor: "CARLOS ALEXANDRE GONCALVES DOS REIS", inep: "52051544", cnpj: "01.932.627/0001-43" },
+      { id: "UE-29", nome: "Escola M. Joaquim Pedro Gomes da Cruz", tipo: "Escola", bairro: "Mansões Village", gestor: "RONNY MEIRE DE ALMEIDA ALEXANDRE", inep: "52071561", cnpj: "01.932.621/0001-76" },
+      { id: "UE-30", nome: "Escola Municipal MEG-LUZ", tipo: "Escola", bairro: "Parque da Barragem Setor 03", gestor: "NEIDE MARTINS GONZAGA", inep: "52051145", cnpj: "01.932.624/0001-00" },
+      { id: "UE-31", nome: "Escola Municipal Mestre Zezito", tipo: "Escola", bairro: "Águas Bonitas I", gestor: "ELANE SANTOS DE JESUS", inep: "52284379", cnpj: "13.847.766/0001-58" },
+      { id: "UE-32", nome: "Escola Municipal Milena Barbosa Gama", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "ELIS CRISTINA ARAUJO LOIOLA RAMOS", inep: "52070450", cnpj: "01.932.618/0001-52" },
+      { id: "UE-33", nome: "Escola M. Nilzon Periquito de Lima", tipo: "Escola", bairro: "Mansões Olinda", gestor: "CLEIDE LIMA IOLANDA", inep: "52091082", cnpj: "07.420.118/0001-18" },
+      { id: "UE-34", nome: "Escola M. Orlando Soares de Sousa", tipo: "Escola", bairro: "Camping Clube", gestor: "LIADIA DE OLIVEIRA ARAUJO", inep: "52095045", cnpj: "09.010.242/0001-30" },
+      { id: "UE-35", nome: "Escola M. P. Edileuza de A. Cavalcante", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "ALLAN SOARES GONCALVES", inep: "52051552", cnpj: "01.932.616/0001-63" },
+      { id: "UE-36", nome: "Escola M. Profª. Erika Flávia Vieira de Souza", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "VANESSA DE OLIVEIRA SILVA", inep: "52078540", cnpj: "03.818.946/0001-58" },
+      { id: "UE-37", nome: "Escola Municipal Roberto Alves da Silva", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "NEIDE CARVALHO DE SOUZA GUEDES", inep: "52095150", cnpj: "08.715.219/0001-89" },
+      { id: "UE-38", nome: "Escola Municipal Rui Barbosa", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "VIVIANE MENDONCA COELHO BONIFACIO", inep: "52078574", cnpj: "03.818.939/0001-56" },
+      { id: "UE-39", nome: "Escola Municipal São Bartolomeu", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "", inep: "", cnpj: "02.987.991/0001-73" },
+      { id: "UE-40", nome: "Escola M. Senador Emival Ramos Caiado", tipo: "Escola", bairro: "Águas Lindas de Goiás", gestor: "MARIA DE FATIMA ALVES DE LIMA", inep: "52284352", cnpj: "12.614.288/0001-73" },
+      { id: "UE-41", nome: "Escola M. Vereador Érico Souza Ferreira", tipo: "Escola", bairro: "Jardim Brasília", gestor: "MANOEL GOMES DA SILVA", inep: "52051560", cnpj: "01.932.611/0001-30" },
+      { id: "UE-42", nome: "Escola M. Vicente de Paula Lisboa", tipo: "Escola", bairro: "Jardim Águas Lindas II", gestor: "PATRICIA ALMEIDA DO VALE GONCALVES", inep: "52051510", cnpj: "01.932.605/0001-83" },
+      { id: "UE-43", nome: "Escola Municipal Zélia Correa Cotrim", tipo: "Escola", bairro: "Recreio da Barragem", gestor: "LUCIANA CAROLINA BRITO DE OLIVEIRA", inep: "52283399", cnpj: "13.833.418/0001-21" },
+      { id: "UE-44", nome: "CEMEI - Centro Municipal de Educação Inclusiva", tipo: "CEMEI", bairro: "Jardim Brasília", gestor: "DINALVA AGRIPINO DE OLIVEIRA", inep: "52227359", cnpj: "11.481.695/0001-97" },
+      { id: "UE-45", nome: "Creche M. Dona Mª Pires Perillo", tipo: "Creche", bairro: "Parque da Barragem Setor 08", gestor: "EDSON MOREIRA GOMES", inep: "52101843", cnpj: "30.843.644/0001-02" },
+      { id: "UE-46", nome: "Creche M. Indiara Carneiro Machado Lisboa", tipo: "Creche", bairro: "Jardim Santa Lúcia", gestor: "MARIA DE FATIMA CAETANO MARQUES", inep: "52100642", cnpj: "22.770.458/0001-62" },
+      { id: "UE-47", nome: "Creche Municipal Prof. Fátima Enes Muniz", tipo: "Creche", bairro: "Jardim América II", gestor: "FRANCISCA ALVES PEREIRA", inep: "52109720", cnpj: "55.723.297/0001-05" },
+      { id: "UE-48", nome: "Creche M. Jardim Brasília II", tipo: "Creche", bairro: "Jardim Brasília II", gestor: "", inep: "52110877", cnpj: "" },
+      { id: "UE-49", nome: "Creche Municipal Profª. Vilma Maria da Costa Araújo", tipo: "Creche", bairro: "Jardim Guaíra I", gestor: "GEIVA FERREIRA LEITE", inep: "52109518", cnpj: "55.191.905/0001-88" },
+      { id: "UE-50", nome: "Creche Municipal Eliene Martins Braga", tipo: "Creche", bairro: "Residencial Jardim Paraíso", gestor: "", inep: "", cnpj: "" },
+      { id: "UE-51", nome: "Creche Municipal Prof. Ivaldo Rodrigues Lima", tipo: "Creche", bairro: "Jardim Pérola I", gestor: "", inep: "", cnpj: "" },
+      { id: "UE-52", nome: "Creche M. José Rodrigues Bezerra", tipo: "Creche", bairro: "Jardim Barragem VI", gestor: "", inep: "", cnpj: "" },
+      { id: "UE-53", nome: "Creche M. Mundo Encantado", tipo: "Creche", bairro: "Jardim Brasília", gestor: "ZILDA TAVARES DE LEITE GOMES SILVA", inep: "52227367", cnpj: "13.833.391/0001-77" },
+      { id: "UE-54", nome: "Creche Municipal Prof. Luiz Antônio Gonçalves de Oliveira", tipo: "Creche", bairro: "Parque Águas Bonitas I", gestor: "", inep: "", cnpj: "" },
+      { id: "UE-55", nome: "Creche M. Pr. Geraldo Evaristo dos Santos", tipo: "Creche", bairro: "Mansões Pôr do Sol", gestor: "DAVID SOARES DE BRITO", inep: "52110869", cnpj: "" }
+    ];
+
+    const blocks = [
+      { id: "pdde", name: "PDDE", items: ["PDDE Básico (Atual)", "PDDE Básico (Velho)", "Desempenho"] },
+      { id: "qualidade", name: "QUALIDADE", items: ["Ed. Conectada", "Cantinho da Leitura", "Educação e Família", "Escola e Comunidade", "Tempo de Aprender", "Mais Alfabetização", "Emergencial"] },
+      { id: "estrutura", name: "PDDE ESTRUTURA", items: ["Campo", "Sala de Recurso"] },
+      { id: "integral", name: "PDDE-INTEGRAL", items: ["Integral"] }
+    ];
+
+    const fieldKeys = ["saC", "saK", "crC", "crK", "renC", "renK", "gasC", "gasK"];
+    const FNDE_DEADLINE = new Date("2027-02-12T00:00:00");
+    let currentUnitId = units[0].id;
+    let saveTimer;
+    let remoteSaveTimer;
+    let remoteReady = false;
+    let syncing = false;
+
+    const $ = (selector) => document.querySelector(selector);
+    const moneyFormatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+    const plainFormatter = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    function today() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function storageKey(unitId) {
+      return `${STORAGE_PREFIX}${unitId}`;
+    }
+
+    function defaultData(unit) {
+      const data = { cnpj: unit.cnpj || "", inep: unit.inep || "", updateDate: today(), updatedAt: new Date().toISOString(), values: {} };
+      blocks.forEach(block => block.items.forEach(item => {
+        data.values[item] = Object.fromEntries(fieldKeys.map(key => [key, 0]));
+      }));
+      return data;
+    }
+
+    function readData(unitId) {
+      const unit = units.find(item => item.id === unitId) || units[0];
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey(unitId)) || "{}");
+        const data = { ...defaultData(unit), ...saved };
+        if (!data.cnpj && unit.cnpj) data.cnpj = unit.cnpj;
+        if (!data.inep && unit.inep) data.inep = unit.inep;
+        return data;
+      } catch {
+        return defaultData(unit);
       }
-      // Saldo Final C, K (calculado)
-      html+=`<td class="calc sf-c">0,00</td><td class="calc sf-k">0,00</td>`;
-      // Total C+K (calculado)
-      html+=`<td class="total-final tot">0,00</td>`;
-      html+='</tr>';
-    });
+    }
 
-    // Linha TOTAL do bloco
-    html+='<tr class="linha-total">';
-    html+='<td class="rotulo">TOTAL</td>';
-    for(let c=0;c<11;c++){ html+=`<td class="bt bt-${c}">0,00</td>`; }
-    html+='</tr>';
-    // Linha C+K consolidada (soma C+K por grupo)
-    html+='<tr class="linha-cmais">';
-    html+='<td class="rotulo" style="background:#EAF1F8;font-style:italic">C + K</td>';
-    // mostra C+K para os 5 grupos (saldo ant, cred, rend, gasto, saldo final) + vazio no total
-    for(let g=0;g<5;g++){ html+=`<td colspan="2" class="ck-${g}">0,00</td>`; }
-    html+='<td></td>';
-    html+='</tr>';
+    function writeData(unitId, data, syncRemote = true) {
+      localStorage.setItem(storageKey(unitId), JSON.stringify(data));
+      const all = readAllData();
+      all[unitId] = data;
+      localStorage.setItem(STORAGE_ALL, JSON.stringify(all));
+      if (syncRemote) scheduleRemoteSave(unitId, data);
+    }
 
-    html+='</tbody></table>';
-    div.innerHTML=html;
-    cont.appendChild(div);
-  });
-  recalc();
-}
+    function readAllData() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_ALL) || "{}");
+      } catch {
+        return {};
+      }
+    }
 
-function recalc(){
-  document.querySelectorAll('tr[data-b]').forEach(tr=>{
-    const inp=tr.querySelectorAll('input.num');
-    const v=[...inp].map(x=>parseFloat((x.value||'0').replace(/\./g,'').replace(',','.'))||0);
-    // ordem: 0SAc 1SAk 2CRc 3CRk 4RE c 5REk 6GAc 7GAk
-    const sfC=v[0]+v[2]+v[4]-v[6];
-    const sfK=v[1]+v[3]+v[5]-v[7];
-    const tot=sfC+sfK;
-    const sfcEl=tr.querySelector('.sf-c'), sfkEl=tr.querySelector('.sf-k'), totEl=tr.querySelector('.tot');
-    sfcEl.textContent=fmt(sfC); sfkEl.textContent=fmt(sfK); totEl.textContent=fmt(tot);
-    sfcEl.className='calc sf-c '+(sfC<0?'saldo-neg':'saldo-pos');
-    sfkEl.className='calc sf-k '+(sfK<0?'saldo-neg':'saldo-pos');
-  });
-  // Totais por bloco
-  document.querySelectorAll('.bloco table').forEach(tb=>{
-    const linhas=tb.querySelectorAll('tr[data-b]');
-    const soma=new Array(11).fill(0);
-    linhas.forEach(tr=>{
-      const inp=tr.querySelectorAll('input.num');
-      const v=[...inp].map(x=>parseFloat((x.value||'0').replace(/\./g,'').replace(',','.'))||0);
-      for(let c=0;c<8;c++) soma[c]+=v[c];
-      const sfC=v[0]+v[2]+v[4]-v[6], sfK=v[1]+v[3]+v[5]-v[7];
-      soma[8]+=sfC; soma[9]+=sfK; soma[10]+=sfC+sfK;
-    });
-    const bt=tb.querySelectorAll('.linha-total .bt');
-    bt.forEach((el,c)=>{ el.textContent=fmt(soma[c]); if(c>=8){el.style.color='#1F4E78';} });
-    // C+K por grupo (saldo ant, cred, rend, gasto, saldo final)
-    const ckPares=[[0,1],[2,3],[4,5],[6,7],[8,9]];
-    ckPares.forEach((par,g)=>{
-      const el=tb.querySelector('.linha-cmais .ck-'+g);
-      if(el) el.textContent=fmt(soma[par[0]]+soma[par[1]]);
-    });
-  });
-}
+    function parseMoney(value) {
+      if (typeof value === "number") return Math.round(value * 100) / 100;
+      const clean = String(value || "")
+        .replace(/[^\d,.-]/g, "")
+        .replace(/\./g, "")
+        .replace(",", ".");
+      const number = Number.parseFloat(clean);
+      return Number.isFinite(number) ? Math.round(number * 100) / 100 : 0;
+    }
 
-function zerar(){
-  document.querySelectorAll('input.num').forEach(i=>i.value='0');
-  recalc();
-}
+    function formatNumber(value) {
+      return plainFormatter.format(Math.round(value * 100) / 100);
+    }
 
-montar();
-</script>
+    function colorClass(value) {
+      if (value < 0) return "negative";
+      if (value > 0) return "positive";
+      return "";
+    }
+
+    function daysUntilFndeDeadline() {
+      const now = new Date();
+      const todayOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      return Math.ceil((FNDE_DEADLINE - todayOnly) / 86400000);
+    }
+
+    function percent(value) {
+      return `${formatNumber(value)}%`;
+    }
+
+    function badgeClass(status) {
+      if (status === "Crítico") return "critico";
+      if (status === "Saldo parado") return "parado";
+      if (status === "Baixa execução") return "baixa";
+      return "regular";
+    }
+
+    function riskWeight(status) {
+      return { "Crítico": 4, "Saldo parado": 3, "Baixa execução": 2, "Regular": 1 }[status] || 0;
+    }
+
+    function classifyRisk(metrics, data = {}) {
+      const days = daysUntilFndeDeadline();
+      const hasFutureCriticalFlag = Boolean(data.prestacaoPendente || data.conselhoVencido);
+      const nearDeadline = days >= 0 && days <= 90;
+      if (metrics.saldoParado && (hasFutureCriticalFlag || nearDeadline)) return "Crítico";
+      if (metrics.saldoParado) return "Saldo parado";
+      if (metrics.available > 0 && metrics.executed > 0 && metrics.percentExecuted < 40) return "Baixa execução";
+      return "Regular";
+    }
+
+    function metricsFromValues(valuesMap) {
+      const totals = { available: 0, executed: 0, finalBalance: 0, custeio: 0, capital: 0 };
+      blocks.forEach(block => block.items.forEach(item => {
+        const values = { ...Object.fromEntries(fieldKeys.map(key => [key, 0])), ...(valuesMap?.[item] || {}) };
+        const availableC = values.saC + values.crC + values.renC;
+        const availableK = values.saK + values.crK + values.renK;
+        const calc = calculateRow(values);
+        totals.available += availableC + availableK;
+        totals.executed += values.gasC + values.gasK;
+        totals.custeio += calc.finalC;
+        totals.capital += calc.finalK;
+      }));
+      totals.finalBalance = totals.custeio + totals.capital;
+      totals.percentExecuted = totals.available > 0 ? (totals.executed / totals.available) * 100 : 0;
+      totals.saldoParado = totals.available > 0 && totals.executed === 0;
+      return totals;
+    }
+
+    function buildUnitSelect(filter = "") {
+      const selected = currentUnitId;
+      const term = filter.trim().toLowerCase();
+      const list = units.filter(unit => !term || `${unit.nome} ${unit.inep} ${unit.bairro}`.toLowerCase().includes(term));
+      $("#unitSelect").innerHTML = list.map(unit => `<option value="${unit.id}">${unit.id} - ${unit.nome}</option>`).join("");
+      if (list.some(unit => unit.id === selected)) $("#unitSelect").value = selected;
+      if (!list.some(unit => unit.id === currentUnitId) && list[0]) {
+        currentUnitId = list[0].id;
+        $("#unitSelect").value = currentUnitId;
+        loadCurrentUnit();
+      }
+    }
+
+    function buildTables() {
+      $("#tables").innerHTML = blocks.map(block => `
+        <div class="block">
+          <table data-block="${block.id}">
+            <thead>
+              <tr><th class="block-title" colspan="12">${block.name}</th></tr>
+              <tr>
+                <th rowspan="2" class="program">Programa</th>
+                <th colspan="2">Saldo Anterior 2025</th>
+                <th colspan="2">Valor Creditado 2026</th>
+                <th colspan="2">Rendimento</th>
+                <th colspan="2">Valor Gasto</th>
+                <th colspan="2">Saldo Final</th>
+                <th>Total</th>
+              </tr>
+              <tr class="subhead">
+                <th>C</th><th>K</th><th>C</th><th>K</th><th>C</th><th>K</th><th>C</th><th>K</th><th>C</th><th>K</th><th>C+K</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${block.items.map(item => rowTemplate(item)).join("")}
+              ${summaryRowTemplate(block.id, "total", "TOTAL")}
+              ${summaryRowTemplate(block.id, "ck", "C+K DO BLOCO")}
+            </tbody>
+          </table>
+        </div>
+      `).join("");
+    }
+
+    function rowTemplate(item) {
+      const safe = item.replace(/"/g, "&quot;");
+      return `
+        <tr data-item="${safe}">
+          <td class="program">${item}</td>
+          ${fieldKeys.map(key => `<td><input class="money" inputmode="decimal" aria-label="${item} ${key}" data-item="${safe}" data-field="${key}"></td>`).join("")}
+          <td class="computed finalC">0,00</td>
+          <td class="computed finalK">0,00</td>
+          <td class="computed lineTotal">0,00</td>
+        </tr>
+      `;
+    }
+
+    function summaryRowTemplate(blockId, kind, label) {
+      return `
+        <tr class="${kind === "total" ? "total-row" : "ck-row"}" data-summary="${blockId}-${kind}">
+          <td class="program">${label}</td>
+          ${Array.from({ length: 11 }, (_, index) => `<td data-sum="${index}">0,00</td>`).join("")}
+        </tr>
+      `;
+    }
+
+    function loadCurrentUnit() {
+      const unit = units.find(item => item.id === currentUnitId) || units[0];
+      const data = readData(unit.id);
+      $("#unitNameView").value = unit.nome;
+      $("#cnpjInput").value = data.cnpj || "";
+      $("#inepInput").value = data.inep || unit.inep || "";
+      $("#updateDate").value = data.updateDate || today();
+      document.querySelectorAll("input.money").forEach(input => {
+        const item = input.dataset.item;
+        const field = input.dataset.field;
+        input.value = formatNumber(data.values?.[item]?.[field] || 0);
+      });
+      updateHeader();
+      recalculate();
+      setSaved("Salvo");
+    }
+
+    function collectCurrentData() {
+      const unit = units.find(item => item.id === currentUnitId) || units[0];
+      const data = defaultData(unit);
+      data.cnpj = $("#cnpjInput").value.trim();
+      data.inep = $("#inepInput").value.trim();
+      data.updateDate = $("#updateDate").value || today();
+      data.updatedAt = new Date().toISOString();
+      data.updatedBy = $("#operatorName").value.trim();
+      document.querySelectorAll("input.money").forEach(input => {
+        const item = input.dataset.item;
+        const field = input.dataset.field;
+        data.values[item][field] = parseMoney(input.value);
+      });
+      return data;
+    }
+
+    function scheduleSave() {
+      setSaved("Salvando...");
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        writeData(currentUnitId, collectCurrentData());
+        setSaved("Salvo");
+        buildOverview();
+      }, 250);
+    }
+
+    function setSaved(text) {
+      $("#savedStatus").textContent = text;
+    }
+
+    function setSyncStatus(text, ok = true) {
+      const el = $("#syncStatus");
+      el.textContent = text;
+      el.style.color = ok ? "var(--azul)" : "var(--vermelho)";
+      el.style.background = ok ? "#eef6ff" : "#fff1f2";
+      el.style.borderColor = ok ? "#bfdbfe" : "#fecaca";
+    }
+
+    async function supabaseRequest(path, options = {}) {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+        ...options,
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          "Content-Type": "application/json",
+          Prefer: "return=representation",
+          ...(options.headers || {})
+        }
+      });
+      if (!response.ok) {
+        const detail = await response.text().catch(() => "");
+        throw new Error(`${response.status} ${detail}`);
+      }
+      return response.status === 204 ? null : response.json();
+    }
+
+    async function pullAllRemote() {
+      setSyncStatus("Supabase: sincronizando...");
+      try {
+        const rows = await supabaseRequest(`${SYNC_TABLE}?select=unit_id,payload,updated_at,updated_by`);
+        rows.forEach(row => {
+          const local = readData(row.unit_id);
+          const remotePayload = row.payload || {};
+          const remoteDate = new Date(row.updated_at || remotePayload.updatedAt || 0).getTime();
+          const localDate = new Date(local.updatedAt || 0).getTime();
+          if (remoteDate >= localDate) {
+            writeData(row.unit_id, { ...local, ...remotePayload, updatedAt: row.updated_at, updatedBy: row.updated_by || remotePayload.updatedBy || "" }, false);
+          }
+        });
+        remoteReady = true;
+        setSyncStatus("Supabase: online");
+        loadCurrentUnit();
+        buildOverview();
+      } catch (error) {
+        remoteReady = false;
+        setSyncStatus("Supabase: tabela pendente", false);
+        console.warn("Falha ao sincronizar Supabase", error);
+      }
+    }
+
+    async function pushRemote(unitId, data) {
+      if (syncing) return;
+      syncing = true;
+      try {
+        const unit = units.find(item => item.id === unitId) || units[0];
+        await supabaseRequest(`${SYNC_TABLE}?on_conflict=unit_id`, {
+          method: "POST",
+          headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+          body: JSON.stringify({
+            unit_id: unitId,
+            unit_name: unit.nome,
+            payload: data,
+            updated_by: data.updatedBy || $("#operatorName").value.trim() || null,
+            updated_at: data.updatedAt || new Date().toISOString()
+          })
+        });
+        remoteReady = true;
+        setSyncStatus("Supabase: salvo online");
+      } catch (error) {
+        remoteReady = false;
+        setSyncStatus("Supabase: não sincronizou", false);
+        console.warn("Falha ao salvar no Supabase", error);
+      } finally {
+        syncing = false;
+      }
+    }
+
+    function scheduleRemoteSave(unitId, data) {
+      clearTimeout(remoteSaveTimer);
+      remoteSaveTimer = setTimeout(() => pushRemote(unitId, data), 900);
+    }
+
+    function updateHeader() {
+      const unit = units.find(item => item.id === currentUnitId) || units[0];
+      const cnpj = $("#cnpjInput").value.trim() || "Não informado";
+      const inep = $("#inepInput").value.trim() || "Não informado";
+      const date = $("#updateDate").value ? $("#updateDate").value.split("-").reverse().join("/") : "--/--/----";
+      $("#headerUnit").textContent = unit.nome;
+      $("#headerDetails").textContent = `CNPJ: ${cnpj} | INEP: ${inep} | Data da Atualização: ${date}`;
+    }
+
+    function calculateRow(values) {
+      const finalC = values.saC + values.crC + values.renC - values.gasC;
+      const finalK = values.saK + values.crK + values.renK - values.gasK;
+      return { finalC, finalK, total: finalC + finalK };
+    }
+
+    function recalculate() {
+      const totals = {
+        saC: 0, saK: 0, crC: 0, crK: 0, renC: 0, renK: 0, gasC: 0, gasK: 0,
+        custeio: 0, capital: 0, geral: 0
+      };
+      blocks.forEach(block => {
+        const blockSums = Array(11).fill(0);
+        block.items.forEach(item => {
+          const row = document.querySelector(`tr[data-item="${CSS.escape(item)}"]`);
+          const values = Object.fromEntries(fieldKeys.map(key => [key, parseMoney(row.querySelector(`[data-field="${key}"]`).value)]));
+          const calc = calculateRow(values);
+          row.querySelector(".finalC").textContent = formatNumber(calc.finalC);
+          row.querySelector(".finalK").textContent = formatNumber(calc.finalK);
+          row.querySelector(".lineTotal").textContent = formatNumber(calc.total);
+          row.querySelector(".finalC").className = `computed finalC ${colorClass(calc.finalC)}`;
+          row.querySelector(".finalK").className = `computed finalK ${colorClass(calc.finalK)}`;
+          row.querySelector(".lineTotal").className = `computed lineTotal ${colorClass(calc.total)}`;
+          row.classList.toggle("alert", calc.finalC < 0 || calc.finalK < 0);
+          const rowValues = [...fieldKeys.map(key => values[key]), calc.finalC, calc.finalK, calc.total];
+          rowValues.forEach((value, index) => blockSums[index] += value);
+        });
+        const totalRow = document.querySelector(`[data-summary="${block.id}-total"]`);
+        const ckRow = document.querySelector(`[data-summary="${block.id}-ck"]`);
+        blockSums.forEach((value, index) => {
+          totalRow.querySelector(`[data-sum="${index}"]`).textContent = formatNumber(value);
+          totalRow.querySelector(`[data-sum="${index}"]`).className = colorClass(value);
+        });
+        const ckSums = [
+          blockSums[0] + blockSums[1],
+          blockSums[2] + blockSums[3],
+          blockSums[4] + blockSums[5],
+          blockSums[6] + blockSums[7],
+          blockSums[8] + blockSums[9],
+          blockSums[10]
+        ];
+        ckRow.querySelectorAll("[data-sum]").forEach((cell, index) => {
+          const value = index < ckSums.length ? ckSums[index] : 0;
+          cell.textContent = index < ckSums.length ? formatNumber(value) : "";
+          cell.className = colorClass(value);
+        });
+        totals.custeio += blockSums[8];
+        totals.capital += blockSums[9];
+        totals.geral += blockSums[10];
+        totals.saC += blockSums[0];
+        totals.saK += blockSums[1];
+        totals.crC += blockSums[2];
+        totals.crK += blockSums[3];
+        totals.renC += blockSums[4];
+        totals.renK += blockSums[5];
+        totals.gasC += blockSums[6];
+        totals.gasK += blockSums[7];
+      });
+      renderSchoolBalanceSummary(totals);
+      renderSchoolBalanceChart(totals);
+      renderIndicatorCards(totals);
+      $("#generalSummary").innerHTML = `
+        <div class="summary-card"><strong>Custeio total</strong><span class="${colorClass(totals.custeio)}">${moneyFormatter.format(totals.custeio)}</span></div>
+        <div class="summary-card"><strong>Capital total</strong><span class="${colorClass(totals.capital)}">${moneyFormatter.format(totals.capital)}</span></div>
+        <div class="summary-card"><strong>Geral C+K</strong><span class="${colorClass(totals.geral)}">${moneyFormatter.format(totals.geral)}</span></div>
+      `;
+      updateHeader();
+    }
+
+    function renderIndicatorCards(totals) {
+      const metrics = {
+        available: totals.saC + totals.saK + totals.crC + totals.crK + totals.renC + totals.renK,
+        executed: totals.gasC + totals.gasK
+      };
+      metrics.percentExecuted = metrics.available > 0 ? (metrics.executed / metrics.available) * 100 : 0;
+      metrics.saldoParado = metrics.available > 0 && metrics.executed === 0;
+      const days = daysUntilFndeDeadline();
+      $("#indicatorCards").innerHTML = `
+        <div class="indicator-card"><strong>Recursos disponíveis</strong><span>${moneyFormatter.format(metrics.available)}</span></div>
+        <div class="indicator-card"><strong>Valor executado</strong><span>${moneyFormatter.format(metrics.executed)}</span></div>
+        <div class="indicator-card"><strong>Percentual executado</strong><span>${percent(metrics.percentExecuted)}</span></div>
+        <div class="indicator-card"><strong>Saldo parado</strong><span class="${metrics.saldoParado ? "negative" : "positive"}">${metrics.saldoParado ? "Sim" : "Não"}</span></div>
+        <div class="indicator-card"><strong>Prazo FNDE</strong><span>${days >= 0 ? `Faltam ${days} dias` : "Prazo vencido"}</span></div>
+      `;
+    }
+
+    function renderSchoolBalanceSummary(totals) {
+      const rows = [
+        ["Saldo Anterior 2025", totals.saC, totals.saK],
+        ["Valor Creditado 2026", totals.crC, totals.crK],
+        ["Rendimento", totals.renC, totals.renK],
+        ["Despesas / Valor Gasto", totals.gasC, totals.gasK],
+        ["Saldo Atual / Saldo Final", totals.custeio, totals.capital]
+      ];
+      $("#schoolBalanceSummary").innerHTML = `
+        <table>
+          <thead>
+            <tr><th class="block-title" colspan="4">SALDO GERAL DA ESCOLA</th></tr>
+            <tr>
+              <th class="program">Movimento</th>
+              <th>Custeio (C)</th>
+              <th>Capital (K)</th>
+              <th>Total C+K</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(([label, c, k]) => `
+              <tr class="${label.includes("Saldo Atual") ? "total-row" : ""}">
+                <td class="program">${label}</td>
+                <td class="${colorClass(c)}">${formatNumber(c)}</td>
+                <td class="${colorClass(k)}">${formatNumber(k)}</td>
+                <td class="${colorClass(c + k)}">${formatNumber(c + k)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderSchoolBalanceChart(totals) {
+      const rows = [
+        { label: "Saldo Anterior", c: totals.saC, k: totals.saK },
+        { label: "Creditado 2026", c: totals.crC, k: totals.crK },
+        { label: "Rendimento", c: totals.renC, k: totals.renK },
+        { label: "Despesas", c: totals.gasC, k: totals.gasK },
+        { label: "Saldo Atual", c: totals.custeio, k: totals.capital }
+      ];
+      const max = Math.max(1, ...rows.flatMap(row => [Math.abs(row.c), Math.abs(row.k)]));
+      const width = value => `${Math.max(2, Math.round((Math.abs(value) / max) * 100))}%`;
+      const bar = (value, kind) => `
+        <div class="bar-track" title="${kind === "custeio" ? "Custeio" : "Capital"}: ${moneyFormatter.format(value)}">
+          <div class="bar-fill ${kind} ${value < 0 ? "negative" : ""}" style="--w:${width(value)}"></div>
+        </div>
+      `;
+      $("#schoolBalanceChart").innerHTML = `
+        <div class="chart-head">
+          <h3>Gráfico do Saldo Geral</h3>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-dot custeio"></span>Custeio</span>
+            <span class="legend-item"><span class="legend-dot capital"></span>Capital</span>
+          </div>
+        </div>
+        <div class="chart-grid">
+          ${rows.map(row => `
+            <div class="chart-row">
+              <div class="chart-label">${row.label}</div>
+              <div class="chart-bars">
+                ${bar(row.c, "custeio")}
+                ${bar(row.k, "capital")}
+              </div>
+              <div class="chart-value ${colorClass(row.c + row.k)}">${moneyFormatter.format(row.c + row.k)}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function unitTotals(unitId) {
+      const unit = units.find(item => item.id === unitId);
+      const data = readData(unitId);
+      const totals = { saC: 0, saK: 0, crC: 0, crK: 0, renC: 0, renK: 0, gasC: 0, gasK: 0, custeio: 0, capital: 0 };
+      blocks.forEach(block => block.items.forEach(item => {
+        const values = { ...Object.fromEntries(fieldKeys.map(key => [key, 0])), ...(data.values?.[item] || {}) };
+        const calc = calculateRow(values);
+        fieldKeys.forEach(key => totals[key] += values[key]);
+        totals.custeio += calc.finalC;
+        totals.capital += calc.finalK;
+      }));
+      const metrics = metricsFromValues(data.values);
+      const situacao = classifyRisk(metrics, data);
+      return { unit, data, ...totals, ...metrics, situacao, geral: totals.custeio + totals.capital };
+    }
+
+    function buildOverview() {
+      $("#overviewBody").innerHTML = units.map(unit => {
+        const item = unitTotals(unit.id);
+        return `
+          <tr>
+            <td class="program">${unit.nome}</td>
+            <td>${unit.tipo}</td>
+            <td>${unit.bairro}</td>
+            <td>${item.data.cnpj || "Não informado"}</td>
+            <td>${item.data.inep || unit.inep || "Não informado"}</td>
+            <td class="${colorClass(item.saC)}">${formatNumber(item.saC)}</td>
+            <td class="${colorClass(item.saK)}">${formatNumber(item.saK)}</td>
+            <td class="${colorClass(item.crC)}">${formatNumber(item.crC)}</td>
+            <td class="${colorClass(item.crK)}">${formatNumber(item.crK)}</td>
+            <td class="${colorClass(item.renC)}">${formatNumber(item.renC)}</td>
+            <td class="${colorClass(item.renK)}">${formatNumber(item.renK)}</td>
+            <td class="${colorClass(item.gasC)}">${formatNumber(item.gasC)}</td>
+            <td class="${colorClass(item.gasK)}">${formatNumber(item.gasK)}</td>
+            <td class="${colorClass(item.custeio)}">${formatNumber(item.custeio)}</td>
+            <td class="${colorClass(item.capital)}">${formatNumber(item.capital)}</td>
+            <td class="${colorClass(item.geral)}">${formatNumber(item.geral)}</td>
+          </tr>
+        `;
+      }).join("");
+      buildRiskRanking();
+    }
+
+    function buildRiskRanking() {
+      const ranking = units
+        .map(unit => unitTotals(unit.id))
+        .sort((a, b) => riskWeight(b.situacao) - riskWeight(a.situacao) || Math.abs(b.finalBalance) - Math.abs(a.finalBalance));
+      $("#riskRankingBody").innerHTML = ranking.map((item, index) => {
+        const notificationNeeded = item.situacao !== "Regular" || item.data.prestacaoPendente;
+        return `
+          <tr>
+            <td>${index + 1}</td>
+            <td class="program">${item.unit.nome}</td>
+            <td class="${colorClass(item.finalBalance)}">${moneyFormatter.format(item.finalBalance)}</td>
+            <td>${percent(item.percentExecuted)}</td>
+            <td><span class="badge ${badgeClass(item.situacao)}">${item.situacao}</span></td>
+            <td>${notificationNeeded ? "Notificação obrigatória" : "Sem notificação"}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function notificationFor(item) {
+      return `Assunto: Alerta de Recursos Financeiros Sem Execução
+
+Prezado(a) Gestor(a),
+
+Foi identificado que a unidade escolar ${item.unit.nome} possui recursos financeiros disponíveis em conta, com necessidade de acompanhamento quanto à execução financeira no exercício vigente.
+
+Ressaltamos que, conforme as regras do FNDE sobre utilização e reprogramação de saldos, especialmente a Resolução CD/FNDE nº 18, de 27 de novembro de 2025, os saldos financeiros reprogramados poderão ser utilizados até o 10º dia útil de fevereiro de 2027. Após esse prazo, os valores não executados poderão estar sujeitos a estorno/recolhimento, conforme as normas aplicáveis.
+
+Solicitamos que a unidade realize, com urgência, a análise do saldo existente, atualize o planejamento de aplicação dos recursos e adote as providências necessárias para execução dentro do prazo legal.
+
+Dados da unidade:
+- Unidade escolar: ${item.unit.nome}
+- Saldo disponível/final informado: ${moneyFormatter.format(item.finalBalance)}
+- Valor executado no exercício: ${moneyFormatter.format(item.executed)}
+- Percentual executado: ${percent(item.percentExecuted)}
+- Classificação de risco: ${item.situacao}
+- Prazo de referência: 10º dia útil de fevereiro de 2027
+
+A GPPE permanece à disposição para orientação técnica e acompanhamento da execução financeira.
+
+Atenciosamente,
+
+Gerência de Projetos e Programas Educacionais - GPPE
+Secretaria Municipal de Educação de Águas Lindas de Goiás`;
+    }
+
+    function generateRankingNotifications() {
+      const items = units
+        .map(unit => unitTotals(unit.id))
+        .filter(item => item.situacao !== "Regular" || item.data.prestacaoPendente)
+        .sort((a, b) => riskWeight(b.situacao) - riskWeight(a.situacao) || Math.abs(b.finalBalance) - Math.abs(a.finalBalance));
+      $("#notificationText").value = items.length
+        ? items.map(notificationFor).join("\n\n----------------------------------------\n\n")
+        : "Nenhuma unidade com saldo parado, baixa execução, risco crítico ou prestação pendente no momento.";
+    }
+
+    function download(filename, content, type = "application/json") {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportAll() {
+      writeData(currentUnitId, collectCurrentData());
+      const payload = {
+        sistema: "Controle Financeiro GPPE 2026",
+        exportadoEm: new Date().toISOString(),
+        unidades: Object.fromEntries(units.map(unit => [unit.id, readData(unit.id)]))
+      };
+      download(`backup-controle-financeiro-2026-${today()}.json`, JSON.stringify(payload, null, 2));
+    }
+
+    function exportSchool() {
+      const unit = units.find(item => item.id === currentUnitId);
+      writeData(currentUnitId, collectCurrentData());
+      download(`controle-${unit.id}-${today()}.json`, JSON.stringify({ unidade: unit, dados: readData(unit.id) }, null, 2));
+    }
+
+    function exportOverviewCsv() {
+      const rows = [["Unidade", "Tipo", "Bairro/Setor", "CNPJ", "INEP", "Saldo Anterior C", "Saldo Anterior K", "Creditado C", "Creditado K", "Rendimento C", "Rendimento K", "Despesa C", "Despesa K", "Saldo Final C", "Saldo Final K", "Total C+K"]];
+      units.forEach(unit => {
+        const item = unitTotals(unit.id);
+        rows.push([
+          unit.nome, unit.tipo, unit.bairro, item.data.cnpj || "", item.data.inep || unit.inep || "",
+          formatNumber(item.saC), formatNumber(item.saK), formatNumber(item.crC), formatNumber(item.crK),
+          formatNumber(item.renC), formatNumber(item.renK), formatNumber(item.gasC), formatNumber(item.gasK),
+          formatNumber(item.custeio), formatNumber(item.capital), formatNumber(item.geral)
+        ]);
+      });
+      const csv = rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(";")).join("\n");
+      download(`consolidado-controle-financeiro-2026-${today()}.csv`, "\ufeff" + csv, "text/csv;charset=utf-8");
+    }
+
+    function importBackup(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const payload = JSON.parse(reader.result);
+          const imported = payload.unidades || payload;
+          Object.entries(imported).forEach(([unitId, data]) => {
+            if (units.some(unit => unit.id === unitId)) writeData(unitId, data);
+          });
+          loadCurrentUnit();
+          buildOverview();
+          alert("Backup importado com sucesso.");
+        } catch {
+          alert("Não foi possível importar o arquivo. Verifique se é um backup JSON válido.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function bindEvents() {
+      $("#unitSelect").addEventListener("change", event => {
+        writeData(currentUnitId, collectCurrentData());
+        currentUnitId = event.target.value;
+        loadCurrentUnit();
+      });
+      $("#searchUnit").addEventListener("input", event => buildUnitSelect(event.target.value));
+      $("#operatorName").value = localStorage.getItem(OPERATOR_STORAGE_KEY) || "";
+      $("#operatorName").addEventListener("input", event => localStorage.setItem(OPERATOR_STORAGE_KEY, event.target.value.trim()));
+      $("#cnpjInput").addEventListener("input", () => { updateHeader(); scheduleSave(); });
+      $("#inepInput").addEventListener("input", () => { updateHeader(); scheduleSave(); });
+      $("#updateDate").addEventListener("input", () => { updateHeader(); scheduleSave(); });
+      $("#tables").addEventListener("input", event => {
+        if (event.target.matches("input.money")) {
+          event.target.value = event.target.value.replace(/[^\d.,-]/g, "");
+          recalculate();
+          scheduleSave();
+        }
+      });
+      $("#tables").addEventListener("focusout", event => {
+        if (event.target.matches("input.money")) {
+          event.target.value = formatNumber(parseMoney(event.target.value));
+          recalculate();
+          scheduleSave();
+        }
+      });
+      document.querySelectorAll(".tab").forEach(button => button.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+        document.querySelectorAll(".panel").forEach(panel => panel.classList.remove("active"));
+        button.classList.add("active");
+        $(`#${button.dataset.tab}`).classList.add("active");
+        buildOverview();
+      }));
+      $("#printBtn").addEventListener("click", () => {
+        document.body.classList.remove("print-overview");
+        writeData(currentUnitId, collectCurrentData());
+        window.print();
+      });
+      $("#printOverviewBtn").addEventListener("click", () => {
+        document.body.classList.add("print-overview");
+        window.print();
+        setTimeout(() => document.body.classList.remove("print-overview"), 500);
+      });
+      $("#exportAllBtn").addEventListener("click", exportAll);
+      $("#exportSchoolBtn").addEventListener("click", exportSchool);
+      $("#exportOverviewBtn").addEventListener("click", exportOverviewCsv);
+      $("#syncNowBtn").addEventListener("click", async () => {
+        writeData(currentUnitId, collectCurrentData());
+        await pullAllRemote();
+      });
+      $("#generateNotificationsBtn").addEventListener("click", generateRankingNotifications);
+      $("#copyNotificationBtn").addEventListener("click", async () => {
+        const text = $("#notificationText").value;
+        if (!text) return;
+        try {
+          await navigator.clipboard.writeText(text);
+          alert("Notificação copiada.");
+        } catch {
+          $("#notificationText").select();
+          document.execCommand("copy");
+          alert("Notificação copiada.");
+        }
+      });
+      $("#printNotificationBtn").addEventListener("click", () => {
+        const text = $("#notificationText").value || "Nenhuma notificação gerada.";
+        const win = window.open("", "_blank");
+        win.document.write(`<pre style="font:14px Arial; white-space:pre-wrap; line-height:1.45">${text.replace(/[&<>]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[char]))}</pre>`);
+        win.document.close();
+        win.focus();
+        win.print();
+      });
+      $("#printNotificationScreenBtn").addEventListener("click", () => window.print());
+      $("#importBtn").addEventListener("click", () => $("#importFile").click());
+      $("#importFile").addEventListener("change", event => {
+        if (event.target.files[0]) importBackup(event.target.files[0]);
+        event.target.value = "";
+      });
+      $("#clearSchoolBtn").addEventListener("click", () => {
+        if (confirm("Limpar todos os valores desta escola?")) {
+          localStorage.removeItem(storageKey(currentUnitId));
+          const all = readAllData();
+          delete all[currentUnitId];
+          localStorage.setItem(STORAGE_ALL, JSON.stringify(all));
+          loadCurrentUnit();
+        }
+      });
+    }
+
+    buildUnitSelect();
+    buildTables();
+    bindEvents();
+    loadCurrentUnit();
+    buildOverview();
+    pullAllRemote();
+  </script>
 </body>
 </html>
