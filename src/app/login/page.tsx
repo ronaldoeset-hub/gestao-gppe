@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { FileCheck2, Lock, Mail } from "lucide-react";
 import { InstitutionalNotice } from "@/components/institutional-notice";
+import { FormMessage } from "@/components/ui/form-message";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -165,7 +166,11 @@ export default function LoginPage() {
           >
             Criar cadastro de acesso
           </Link>
-          {message ? <p className="mt-4 text-sm text-slate-600">{message}</p> : null}
+          {message ? (
+            <div className="mt-4">
+              <FormMessage tone={message.startsWith("Enviamos") ? "success" : message.includes("...") ? "neutral" : "error"}>{message}</FormMessage>
+            </div>
+          ) : null}
           <div className="mt-5">
             <InstitutionalNotice compact />
           </div>

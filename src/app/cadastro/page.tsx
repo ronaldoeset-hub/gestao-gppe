@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Building2, FileCheck2, Lock, Mail, Phone, UserRound } from "lucide-react";
 import { InstitutionalNotice } from "@/components/institutional-notice";
+import { FormMessage } from "@/components/ui/form-message";
 import { schoolUnits } from "@/lib/data";
 import { createClient } from "@/lib/supabase/client";
 
@@ -70,14 +71,14 @@ export default function CadastroPage() {
 
   return (
     <main className="min-h-screen bg-slate-100 px-5 py-8 text-slate-950">
-      <section className="mx-auto grid max-w-6xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-soft lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="mx-auto grid max-w-6xl overflow-hidden rounded-md border border-slate-200 bg-white shadow-soft lg:grid-cols-[0.9fr_1.1fr]">
         <div className="bg-gradient-to-br from-blue-950 via-blue-800 to-emerald-700 p-8 text-white lg:p-10">
           <Link href="/login" className="inline-flex items-center gap-2 text-sm font-black text-blue-100 hover:text-white">
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Voltar ao login
           </Link>
           <div className="mt-16">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-300 text-blue-950">
+            <div className="flex h-14 w-14 items-center justify-center rounded-md bg-amber-300 text-blue-950">
               <FileCheck2 className="h-8 w-8" aria-hidden="true" />
             </div>
             <p className="mt-6 text-sm font-black uppercase tracking-wide text-amber-300">Solicitacao de acesso</p>
@@ -112,7 +113,7 @@ export default function CadastroPage() {
 
           <label className="block text-sm font-semibold text-slate-700">
             Tipo de cadastro
-            <select value={accountKind} onChange={(event) => setAccountKind(event.target.value as "unidade" | "gppe")} className="mt-2 h-11 w-full rounded-xl border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-amber-300">
+            <select value={accountKind} onChange={(event) => setAccountKind(event.target.value as "unidade" | "gppe")} className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-amber-300">
               <option value="unidade">Funcionario de unidade escolar</option>
               <option value="gppe">Equipe GPPE / Departamento</option>
             </select>
@@ -122,7 +123,7 @@ export default function CadastroPage() {
             <>
               <label className="block text-sm font-semibold text-slate-700">
                 Perfil solicitado
-                <select value={profileType} onChange={(event) => setProfileType(event.target.value as "gestor_escolar" | "conselho_escolar")} className="mt-2 h-11 w-full rounded-xl border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-amber-300">
+                <select value={profileType} onChange={(event) => setProfileType(event.target.value as "gestor_escolar" | "conselho_escolar")} className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-amber-300">
                   <option value="gestor_escolar">Gestor Escolar</option>
                   <option value="conselho_escolar">Conselho Escolar</option>
                 </select>
@@ -130,7 +131,7 @@ export default function CadastroPage() {
 
               <label className="block text-sm font-semibold text-slate-700">
                 Unidade de ensino correspondente
-                <div className="mt-2 flex items-center gap-2 rounded-xl border border-slate-300 px-3 focus-within:ring-2 focus-within:ring-amber-300">
+                <div className="mt-2 flex items-center gap-2 rounded-md border border-slate-300 px-3 focus-within:ring-2 focus-within:ring-amber-300">
                   <Building2 className="h-4 w-4 text-slate-400" aria-hidden="true" />
                   <select value={schoolName} onChange={(event) => setSchoolName(event.target.value)} required className="h-11 w-full border-0 bg-white outline-none">
                     <option value="">Selecione sua unica escola ou creche</option>
@@ -147,7 +148,7 @@ export default function CadastroPage() {
               </label>
             </>
           ) : (
-            <section className="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-semibold leading-6 text-blue-950">
+            <section className="rounded-md border border-blue-100 bg-blue-50 p-4 text-sm font-semibold leading-6 text-blue-950">
               Cadastro solicitado como Tecnico GPPE. Esse perfil podera alimentar o sistema em varias unidades, mas nao tera permissao de administrador.
               A liberacao continua dependendo da aprovacao do administrador.
             </section>
@@ -155,11 +156,11 @@ export default function CadastroPage() {
 
           <InstitutionalNotice compact />
 
-          <button type="submit" disabled={isSubmitting} className="h-12 w-full rounded-xl bg-blue-700 px-4 text-sm font-black text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60">
+          <button type="submit" disabled={isSubmitting} className="h-12 w-full rounded-md bg-blue-700 px-4 text-sm font-black text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60">
             {isSubmitting ? "Enviando..." : "Solicitar acesso"}
           </button>
 
-          {message ? <p className="rounded-xl bg-blue-50 p-3 text-sm font-semibold leading-6 text-blue-900">{message}</p> : null}
+          {message ? <div className="rounded-md bg-blue-50 p-3"><FormMessage tone={message.startsWith("Nao") || message.startsWith("Falha") ? "error" : "success"}>{message}</FormMessage></div> : null}
         </form>
       </section>
     </main>
@@ -170,7 +171,7 @@ function Field({ label, icon, children }: { label: string; icon: ReactNode; chil
   return (
     <label className="block text-sm font-semibold text-slate-700">
       {label}
-      <div className="mt-2 flex items-center gap-2 rounded-xl border border-slate-300 px-3 focus-within:ring-2 focus-within:ring-amber-300">
+      <div className="mt-2 flex items-center gap-2 rounded-md border border-slate-300 px-3 focus-within:ring-2 focus-within:ring-amber-300">
         <span className="text-slate-400">{icon}</span>
         {children}
       </div>

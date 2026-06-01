@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FileCheck2, LockKeyhole } from "lucide-react";
+import { FormMessage } from "@/components/ui/form-message";
 import { createClient } from "@/lib/supabase/client";
 
 export default function NewPasswordPage() {
@@ -106,7 +107,11 @@ export default function NewPasswordPage() {
           >
             {isSaving ? "Salvando..." : "Salvar nova senha"}
           </button>
-          {message ? <p className="mt-4 text-sm text-slate-600">{message}</p> : null}
+          {message ? (
+            <div className="mt-4">
+              <FormMessage tone={message.startsWith("Senha atualizada") ? "success" : message.includes("...") ? "neutral" : "error"}>{message}</FormMessage>
+            </div>
+          ) : null}
         </form>
       </section>
     </main>
