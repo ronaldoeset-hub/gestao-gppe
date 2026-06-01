@@ -6,6 +6,7 @@ import {
   Bot,
   Building2,
   CalendarClock,
+  Calculator,
   ClipboardCheck,
   Database,
   FileArchive,
@@ -80,6 +81,7 @@ export const menuGroups: MenuGroup[] = [
     label: "Recursos e Prestação de Contas",
     items: [
       { href: "/recursos",         label: "Recursos",            icon: Landmark,     roles: SME_TEC_GES_CON },
+      { href: "/controle-financeiro", label: "Controle Financeiro", icon: Calculator, roles: SME_TEC_GES_CON },
       { href: "/fnde-pdde",        label: "FNDE/PDDE",           icon: ClipboardCheck, roles: SME_TEC_GES_CON },
       { href: "/prestacao-contas", label: "Prestação de Contas", icon: Receipt,      roles: SME_TEC_GES_CON },
       { href: "/central-prazos",   label: "Central de Prazos",   icon: CalendarClock, roles: SME_TEC_GES_FUN }
@@ -166,6 +168,7 @@ export const eduMenuItems: EduMenuItem[] = [
   { href: "/escolas", label: "Escolas", icon: Building2 },
   { href: "/conselhos", label: "Conselhos", icon: UsersRound },
   { href: "/recursos", label: "Recursos", icon: Landmark },
+  { href: "/controle-financeiro", label: "Controle Financeiro", icon: Calculator },
   { href: "/biblioteca-sei", label: "Biblioteca SEI", icon: FileText },
   { href: "/fnde-pdde", label: "FNDE/PDDE", icon: ClipboardCheck },
   { href: "/central-prazos", label: "Central de Prazos", icon: CalendarClock },

@@ -45,6 +45,7 @@ export async function middleware(request: NextRequest) {
   const isPasswordRecovery    = pathname.startsWith("/nova-senha");
   const isEducationalPortal   = pathname.startsWith("/recursos-educacionais");
   const isInstitutionalNotice = pathname.startsWith("/aviso-institucional");
+  const isControleFinanceiro  = pathname.startsWith("/controle-financeiro");
   const isStaticOrFile        = pathname.startsWith("/_next") || pathname.includes(".");
   const isAppRoute            = !isStaticOrFile;
   const isLogout              = pathname.startsWith("/auth/logout");
@@ -59,6 +60,7 @@ export async function middleware(request: NextRequest) {
     !isPasswordRecovery &&
     !isEducationalPortal &&
     !isInstitutionalNotice &&
+    !isControleFinanceiro &&
     isAppRoute
   ) {
     const url = request.nextUrl.clone();
