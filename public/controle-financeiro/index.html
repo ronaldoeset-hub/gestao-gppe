@@ -104,6 +104,29 @@
     button.warn { background: var(--amarelo-forte); color: #1f2937; border-color: #c99700; }
     button.danger { background: #fff; color: var(--vermelho); border-color: var(--vermelho); }
 
+    .main-menu-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--azul-escuro);
+      border-radius: 6px;
+      background: var(--azul);
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .2) inset;
+    }
+
+    .main-menu-link:hover,
+    .main-menu-link:focus {
+      background: var(--azul-escuro);
+      outline: 2px solid rgba(255, 210, 77, .7);
+      outline-offset: 1px;
+    }
+
     .saved {
       min-width: 110px;
       color: var(--verde);
@@ -538,6 +561,7 @@
     </section>
 
     <section class="actions no-print">
+      <a class="main-menu-link" href="/dashboard">Voltar ao menu principal</a>
       <button id="printBtn">Gerar PDF / Imprimir desta escola</button>
       <button class="secondary" id="exportSchoolBtn">Exportar esta escola</button>
       <button class="warn" id="exportAllBtn">Exportar backup (todas as escolas)</button>

@@ -257,13 +257,19 @@ export function AppShell({ children, role, fullName, pendingCount = 0 }: AppShel
         {/* ── Conteúdo principal ── */}
         <div className="min-w-0 flex-1">
           <div className="border-b border-slate-200 bg-white">
-            <div className="mx-auto flex min-h-14 max-w-[1540px] items-center justify-between gap-4 px-4 text-sm lg:px-7">
+            <div className="mx-auto flex min-h-14 max-w-[1540px] flex-wrap items-center justify-between gap-3 px-4 py-2 text-sm lg:px-7">
               <div className="min-w-0">
                 <p className="truncate font-black text-blue-950">EDUCONECTA — Gestão Educacional Inteligente</p>
                 <p className="truncate text-xs font-semibold text-slate-500">
                   Plataforma independente. Sem credenciamento ou intermediação de fornecedores.
                 </p>
               </div>
+              <Link
+                href="/dashboard"
+                className="inline-flex h-10 items-center justify-center rounded-md border border-slate-300 bg-white px-3 text-sm font-black text-blue-800 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2"
+              >
+                Voltar ao menu principal
+              </Link>
               {role === "admin_sme" ? (
                 <Link
                   href="/administracao"
