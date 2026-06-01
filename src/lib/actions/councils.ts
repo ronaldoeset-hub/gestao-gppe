@@ -18,6 +18,11 @@ export type CouncilInput = {
   status?: string;
 };
 
+export type FormActionState = {
+  ok: boolean;
+  message: string;
+};
+
 async function tryAuditLog(
   supabase: Awaited<ReturnType<typeof createClient>>,
   entry: {
@@ -58,7 +63,29 @@ export async function createCouncil(input: CouncilInput) {
   });
 
   revalidatePath("/conselhos");
+  revalidatePath("/central-prazos");
+  revalidatePath("/relatorios");
   return { success: true, data };
+}
+
+export async function createCouncilFromForm(_state: FormActionState, formData: FormData): Promise<FormActionState> {
+  const input: CouncilInput = {
+    school_unit_id: String(formData.get("school_unit_id") ?? ""),
+    president_name: String(formData.get("president_name") ?? ""),
+    vice_president_name: String(formData.get("vice_president_name") ?? "") || undefined,
+    mandate_start: String(formData.get("mandate_start") ?? ""),
+    mandate_end: String(formData.get("mandate_end") ?? ""),
+    members_count: Number(formData.get("members_count") ?? 0),
+    status: String(formData.get("status") ?? "regular")
+  };
+
+  const result = await createCouncil(input);
+
+  if (result.error) {
+    return { ok: false, message: `Erro ao salvar: ${result.error}` };
+  }
+
+  return { ok: true, message: "Conselho cadastrado com sucesso." };
 }
 
 export async function updateCouncil(id: string, input: Partial<CouncilInput>) {

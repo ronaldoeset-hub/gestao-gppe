@@ -1,8 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useFormState, useFormStatus } from "react-dom";
 import { Save } from "lucide-react";
+import { createAlert } from "@/lib/actions/alerts";
+import { createCouncilFromForm } from "@/lib/actions/councils";
 import { createClient } from "@/lib/supabase/client";
+
+const initialActionState = {
+  ok: false,
+  message: ""
+};
 
 type SchoolOption = {
   id: string;
@@ -47,50 +55,29 @@ function SchoolSelect({ allowEmpty = false }: { allowEmpty?: boolean }) {
   );
 }
 
-function SubmitRow({ status, idleText, label }: { status: string; idleText: string; label: string }) {
+function SubmitRow({ status, idleText, label, ok = false }: { status: string; idleText: string; label: string; ok?: boolean }) {
+  const { pending } = useFormStatus();
+
   return (
     <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-sm text-slate-600">{status || idleText}</p>
+      <p className={ok ? "text-sm font-semibold text-emerald-700" : "text-sm text-slate-600"}>{pending ? "Salvando..." : status || idleText}</p>
       <button
         type="submit"
+        disabled={pending}
         className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-sme-blue px-4 text-sm font-semibold text-white hover:bg-sme-navy focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2"
       >
         <Save className="h-4 w-4" aria-hidden="true" />
-        {label}
+        {pending ? "Salvando" : label}
       </button>
     </div>
   );
 }
 
 export function CouncilForm() {
-  const [status, setStatus] = useState("");
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setStatus("Salvando conselho...");
-    const formData = new FormData(event.currentTarget);
-    const supabase = createClient();
-    const { error } = await supabase.from("school_councils").insert({
-      school_unit_id: String(formData.get("school_unit_id")),
-      president_name: String(formData.get("president_name") ?? ""),
-      vice_president_name: String(formData.get("vice_president_name") ?? "") || null,
-      mandate_start: String(formData.get("mandate_start")),
-      mandate_end: String(formData.get("mandate_end")),
-      members_count: Number(formData.get("members_count") ?? 0),
-      status: String(formData.get("status") ?? "regular")
-    });
-
-    if (error) {
-      setStatus(`Erro ao salvar: ${error.message}`);
-      return;
-    }
-
-    event.currentTarget.reset();
-    setStatus("Conselho cadastrado com sucesso.");
-  }
+  const [state, formAction] = useFormState(createCouncilFromForm, initialActionState);
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
+    <form action={formAction} className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <label className="block text-sm font-semibold text-slate-700 xl:col-span-2">
           Unidade escolar
@@ -125,7 +112,7 @@ export function CouncilForm() {
           </select>
         </label>
       </div>
-      <SubmitRow status={status} idleText="Os dados serão gravados na tabela school_councils." label="Salvar conselho" />
+      <SubmitRow status={state.message} ok={state.ok} idleText="Os dados serão gravados na tabela school_councils." label="Salvar conselho" />
     </form>
   );
 }
@@ -264,33 +251,10 @@ export function AccountabilityForm() {
 }
 
 export function AlertForm() {
-  const [status, setStatus] = useState("");
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setStatus("Salvando alerta...");
-    const formData = new FormData(event.currentTarget);
-    const schoolUnitId = String(formData.get("school_unit_id") ?? "");
-    const supabase = createClient();
-    const { error } = await supabase.from("alerts").insert({
-      school_unit_id: schoolUnitId || null,
-      title: String(formData.get("title") ?? ""),
-      description: String(formData.get("description") ?? ""),
-      severity: String(formData.get("severity") ?? "media"),
-      due_date: String(formData.get("due_date") ?? "") || null
-    });
-
-    if (error) {
-      setStatus(`Erro ao salvar: ${error.message}`);
-      return;
-    }
-
-    event.currentTarget.reset();
-    setStatus("Alerta cadastrado com sucesso.");
-  }
+  const [state, formAction] = useFormState(createAlert, initialActionState);
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
+    <form action={formAction} className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <label className="block text-sm font-semibold text-slate-700">
           Unidade
@@ -317,7 +281,7 @@ export function AlertForm() {
           <input name="due_date" type="date" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
         </label>
       </div>
-      <SubmitRow status={status} idleText="Os dados serão gravados na tabela alerts." label="Salvar alerta" />
+      <SubmitRow status={state.message} ok={state.ok} idleText="Os dados serão gravados na tabela alerts." label="Salvar alerta" />
     </form>
   );
 }

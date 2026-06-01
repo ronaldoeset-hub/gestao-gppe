@@ -1,6 +1,5 @@
-import { EduConectaModulePage } from "@/components/educonecta-module-page";
-import { modules } from "@/data/educonecta";
+import { redirect } from "next/navigation";
 
 export default function EscolasPage() {
-  return <EduConectaModulePage module={modules.escolas} />;
+  redirect("/unidades");
 }

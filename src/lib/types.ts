@@ -6,6 +6,10 @@ export type SchoolUnit = {
   id: string;
   name: string;
   inep: string;
+  cnpj?: string;
+  phone?: string;
+  email?: string;
+  zip_code?: string;
   type: "Escola" | "Creche" | "CEMEI" | "Conveniada";
   district: string;
   manager: string;
