@@ -23,6 +23,7 @@ import {
   Settings,
   Share2,
   ShieldCheck,
+  TrendingDown,
   UsersRound
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -80,11 +81,12 @@ export const menuGroups: MenuGroup[] = [
   {
     label: "Recursos e Prestação de Contas",
     items: [
-      { href: "/recursos",         label: "Recursos",            icon: Landmark,     roles: SME_TEC_GES_CON },
-      { href: "/controle-financeiro", label: "Controle Financeiro", icon: Calculator, roles: SME_TEC_GES_CON },
-      { href: "/fnde-pdde",        label: "FNDE/PDDE",           icon: ClipboardCheck, roles: SME_TEC_GES_CON },
-      { href: "/prestacao-contas", label: "Prestação de Contas", icon: Receipt,      roles: SME_TEC_GES_CON },
-      { href: "/central-prazos",   label: "Central de Prazos",   icon: CalendarClock, roles: SME_TEC_GES_FUN }
+      { href: "/recursos",          label: "Recursos",             icon: Landmark,      roles: SME_TEC_GES_CON },
+      { href: "/controle-financeiro", label: "Controle Financeiro", icon: Calculator,  roles: SME_TEC_GES_CON },
+      { href: "/fnde-pdde",         label: "FNDE/PDDE",            icon: ClipboardCheck, roles: SME_TEC_GES_CON },
+      { href: "/prestacao-contas",  label: "Prestação de Contas",  icon: Receipt,       roles: SME_TEC_GES_CON },
+      { href: "/central-prazos",    label: "Central de Prazos",    icon: CalendarClock, roles: SME_TEC_GES_FUN },
+      { href: "/ranking-saldos",    label: "Ranking de Saldos",    icon: TrendingDown,  roles: SME_TEC }
     ]
   },
   {

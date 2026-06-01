@@ -4,22 +4,44 @@ import { ArrowRight, Bot, CalendarClock, Download, RefreshCw } from "lucide-reac
 import { EduConectaCards } from "@/components/educonecta-cards";
 import { InstitutionalNotice } from "@/components/institutional-notice";
 import { MockChart } from "@/components/mock-chart";
-import { dashboardCards, modules } from "@/data/educonecta";
+import { modules } from "@/data/educonecta";
+import { getDashboardSummary } from "@/lib/supabase/queries/schools";
+import { isSupabaseEnabled } from "@/lib/supabase/config";
 
-const financialSummary = [
-  { label: "Recursos recebidos", value: 8245320, color: "bg-emerald-500" },
-  { label: "Recursos executados", value: 4312780, color: "bg-blue-600" },
-  { label: "Saldo disponivel", value: 3932539, color: "bg-amber-400" }
-];
+function formatBRL(value: number) {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
 
-const fndeSummary = [
-  { label: "PDDE regular", value: 42 },
-  { label: "SIGPC pendente", value: 7 },
-  { label: "PDDEWeb atencao", value: 6 },
-  { label: "VAAR monitorado", value: 12 }
-];
+export default async function DashboardPage() {
+  const summary = await getDashboardSummary();
+  const isMock = !isSupabaseEnabled();
 
-export default function DashboardPage() {
+  const financialSummary = [
+    { label: "Recursos recebidos", value: summary?.totalRecebido ?? 0, color: "bg-emerald-500" },
+    { label: "Recursos executados", value: summary?.totalExecutado ?? 0, color: "bg-blue-600" },
+    { label: "Saldo disponivel", value: summary?.saldoDisponivel ?? 0, color: "bg-amber-400" },
+  ];
+
+  const fndeSummary = [
+    { label: "Total unidades", value: summary?.totalUnidades ?? 0 },
+    { label: "Conselhos vencidos", value: summary?.conselhosVencidos ?? 0 },
+    { label: "Vencendo 90 dias", value: summary?.conselhosVencendo90d ?? 0 },
+    { label: "Prest. pendentes", value: summary?.prestacoesPendentes ?? 0 },
+  ];
+
+  const dashboardCards = [
+    { label: "Total unidades", value: String(summary?.totalUnidades ?? 55), detail: "Rede municipal", tone: "blue" as const },
+    { label: "Conselhos vencidos", value: String(summary?.conselhosVencidos ?? 0), detail: "Exigem ação imediata", tone: "red" as const },
+    { label: "Vencendo em 90 dias", value: String(summary?.conselhosVencendo90d ?? 0), detail: "Próximos 90 dias", tone: "yellow" as const },
+    { label: "Prestações pendentes", value: String(summary?.prestacoesPendentes ?? 0), detail: "Aguardando envio", tone: "red" as const },
+    { label: "Total recebido", value: formatBRL(summary?.totalRecebido ?? 0), detail: "Exercício 2026", tone: "green" as const },
+    { label: "Saldo disponível", value: formatBRL(summary?.saldoDisponivel ?? 0), detail: "A executar", tone: "yellow" as const },
+  ];
+
   return (
     <div className="space-y-6">
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
@@ -52,6 +74,13 @@ export default function DashboardPage() {
       </section>
 
       <InstitutionalNotice />
+
+      {isMock && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <strong>Modo demonstração</strong> — os dados financeiros abaixo são ilustrativos.
+          Configure o Supabase para exibir dados reais.
+        </div>
+      )}
 
       <EduConectaCards cards={dashboardCards} />
 
