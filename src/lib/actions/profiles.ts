@@ -1,13 +1,30 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
-export async function approveUser(userId: string) {
+async function tryAuditLog(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  entry: {
+    user_id: string;
+    action: string;
+    entity_type: string;
+    entity_id: string;
+    old_data?: Record<string, unknown>;
+    new_data?: Record<string, unknown>;
+  }
+) {
+  try {
+    await supabase.from("audit_logs").insert(entry);
+  } catch {
+    // tabela ainda não existe — ignora silenciosamente
+  }
+}
+
+async function getSessionAndRole() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Não autenticado" };
+  if (!user) return { supabase, user: null, role: null };
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -15,11 +32,15 @@ export async function approveUser(userId: string) {
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin_sme") return { error: "Sem permissão" };
+  return { supabase, user, role: profile?.role ?? null };
+}
 
-  const admin = createAdminClient();
+export async function approveUser(userId: string) {
+  const { supabase, user, role } = await getSessionAndRole();
+  if (!user) return { error: "Não autenticado" };
+  if (role !== "admin_sme") return { error: "Sem permissão" };
 
-  const { error } = await admin
+  const { error } = await supabase
     .from("profiles")
     .update({
       access_status: "aprovado",
@@ -30,7 +51,7 @@ export async function approveUser(userId: string) {
 
   if (error) return { error: error.message };
 
-  await admin.from("audit_logs").insert({
+  await tryAuditLog(supabase, {
     user_id: user.id,
     action: "approve_user",
     entity_type: "profiles",
@@ -44,34 +65,24 @@ export async function approveUser(userId: string) {
 }
 
 export async function blockUser(userId: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user, role } = await getSessionAndRole();
   if (!user) return { error: "Não autenticado" };
+  if (role !== "admin_sme") return { error: "Sem permissão" };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin_sme") return { error: "Sem permissão" };
-
-  const admin = createAdminClient();
-
-  const { data: target } = await admin
+  const { data: target } = await supabase
     .from("profiles")
     .select("access_status")
     .eq("id", userId)
     .single();
 
-  const { error } = await admin
+  const { error } = await supabase
     .from("profiles")
     .update({ access_status: "bloqueado" })
     .eq("id", userId);
 
   if (error) return { error: error.message };
 
-  await admin.from("audit_logs").insert({
+  await tryAuditLog(supabase, {
     user_id: user.id,
     action: "block_user",
     entity_type: "profiles",
@@ -86,28 +97,18 @@ export async function blockUser(userId: string) {
 }
 
 export async function assignSchoolUnit(userId: string, schoolUnitId: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { supabase, user, role } = await getSessionAndRole();
   if (!user) return { error: "Não autenticado" };
+  if (role !== "admin_sme") return { error: "Sem permissão" };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "admin_sme") return { error: "Sem permissão" };
-
-  const admin = createAdminClient();
-
-  const { error } = await admin
+  const { error } = await supabase
     .from("profiles")
     .update({ school_unit_id: schoolUnitId })
     .eq("id", userId);
 
   if (error) return { error: error.message };
 
-  await admin.from("audit_logs").insert({
+  await tryAuditLog(supabase, {
     user_id: user.id,
     action: "assign_school_unit",
     entity_type: "profiles",

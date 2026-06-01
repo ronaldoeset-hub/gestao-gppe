@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 export type CouncilInput = {
   school_unit_id: string;
@@ -19,6 +18,24 @@ export type CouncilInput = {
   status?: string;
 };
 
+async function tryAuditLog(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  entry: {
+    user_id: string;
+    action: string;
+    entity_type: string;
+    entity_id: string;
+    old_data?: Record<string, unknown>;
+    new_data?: Record<string, unknown>;
+  }
+) {
+  try {
+    await supabase.from("audit_logs").insert(entry);
+  } catch {
+    // tabela ainda não existe — ignora silenciosamente
+  }
+}
+
 export async function createCouncil(input: CouncilInput) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -32,13 +49,12 @@ export async function createCouncil(input: CouncilInput) {
 
   if (error) return { error: error.message };
 
-  const admin = createAdminClient();
-  await admin.from("audit_logs").insert({
+  await tryAuditLog(supabase, {
     user_id: user.id,
     action: "create",
     entity_type: "school_councils",
     entity_id: data.id,
-    new_data: input,
+    new_data: input as Record<string, unknown>,
   });
 
   revalidatePath("/conselhos");
@@ -63,14 +79,13 @@ export async function updateCouncil(id: string, input: Partial<CouncilInput>) {
 
   if (error) return { error: error.message };
 
-  const admin = createAdminClient();
-  await admin.from("audit_logs").insert({
+  await tryAuditLog(supabase, {
     user_id: user.id,
     action: "update",
     entity_type: "school_councils",
     entity_id: id,
-    old_data: old,
-    new_data: input,
+    old_data: old as Record<string, unknown>,
+    new_data: input as Record<string, unknown>,
   });
 
   revalidatePath("/conselhos");

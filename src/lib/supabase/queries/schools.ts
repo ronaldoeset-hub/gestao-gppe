@@ -49,10 +49,9 @@ export async function getSchoolUnits(): Promise<SchoolUnit[]> {
     const { data, error } = await supabase
       .from("school_units")
       .select(
-        "id,name,inep,cnpj,type,district,manager_name,phone,email,active,school_councils(status,mandate_end)"
+        "id,name,inep,type,district,manager_name,active,school_councils(status,mandate_end)"
       )
       .eq("active", true)
-      .is("deleted_at", null)
       .order("name", { ascending: true });
 
     if (error || !data?.length) return [];
@@ -61,12 +60,12 @@ export async function getSchoolUnits(): Promise<SchoolUnit[]> {
       id: unit.id,
       name: unit.name,
       inep: unit.inep ?? "",
-      cnpj: unit.cnpj ?? "",
+      cnpj: "",
       type: typeLabels[unit.type],
       district: unit.district ?? "",
       manager: unit.manager_name ?? "",
-      phone: unit.phone ?? "",
-      email: unit.email ?? "",
+      phone: "",
+      email: "",
       councilStatus: councilStatusFromRows(unit.school_councils),
     }));
   } catch {
