@@ -1,9 +1,15 @@
+import type { Metadata } from "next";
 import { AlertTriangle, Plus } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { AlertForm } from "@/components/linked-record-forms";
 import { ModuleHeader } from "@/components/module-header";
 import { getAlerts } from "@/lib/supabase/queries";
 import { formatDate } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Alertas",
+  description: "Central de alertas e pendências operacionais do GPPE."
+};
 
 export default async function AlertsPage() {
   const alerts = await getAlerts();

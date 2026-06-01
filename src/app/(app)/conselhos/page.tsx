@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Plus, UsersRound } from "lucide-react";
 import { CouncilRegularityPanel } from "@/components/council-regularity-panel";
 import { DataTable } from "@/components/data-table";
@@ -7,6 +8,11 @@ import { ModuleHeader } from "@/components/module-header";
 import { StatusBadge } from "@/components/status-badge";
 import { getCouncils } from "@/lib/supabase/queries";
 import { formatDate } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Conselhos escolares",
+  description: "Controle de mandatos, composição e regularidade dos conselhos escolares."
+};
 
 export default async function CouncilsPage() {
   const councils = await getCouncils();

@@ -6,6 +6,8 @@ import { Save } from "lucide-react";
 import { createAlert } from "@/lib/actions/alerts";
 import { createCouncilFromForm } from "@/lib/actions/councils";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { FormMessage } from "@/components/ui/form-message";
 
 const initialActionState = {
   ok: false,
@@ -60,15 +62,14 @@ function SubmitRow({ status, idleText, label, ok = false }: { status: string; id
 
   return (
     <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <p className={ok ? "text-sm font-semibold text-emerald-700" : "text-sm text-slate-600"}>{pending ? "Salvando..." : status || idleText}</p>
-      <button
+      <FormMessage tone={ok ? "success" : status.startsWith("Erro") ? "error" : "neutral"}>{pending ? "Salvando..." : status || idleText}</FormMessage>
+      <Button
         type="submit"
         disabled={pending}
-        className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-sme-blue px-4 text-sm font-semibold text-white hover:bg-sme-navy focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2"
       >
         <Save className="h-4 w-4" aria-hidden="true" />
         {pending ? "Salvando" : label}
-      </button>
+      </Button>
     </div>
   );
 }

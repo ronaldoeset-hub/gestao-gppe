@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { FileBarChart } from "lucide-react";
 import { ExportButtons } from "@/components/export-buttons";
 import { ModuleHeader } from "@/components/module-header";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Relatórios",
+  description: "Exportação de relatórios de conselhos, unidades escolares e alertas."
+};
 
 type ExportRow = Record<string, string | number | undefined>;
 type RelatedName = { name: string } | { name: string }[] | null;

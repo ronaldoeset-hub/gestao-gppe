@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { CalendarClock } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { ModuleHeader } from "@/components/module-header";
@@ -5,6 +6,11 @@ import { StatusBadge } from "@/components/status-badge";
 import { createClient } from "@/lib/supabase/server";
 import type { Status } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Central de prazos",
+  description: "Acompanhamento de mandatos vencidos, vencimentos próximos e prestações pendentes."
+};
 
 type RelatedName = { name: string } | { name: string }[] | null;
 

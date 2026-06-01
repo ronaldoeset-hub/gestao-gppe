@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { ModuleHeader } from "@/components/module-header";
@@ -5,6 +6,11 @@ import { ProfileManager } from "@/components/profile-manager";
 import { roleLabels, rolePermissions } from "@/lib/data";
 import { getProfiles } from "@/lib/supabase/queries";
 import { formatDate } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Perfis de acesso",
+  description: "Consulta e gestão visual dos perfis de acesso do sistema GPPE."
+};
 
 export default async function RolesPage() {
   const profiles = await getProfiles();

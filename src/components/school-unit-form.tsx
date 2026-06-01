@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Save } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { FormMessage } from "@/components/ui/form-message";
 
 const schoolTypeOptions = [
   { label: "Escola", value: "escola" },
@@ -13,21 +15,43 @@ const schoolTypeOptions = [
 
 export function SchoolUnitForm() {
   const [status, setStatus] = useState("");
+  const [tone, setTone] = useState<"neutral" | "success" | "error">("neutral");
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setStatus("Salvando cadastro...");
+    setTone("neutral");
+    setSubmitting(true);
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form);
+    const name = String(formData.get("name") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+
+    if (name.length < 3) {
+      setStatus("Informe um nome de unidade com pelo menos 3 caracteres.");
+      setTone("error");
+      setSubmitting(false);
+      return;
+    }
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setStatus("Informe um e-mail valido.");
+      setTone("error");
+      setSubmitting(false);
+      return;
+    }
+
     const payload = {
-      name: String(formData.get("name") ?? ""),
+      name,
       inep: String(formData.get("inep") ?? "") || null,
       type: String(formData.get("type") ?? "escola"),
       district: String(formData.get("district") ?? "") || null,
       address: String(formData.get("address") ?? "") || null,
       manager_name: String(formData.get("manager_name") ?? "") || null,
       phone: String(formData.get("phone") ?? "") || null,
-      email: String(formData.get("email") ?? "") || null
+      email: email || null
     };
 
     const supabase = createClient();
@@ -35,11 +59,15 @@ export function SchoolUnitForm() {
 
     if (error) {
       setStatus(`Erro ao salvar: ${error.message}`);
+      setTone("error");
+      setSubmitting(false);
       return;
     }
 
-    event.currentTarget.reset();
+    form.reset();
     setStatus("Unidade cadastrada com sucesso.");
+    setTone("success");
+    setSubmitting(false);
   }
 
   return (
@@ -115,14 +143,15 @@ export function SchoolUnitForm() {
         </label>
       </div>
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-slate-600">{status || "Os dados serão gravados na tabela school_units do Supabase."}</p>
-        <button
+        <FormMessage tone={tone}>{status || "Os dados serão gravados na tabela school_units do Supabase."}</FormMessage>
+        <Button
           type="submit"
+          disabled={submitting}
           className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-sme-blue px-4 text-sm font-semibold text-white hover:bg-sme-navy focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2"
         >
           <Save className="h-4 w-4" aria-hidden="true" />
-          Salvar unidade
-        </button>
+          {submitting ? "Salvando" : "Salvar unidade"}
+        </Button>
       </div>
     </form>
   );

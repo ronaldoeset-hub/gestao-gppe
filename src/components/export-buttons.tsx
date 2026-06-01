@@ -9,6 +9,8 @@ type ExportButtonsProps = {
 
 export function ExportButtons({ filename, rows }: ExportButtonsProps) {
   async function exportExcel() {
+    if (!rows.length) return;
+
     const headers = Object.keys(rows[0] ?? {});
     const escapeCell = (value: string | number | undefined) => {
       const text = String(value ?? "");
@@ -28,6 +30,8 @@ export function ExportButtons({ filename, rows }: ExportButtonsProps) {
   }
 
   async function exportPdf() {
+    if (!rows.length) return;
+
     const { jsPDF } = await import("jspdf");
     const doc = new jsPDF();
     doc.setFontSize(14);
@@ -44,6 +48,8 @@ export function ExportButtons({ filename, rows }: ExportButtonsProps) {
       <button
         type="button"
         onClick={exportExcel}
+        disabled={!rows.length}
+        aria-label={`Exportar ${filename} em CSV`}
         className="inline-flex h-10 items-center gap-2 rounded-md bg-sme-blue px-3 text-sm font-semibold text-white transition hover:bg-sme-navy focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2"
       >
         <FileSpreadsheet className="h-4 w-4" aria-hidden="true" />
@@ -52,6 +58,8 @@ export function ExportButtons({ filename, rows }: ExportButtonsProps) {
       <button
         type="button"
         onClick={exportPdf}
+        disabled={!rows.length}
+        aria-label={`Exportar ${filename} em PDF`}
         className="inline-flex h-10 items-center gap-2 rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold text-sme-ink transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2"
       >
         <FileText className="h-4 w-4" aria-hidden="true" />

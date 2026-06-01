@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Landmark, Plus } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { ExportButtons } from "@/components/export-buttons";
@@ -8,6 +9,11 @@ import { ResourcesOverview } from "@/components/resources-overview";
 import { StatusBadge } from "@/components/status-badge";
 import { getFinancialControl, getResources } from "@/lib/supabase/queries";
 import { formatCurrency, formatDate } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Recursos",
+  description: "Acompanhamento de repasses, saldos, planejamento e controle financeiro."
+};
 
 export default async function ResourcesPage() {
   const [resources, financialControl] = await Promise.all([getResources(), getFinancialControl()]);

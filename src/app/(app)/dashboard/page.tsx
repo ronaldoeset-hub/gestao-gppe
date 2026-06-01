@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { ArrowRight, Bot, CalendarClock, Download, RefreshCw } from "lucide-react";
 import { EduConectaCards } from "@/components/educonecta-cards";
@@ -7,6 +8,11 @@ import { MockChart } from "@/components/mock-chart";
 import { modules } from "@/data/educonecta";
 import { getDashboardSummary } from "@/lib/supabase/queries/schools";
 import { isSupabaseEnabled } from "@/lib/supabase/config";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Resumo executivo de unidades, conselhos, recursos e prazos do GPPE."
+};
 
 function formatBRL(value: number) {
   return new Intl.NumberFormat("pt-BR", {

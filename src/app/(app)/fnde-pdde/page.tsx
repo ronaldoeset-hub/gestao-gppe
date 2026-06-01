@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { DataTable } from "@/components/data-table";
 import { EduConectaModulePage } from "@/components/educonecta-module-page";
 import { modules } from "@/data/educonecta";
 import { getFinancialControl } from "@/lib/supabase/queries";
 import { formatCurrency, formatDate } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "FNDE e PDDE",
+  description: "Consulta operacional de repasses PDDE e controle financeiro vinculado."
+};
 
 export default async function FndePddePage() {
   const financialControl = await getFinancialControl();

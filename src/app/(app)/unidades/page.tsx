@@ -1,9 +1,15 @@
+import type { Metadata } from "next";
 import { Building2, Plus } from "lucide-react";
 import { ExportButtons } from "@/components/export-buttons";
 import { ModuleHeader } from "@/components/module-header";
 import { SchoolUnitForm } from "@/components/school-unit-form";
 import { SchoolUnitsTable } from "@/components/school-units-table";
 import { getSchoolUnits } from "@/lib/supabase/queries";
+
+export const metadata: Metadata = {
+  title: "Unidades escolares",
+  description: "Cadastro e consulta das unidades escolares acompanhadas pelo GPPE."
+};
 
 export default async function SchoolUnitsPage() {
   const schoolUnits = await getSchoolUnits();

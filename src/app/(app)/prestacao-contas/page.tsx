@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ClipboardCheck, Plus } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { ExportButtons } from "@/components/export-buttons";
@@ -6,6 +7,11 @@ import { ModuleHeader } from "@/components/module-header";
 import { StatusBadge } from "@/components/status-badge";
 import { getAccountabilities, getFinancialControl } from "@/lib/supabase/queries";
 import { formatCurrency, formatDate } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Prestação de contas",
+  description: "Controle de prazos, envios e status de prestação de contas."
+};
 
 export default async function AccountabilityPage() {
   const [accountabilities, financialControl] = await Promise.all([getAccountabilities(), getFinancialControl()]);

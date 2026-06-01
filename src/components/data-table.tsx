@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/empty-state";
 
 type DataTableProps<T> = {
   columns: Array<{
@@ -8,9 +9,14 @@ type DataTableProps<T> = {
     className?: string;
   }>;
   rows: T[];
+  emptyDescription?: string;
 };
 
-export function DataTable<T>({ columns, rows }: DataTableProps<T>) {
+export function DataTable<T>({ columns, rows, emptyDescription = "A consulta nao retornou registros para exibicao." }: DataTableProps<T>) {
+  if (!rows.length) {
+    return <EmptyState description={emptyDescription} />;
+  }
+
   return (
     <div className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-soft">
       <div className="overflow-x-auto">

@@ -1,9 +1,15 @@
+import type { Metadata } from "next";
 import { CheckCircle2, FileArchive } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { DocumentUploader } from "@/components/document-uploader";
 import { ModuleHeader } from "@/components/module-header";
 import { getDocuments } from "@/lib/supabase/queries";
 import { formatDate } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Documentos",
+  description: "Upload, checklist e consulta de documentos vinculados às unidades e prestações."
+};
 
 const documentTypes = [
   "Edital de Convocacao",

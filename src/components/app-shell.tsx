@@ -89,6 +89,12 @@ export function AppShell({ children, role, fullName, pendingCount = 0 }: AppShel
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-950">
+      <a
+        href="#conteudo-principal"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-blue-900 focus:shadow-lg"
+      >
+        Pular para o conteudo principal
+      </a>
       {/* ── Header ── */}
       <header className="sticky top-0 z-40 border-b border-blue-950/20 bg-gradient-to-r from-blue-950 via-blue-800 to-emerald-700 text-white shadow-lg shadow-blue-950/20">
         <div className="flex min-h-20 items-center gap-4 px-4 lg:px-7">
@@ -215,6 +221,7 @@ export function AppShell({ children, role, fullName, pendingCount = 0 }: AppShel
                       <Link
                         key={item.href}
                         href={item.href}
+                        aria-current={active ? "page" : undefined}
                         onClick={() => setOpen(false)}
                         className={cn(
                           "flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition",
@@ -277,7 +284,7 @@ export function AppShell({ children, role, fullName, pendingCount = 0 }: AppShel
             </div>
           </div>
 
-          <main className="mx-auto max-w-[1540px] px-4 py-5 lg:px-7">{children}</main>
+          <main id="conteudo-principal" className="mx-auto max-w-[1540px] px-4 py-5 lg:px-7">{children}</main>
 
           <footer className="mt-8 bg-blue-950 px-6 py-8 text-white">
             <div className="mx-auto grid max-w-[1540px] gap-6 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
