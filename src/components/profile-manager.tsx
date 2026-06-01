@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useFormState, useFormStatus } from "react-dom";
 import { Save } from "lucide-react";
+import { updateProfileFromForm } from "@/lib/actions/profiles";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form-message";
 import { roleLabels } from "@/lib/data";
@@ -19,17 +21,32 @@ type ProfileManagerProps = {
 
 const roles: UserRole[] = ["admin_sme", "tecnico_gppe", "gestor_escolar", "funcionario_escola", "conselho_escolar"];
 
+const initialActionState = {
+  ok: false,
+  message: ""
+};
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button type="submit" disabled={pending}>
+      <Save className="h-4 w-4" aria-hidden="true" />
+      {pending ? "Salvando" : "Salvar perfil"}
+    </Button>
+  );
+}
+
 export function ProfileManager({ profiles }: ProfileManagerProps) {
+  const [state, formAction] = useFormState(updateProfileFromForm, initialActionState);
   const [selectedUser, setSelectedUser] = useState("");
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState<UserRole>("gestor_escolar");
   const [accessStatus, setAccessStatus] = useState<"pendente" | "aprovado" | "bloqueado">("aprovado");
   const [schoolUnitId, setSchoolUnitId] = useState("");
   const [phone, setPhone] = useState("");
-  const [status, setStatus] = useState("");
-  const [tone, setTone] = useState<"neutral" | "success" | "error">("neutral");
-  const [submitting, setSubmitting] = useState(false);
   const [schools, setSchools] = useState<SchoolOption[]>([]);
+  const tone = state.ok ? "success" : state.message ? "error" : "neutral";
 
   useEffect(() => {
     async function loadSchools() {
@@ -51,57 +68,17 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
     setRole(profile.role);
     setPhone(profile.phone);
     setAccessStatus(profile.accessStatus ?? "aprovado");
-    setSchoolUnitId("");
-  }
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!selectedUser) {
-      setStatus("Selecione um usuario para atualizar.");
-      setTone("error");
-      return;
-    }
-
-    if (fullName.trim().length < 3) {
-      setStatus("Informe um nome com pelo menos 3 caracteres.");
-      setTone("error");
-      return;
-    }
-
-    setStatus("Atualizando perfil...");
-    setTone("neutral");
-    setSubmitting(true);
-    const supabase = createClient();
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        full_name: fullName,
-        role,
-        access_status: accessStatus,
-        school_unit_id: schoolUnitId || null,
-        phone: phone || null
-      })
-      .eq("id", selectedUser);
-
-    if (error) {
-      setStatus(`Erro ao atualizar: ${error.message}`);
-      setTone("error");
-      setSubmitting(false);
-      return;
-    }
-
-    setStatus("Perfil atualizado com sucesso.");
-    setTone("success");
-    setSubmitting(false);
+    setSchoolUnitId(profile.schoolUnitId ?? "");
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
-      <h2 className="text-lg font-bold text-sme-ink">Atualizar usuário</h2>
+    <form action={formAction} className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
+      <h2 className="text-lg font-bold text-sme-ink">Atualizar usuario</h2>
       <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <label className="block text-sm font-semibold text-slate-700 xl:col-span-2">
-          Usuário
+          Usuario
           <select
+            name="user_id"
             value={selectedUser}
             onChange={(event) => handleSelectedUserChange(event.target.value)}
             required
@@ -118,15 +95,18 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
         <label className="block text-sm font-semibold text-slate-700 xl:col-span-2">
           Nome
           <input
+            name="full_name"
             value={fullName}
             onChange={(event) => setFullName(event.target.value)}
             required
+            minLength={3}
             className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow"
           />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
           Perfil
           <select
+            name="role"
             value={role}
             onChange={(event) => setRole(event.target.value as UserRole)}
             className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow"
@@ -141,6 +121,7 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
         <label className="block text-sm font-semibold text-slate-700">
           Acesso
           <select
+            name="access_status"
             value={accessStatus}
             onChange={(event) => setAccessStatus(event.target.value as "pendente" | "aprovado" | "bloqueado")}
             className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow"
@@ -153,11 +134,12 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
         <label className="block text-sm font-semibold text-slate-700 xl:col-span-2">
           Unidade vinculada
           <select
+            name="school_unit_id"
             value={schoolUnitId}
             onChange={(event) => setSchoolUnitId(event.target.value)}
             className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow"
           >
-            <option value="">Sem vínculo ou manter atual</option>
+            <option value="">Sem vinculo</option>
             {schools.map((school) => (
               <option key={school.id} value={school.id}>
                 {school.name}
@@ -168,6 +150,7 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
         <label className="block text-sm font-semibold text-slate-700">
           Telefone
           <input
+            name="phone"
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
             className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow"
@@ -176,11 +159,8 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
         </label>
       </div>
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <FormMessage tone={tone}>{status || "O login deve ser criado antes em Authentication > Users no Supabase."}</FormMessage>
-        <Button type="submit" disabled={submitting}>
-          <Save className="h-4 w-4" aria-hidden="true" />
-          {submitting ? "Salvando" : "Salvar perfil"}
-        </Button>
+        <FormMessage tone={tone}>{state.message || "O login deve ser criado antes em Authentication > Users no Supabase."}</FormMessage>
+        <SubmitButton />
       </div>
     </form>
   );

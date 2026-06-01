@@ -74,6 +74,7 @@ export type ProfileRecord = {
   fullName: string;
   role: UserRole;
   school: string;
+  schoolUnitId?: string;
   phone: string;
   createdAt: string;
   accessStatus?: "pendente" | "aprovado" | "bloqueado";

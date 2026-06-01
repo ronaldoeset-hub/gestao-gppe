@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { Save } from "lucide-react";
+import { createAccountability } from "@/lib/actions/accountabilities";
 import { createAlert } from "@/lib/actions/alerts";
 import { createCouncilFromForm } from "@/lib/actions/councils";
+import { createResourceTransfer } from "@/lib/actions/resources";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form-message";
@@ -47,7 +49,7 @@ function SchoolSelect({ allowEmpty = false }: { allowEmpty?: boolean }) {
       className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow"
       disabled={loading}
     >
-      {allowEmpty ? <option value="">Todas as unidades</option> : null}
+      {allowEmpty ? <option value="">Todas as unidades</option> : <option value="">Selecione</option>}
       {schools.map((school) => (
         <option key={school.id} value={school.id}>
           {school.name}
@@ -61,27 +63,21 @@ function SubmitRow({
   status,
   idleText,
   label,
-  ok = false,
-  pendingOverride = false
+  ok = false
 }: {
   status: string;
   idleText: string;
   label: string;
   ok?: boolean;
-  pendingOverride?: boolean;
 }) {
   const { pending } = useFormStatus();
-  const isPending = pending || pendingOverride;
 
   return (
     <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <FormMessage tone={ok ? "success" : status.startsWith("Erro") ? "error" : "neutral"}>{isPending ? "Salvando..." : status || idleText}</FormMessage>
-      <Button
-        type="submit"
-        disabled={isPending}
-      >
+      <FormMessage tone={ok ? "success" : status ? "error" : "neutral"}>{pending ? "Salvando..." : status || idleText}</FormMessage>
+      <Button type="submit" disabled={pending}>
         <Save className="h-4 w-4" aria-hidden="true" />
-        {isPending ? "Salvando" : label}
+        {pending ? "Salvando" : label}
       </Button>
     </div>
   );
@@ -98,7 +94,7 @@ export function CouncilForm() {
           <SchoolSelect />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
-          Início do mandato
+          Inicio do mandato
           <input name="mandate_start" type="date" required className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
@@ -121,69 +117,21 @@ export function CouncilForm() {
           Status
           <select name="status" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow">
             <option value="regular">Regular</option>
-            <option value="atencao">Atenção</option>
+            <option value="atencao">Atencao</option>
             <option value="pendente">Pendente</option>
           </select>
         </label>
       </div>
-      <SubmitRow status={state.message} ok={state.ok} idleText="Os dados serão gravados na tabela school_councils." label="Salvar conselho" />
+      <SubmitRow status={state.message} ok={state.ok} idleText="Os dados serao gravados por Server Action na tabela school_councils." label="Salvar conselho" />
     </form>
   );
 }
 
 export function ResourceForm() {
-  const [status, setStatus] = useState("");
-  const [ok, setOk] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    setStatus("Salvando recurso...");
-    setOk(false);
-    setSubmitting(true);
-    const formData = new FormData(form);
-    const amount = Number(formData.get("amount") ?? 0);
-    const balanceValue = formData.get("balance");
-    const balance = balanceValue === null || String(balanceValue) === "" ? amount : Number(balanceValue);
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-      setStatus("Informe um valor maior que zero.");
-      setSubmitting(false);
-      return;
-    }
-
-    if (!Number.isFinite(balance) || balance < 0) {
-      setStatus("Informe um saldo valido.");
-      setSubmitting(false);
-      return;
-    }
-
-    const supabase = createClient();
-    const { error } = await supabase.from("resource_transfers").insert({
-      school_unit_id: String(formData.get("school_unit_id")),
-      program: String(formData.get("program") ?? ""),
-      source: String(formData.get("source") ?? "") || null,
-      amount,
-      released_at: String(formData.get("released_at")),
-      balance,
-      status: String(formData.get("status") ?? "regular")
-    });
-
-    if (error) {
-      setStatus(`Erro ao salvar: ${error.message}`);
-      setSubmitting(false);
-      return;
-    }
-
-    form.reset();
-    setStatus("Recurso cadastrado com sucesso.");
-    setOk(true);
-    setSubmitting(false);
-  }
+  const [state, formAction] = useFormState(createResourceTransfer, initialActionState);
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
+    <form action={formAction} className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <label className="block text-sm font-semibold text-slate-700 xl:col-span-2">
           Unidade escolar
@@ -191,7 +139,7 @@ export function ResourceForm() {
         </label>
         <label className="block text-sm font-semibold text-slate-700">
           Programa
-          <input name="program" required placeholder="PDDE, Manutenção..." className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
+          <input name="program" required placeholder="PDDE, Manutencao..." className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
           Fonte
@@ -206,75 +154,36 @@ export function ResourceForm() {
           <input name="balance" type="number" min="0" step="0.01" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
-          Data de liberação
+          Data de liberacao
           <input name="released_at" type="date" required className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
           Status
           <select name="status" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow">
             <option value="regular">Regular</option>
-            <option value="atencao">Atenção</option>
+            <option value="atencao">Atencao</option>
             <option value="pendente">Pendente</option>
           </select>
         </label>
       </div>
-      <SubmitRow status={status} ok={ok} pendingOverride={submitting} idleText="Os dados serão gravados na tabela resource_transfers." label="Salvar recurso" />
+      <SubmitRow status={state.message} ok={state.ok} idleText="Os dados serao gravados por Server Action na tabela resource_transfers." label="Salvar recurso" />
     </form>
   );
 }
 
 export function AccountabilityForm() {
-  const [status, setStatus] = useState("");
-  const [ok, setOk] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    setStatus("Salvando prestação...");
-    setOk(false);
-    setSubmitting(true);
-    const formData = new FormData(form);
-    const submittedAt = String(formData.get("submitted_at") ?? "");
-
-    if (submittedAt && new Date(submittedAt) > new Date()) {
-      setStatus("A data de envio nao pode ser futura.");
-      setSubmitting(false);
-      return;
-    }
-
-    const supabase = createClient();
-    const { error } = await supabase.from("accountabilities").insert({
-      school_unit_id: String(formData.get("school_unit_id")),
-      reference_period: String(formData.get("reference_period") ?? ""),
-      due_date: String(formData.get("due_date")),
-      submitted_at: String(formData.get("submitted_at") ?? "") || null,
-      status: String(formData.get("status") ?? "pendente"),
-      technical_opinion: String(formData.get("technical_opinion") ?? "") || null
-    });
-
-    if (error) {
-      setStatus(`Erro ao salvar: ${error.message}`);
-      setSubmitting(false);
-      return;
-    }
-
-    form.reset();
-    setStatus("Prestação cadastrada com sucesso.");
-    setOk(true);
-    setSubmitting(false);
-  }
+  const [state, formAction] = useFormState(createAccountability, initialActionState);
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
+    <form action={formAction} className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <label className="block text-sm font-semibold text-slate-700 xl:col-span-2">
           Unidade escolar
           <SchoolSelect />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
-          Referência
-          <input name="reference_period" required placeholder="1º quadrimestre de 2026" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
+          Referencia
+          <input name="reference_period" required placeholder="1o quadrimestre de 2026" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
           Prazo
@@ -289,16 +198,16 @@ export function AccountabilityForm() {
           <select name="status" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow">
             <option value="pendente">Pendente</option>
             <option value="regular">Regular</option>
-            <option value="atencao">Atenção</option>
+            <option value="atencao">Atencao</option>
             <option value="vencido">Vencido</option>
           </select>
         </label>
         <label className="block text-sm font-semibold text-slate-700 xl:col-span-2">
-          Parecer técnico
+          Parecer tecnico
           <input name="technical_opinion" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
         </label>
       </div>
-      <SubmitRow status={status} ok={ok} pendingOverride={submitting} idleText="Os dados serão gravados na tabela accountabilities." label="Salvar prestação" />
+      <SubmitRow status={state.message} ok={state.ok} idleText="Os dados serao gravados por Server Action na tabela accountabilities." label="Salvar prestacao" />
     </form>
   );
 }
@@ -317,16 +226,16 @@ export function AlertForm() {
           Prioridade
           <select name="severity" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow">
             <option value="alta">Alta</option>
-            <option value="media">Média</option>
+            <option value="media">Media</option>
             <option value="baixa">Baixa</option>
           </select>
         </label>
         <label className="block text-sm font-semibold text-slate-700 xl:col-span-2">
-          Título
+          Titulo
           <input name="title" required className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
         </label>
         <label className="block text-sm font-semibold text-slate-700 xl:col-span-3">
-          Descrição
+          Descricao
           <input name="description" required className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
@@ -334,7 +243,7 @@ export function AlertForm() {
           <input name="due_date" type="date" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
         </label>
       </div>
-      <SubmitRow status={state.message} ok={state.ok} idleText="Os dados serão gravados na tabela alerts." label="Salvar alerta" />
+      <SubmitRow status={state.message} ok={state.ok} idleText="Os dados serao gravados por Server Action na tabela alerts." label="Salvar alerta" />
     </form>
   );
 }

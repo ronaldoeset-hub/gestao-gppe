@@ -3,6 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
+type FormActionState = {
+  ok: boolean;
+  message: string;
+};
+
+const allowedRoles = new Set(["admin_sme", "tecnico_gppe", "gestor_escolar", "funcionario_escola", "conselho_escolar"]);
+const allowedAccessStatuses = new Set(["pendente", "aprovado", "bloqueado"]);
+
+function text(formData: FormData, key: string) {
+  return String(formData.get(key) ?? "").trim();
+}
+
 async function tryAuditLog(
   supabase: Awaited<ReturnType<typeof createClient>>,
   entry: {
@@ -118,4 +130,53 @@ export async function assignSchoolUnit(userId: string, schoolUnitId: string) {
 
   revalidatePath("/administracao");
   return { success: true };
+}
+
+export async function updateProfileFromForm(_state: FormActionState, formData: FormData): Promise<FormActionState> {
+  const { supabase, user, role: currentRole } = await getSessionAndRole();
+  if (!user) return { ok: false, message: "Nao autenticado." };
+  if (currentRole !== "admin_sme") return { ok: false, message: "Sem permissao para atualizar perfis." };
+
+  const userId = text(formData, "user_id");
+  const fullName = text(formData, "full_name");
+  const role = text(formData, "role");
+  const accessStatus = text(formData, "access_status") || "aprovado";
+  const schoolUnitId = text(formData, "school_unit_id");
+  const phone = text(formData, "phone");
+
+  if (!userId) return { ok: false, message: "Selecione um usuario para atualizar." };
+  if (fullName.length < 3) return { ok: false, message: "Informe um nome com pelo menos 3 caracteres." };
+  if (!allowedRoles.has(role)) return { ok: false, message: "Perfil informado nao e valido." };
+  if (!allowedAccessStatuses.has(accessStatus)) return { ok: false, message: "Status de acesso informado nao e valido." };
+
+  const { data: target } = await supabase
+    .from("profiles")
+    .select("full_name,role,access_status,school_unit_id,phone")
+    .eq("id", userId)
+    .single();
+
+  const payload = {
+    full_name: fullName,
+    role,
+    access_status: accessStatus,
+    school_unit_id: schoolUnitId || null,
+    phone: phone || null
+  };
+
+  const { error } = await supabase.from("profiles").update(payload).eq("id", userId);
+  if (error) return { ok: false, message: `Erro ao atualizar: ${error.message}` };
+
+  await tryAuditLog(supabase, {
+    user_id: user.id,
+    action: "update_profile",
+    entity_type: "profiles",
+    entity_id: userId,
+    old_data: target ?? undefined,
+    new_data: payload
+  });
+
+  revalidatePath("/administracao");
+  revalidatePath("/perfis");
+
+  return { ok: true, message: "Perfil atualizado com sucesso." };
 }
