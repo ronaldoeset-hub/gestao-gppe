@@ -1,5 +1,5 @@
 node_modules
-PROMPT_*.md
+PUBLICAR_GITHUB_GESTAO_GPPE
 .next
 out
 dist
@@ -10,3 +10,5 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.tsbuildinfo
+
+.vercel

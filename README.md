@@ -60,10 +60,20 @@ http://localhost:3000
 Para login com Supabase em producao:
 
 ```bash
+NEXT_PUBLIC_GPPE_DATA_MODE=real
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_DB_URL=
 NEXT_PUBLIC_APP_URL=https://gestao-gppe.vercel.app
 ```
+
+Para aplicar migrations e policies automaticamente no Supabase, defina `SUPABASE_DB_URL` com a URL PostgreSQL administrativa do projeto e rode:
+
+```bash
+npm run supabase:apply
+```
+
+Veja tambem `docs/aplicacao-automatica-supabase.md`.
 
 ## Publicacao
 

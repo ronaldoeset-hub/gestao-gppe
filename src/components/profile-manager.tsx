@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Save } from "lucide-react";
 import { roleLabels } from "@/lib/data";
 import { createClient } from "@/lib/supabase/client";
@@ -19,7 +18,6 @@ type ProfileManagerProps = {
 const roles: UserRole[] = ["admin_sme", "tecnico_gppe", "gestor_escolar", "funcionario_escola", "conselho_escolar"];
 
 export function ProfileManager({ profiles }: ProfileManagerProps) {
-  const router = useRouter();
   const [selectedUser, setSelectedUser] = useState("");
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState<UserRole>("gestor_escolar");
@@ -39,16 +37,18 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
     loadSchools();
   }, []);
 
-  useEffect(() => {
-    const profile = profiles.find((item) => item.id === selectedUser);
+  function handleSelectedUserChange(userId: string) {
+    setSelectedUser(userId);
+
+    const profile = profiles.find((item) => item.id === userId);
     if (!profile) return;
 
     setFullName(profile.fullName);
     setRole(profile.role);
     setPhone(profile.phone);
     setAccessStatus(profile.accessStatus ?? "aprovado");
-    setSchoolUnitId(profile.schoolUnitId ?? "");
-  }, [profiles, selectedUser]);
+    setSchoolUnitId("");
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -68,9 +68,6 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
       .eq("id", selectedUser);
 
     setStatus(error ? `Erro ao atualizar: ${error.message}` : "Perfil atualizado com sucesso.");
-    if (!error) {
-      router.refresh();
-    }
   }
 
   return (
@@ -81,7 +78,7 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
           Usuário
           <select
             value={selectedUser}
-            onChange={(event) => setSelectedUser(event.target.value)}
+            onChange={(event) => handleSelectedUserChange(event.target.value)}
             required
             className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow"
           >
@@ -135,7 +132,7 @@ export function ProfileManager({ profiles }: ProfileManagerProps) {
             onChange={(event) => setSchoolUnitId(event.target.value)}
             className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow"
           >
-            <option value="">Sem vinculo</option>
+            <option value="">Sem vínculo ou manter atual</option>
             {schools.map((school) => (
               <option key={school.id} value={school.id}>
                 {school.name}

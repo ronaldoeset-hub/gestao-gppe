@@ -1,0 +1,2 @@
+unidade_nome,programa_codigo,periodo_ano,tipo_recurso,item,fornecedor_nome,tipo_movimento,numero_documento,data_emissao,data_pagamento,valor,forma_pagamento,status,observacao
+Escola Municipal Jardim das Oliveiras,PDDE-BASICO,2026,custeio,Pistola,Fornecedor Exemplo Materiais,compra,NF-0001,2026-04-10,2026-04-12,520.00,pix,confirmado,Movimento demonstrativo

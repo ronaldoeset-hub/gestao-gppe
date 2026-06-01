@@ -50,6 +50,7 @@ alter table public.council_members enable row level security;
 alter table public.council_required_documents enable row level security;
 alter table public.council_regularities enable row level security;
 
+drop policy if exists "council_members_select_by_role" on public.council_members;
 create policy "council_members_select_by_role" on public.council_members
 for select using (
   public.current_role() in ('admin_sme', 'tecnico_gppe')
@@ -61,10 +62,12 @@ for select using (
   )
 );
 
+drop policy if exists "council_members_staff_write" on public.council_members;
 create policy "council_members_staff_write" on public.council_members
 for all using (public.current_role() in ('admin_sme', 'tecnico_gppe'))
 with check (public.current_role() in ('admin_sme', 'tecnico_gppe'));
 
+drop policy if exists "council_required_documents_select_by_role" on public.council_required_documents;
 create policy "council_required_documents_select_by_role" on public.council_required_documents
 for select using (
   public.current_role() in ('admin_sme', 'tecnico_gppe')
@@ -76,10 +79,12 @@ for select using (
   )
 );
 
+drop policy if exists "council_required_documents_staff_write" on public.council_required_documents;
 create policy "council_required_documents_staff_write" on public.council_required_documents
 for all using (public.current_role() in ('admin_sme', 'tecnico_gppe'))
 with check (public.current_role() in ('admin_sme', 'tecnico_gppe'));
 
+drop policy if exists "council_regularities_select_by_role" on public.council_regularities;
 create policy "council_regularities_select_by_role" on public.council_regularities
 for select using (
   public.current_role() in ('admin_sme', 'tecnico_gppe')
@@ -91,6 +96,7 @@ for select using (
   )
 );
 
+drop policy if exists "council_regularities_staff_write" on public.council_regularities;
 create policy "council_regularities_staff_write" on public.council_regularities
 for all using (public.current_role() in ('admin_sme', 'tecnico_gppe'))
 with check (public.current_role() in ('admin_sme', 'tecnico_gppe'));

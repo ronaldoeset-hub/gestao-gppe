@@ -1,0 +1,6 @@
+unidade_nome,programa_codigo,periodo_ano,tipo_recurso,item,categoria,quantidade,unidade_medida,valor_unitario,valor_total,prioridade,status,observacao
+Escola Municipal Jardim das Oliveiras,PDDE-BASICO,2026,custeio,Pistola,Material,10,UND,52.00,520.00,media,planejado,Extraido do arquivo PLANEJAMENTO_CORRIGIDO.xlsx
+Escola Municipal Jardim das Oliveiras,PDDE-BASICO,2026,custeio,Resma,Material,3,CX,299.00,897.00,media,planejado,Extraido do arquivo PLANEJAMENTO_CORRIGIDO.xlsx
+Escola Municipal Jardim das Oliveiras,PDDE-BASICO,2026,custeio,Folha A4,Material,4,FLS,158.00,632.00,media,planejado,Extraido do arquivo PLANEJAMENTO_CORRIGIDO.xlsx
+Escola Municipal Jardim das Oliveiras,PDDE-BASICO,2026,capital,TV,Equipamento,8,CX,1988.00,15904.00,alta,planejado,Extraido do arquivo PLANEJAMENTO_CORRIGIDO.xlsx
+Escola Municipal Jardim das Oliveiras,PDDE-BASICO,2026,capital,Som,Equipamento,2,UND,1999.00,3998.00,alta,planejado,Extraido do arquivo PLANEJAMENTO_CORRIGIDO.xlsx

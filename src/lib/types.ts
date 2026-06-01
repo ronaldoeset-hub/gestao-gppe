@@ -70,131 +70,94 @@ export type ProfileRecord = {
   fullName: string;
   role: UserRole;
   school: string;
-  schoolUnitId?: string | null;
   phone: string;
   createdAt: string;
-  accessRequestedAt?: string | null;
   accessStatus?: "pendente" | "aprovado" | "bloqueado";
 };
 
-export type FndeLink = {
+export type FinancialAllocation = {
   id: string;
-  title: string;
-  url: string;
-  category: string;
-  description: string;
+  school: string;
+  program: string;
+  period: string;
+  resourceType: "Custeio" | "Capital" | "Outros";
+  plannedAmount: number;
+  receivedAmount: number;
+  releasedAt?: string;
+  currentBalance: number;
+  status: Status | "encerrado";
+  notes?: string;
 };
 
-export type SupportTicket = {
+export type FinancialPlanItem = {
+  id: string;
+  school: string;
+  program: string;
+  itemName: string;
+  category?: string;
+  quantity: number;
+  unitLabel?: string;
+  unitPrice: number;
+  plannedTotal: number;
+  priority?: string;
+  status: "planejado" | "aprovado" | "comprado" | "cancelado";
+  observation?: string;
+};
+
+export type FinancialMovement = {
+  id: string;
+  school: string;
+  program: string;
+  supplier?: string;
+  type: "compra" | "pagamento" | "devolucao" | "ajuste" | "cancelamento";
+  documentNumber?: string;
+  issuedAt?: string;
+  paidAt?: string;
+  amount: number;
+  paymentMethod?: string;
+  status: string;
+  description?: string;
+};
+
+export type FinancialDocument = {
+  id: string;
+  school: string;
+  title: string;
+  category: string;
+  documentNumber?: string;
+  storagePath?: string;
+  documentDate?: string;
+  competence?: string;
+};
+
+export type FinancialAccountabilityReport = {
+  id: string;
+  school: string;
+  program: string;
+  reference: string;
+  dueDate: string;
+  submittedAt?: string;
+  status: "pendente" | "em_analise" | "aprovado" | "reprovado" | "vencido";
+  plannedAmount: number;
+  executedAmount: number;
+  balance: number;
+};
+
+export type FinancialAlert = {
   id: string;
   school: string;
   title: string;
   description: string;
-  priority: "baixa" | "media" | "alta" | "critica";
-  status: "aberto" | "em_atendimento" | "respondido" | "resolvido" | "cancelado";
-  createdAt: string;
+  severity: Alert["severity"];
+  dueDate?: string;
+  status: string;
 };
 
-export type PddeProgram = {
-  id: string;
-  groupName: string;
-  programName: string;
-  sortOrder: number;
-};
-
-export type PddeBalance = {
-  id?: string;
-  schoolUnitId: string;
-  programId: string;
-  exerciseYear: number;
-  saldoAnteriorC: number;
-  saldoAnteriorK: number;
-  valorCreditadoC: number;
-  valorCreditadoK: number;
-  rendimentoC: number;
-  rendimentoK: number;
-  valorGastoC: number;
-  valorGastoK: number;
-};
-
-export type Exercicio = {
-  id: string;
-  ano: number;
-  status: "aberto" | "encerrado";
-};
-
-export type FonteRecurso = {
-  id: string;
-  nome: string;
-  ativo: boolean;
-};
-
-export type GestaoPrograma = {
-  id: string;
-  nome: string;
-  descricao?: string;
-  ativo: boolean;
-  createdAt: string;
-};
-
-export type FinanceiroUnidade = {
-  id?: string;
-  unidadeId: string;
-  programaId: string;
-  exercicio: number;
-  saldoAnteriorCusteio: number;
-  saldoAnteriorCapital: number;
-  creditadoCusteio: number;
-  creditadoCapital: number;
-  rendimentoCusteio: number;
-  rendimentoCapital: number;
-  despesaCusteio: number;
-  despesaCapital: number;
-  fonteRecursoId?: string;
-  situacaoPrograma?: string;
-  tipoPrograma?: string;
-  observacaoTecnica?: string;
-  createdAt?: string;
-  updatedAt?: string;
-};
-
-export type FinanceiroCalculado = {
-  totalCusteio: number;
-  totalCapital: number;
-  saldoFinalCusteio: number;
-  saldoFinalCapital: number;
-  saldoGeral: number;
-};
-
-export type FinanceiroBalance = {
-  id?: string;
-  schoolUnitId: string;
-  programaCodigo: string;
-  exerciseYear: number;
-  saldoAnteriorC: number;
-  saldoAnteriorK: number;
-  valorCreditadoC: number;
-  valorCreditadoK: number;
-  rendimentoC: number;
-  rendimentoK: number;
-  valorGastoC: number;
-  valorGastoK: number;
-  updatedAt?: string;
-};
-
-export type EducationalResourceStatus = "publico" | "rascunho" | "arquivado";
-
-export type EducationalResource = {
-  id: string;
-  title: string;
-  category: string;
-  stage?: string;
-  modality?: string;
-  type: string;
-  description?: string;
-  tags: string[];
-  filePath?: string;
-  externalUrl?: string;
-  status: EducationalResourceStatus;
-  createdAt: string;
+export type FinancialControl = {
+  allocations: FinancialAllocation[];
+  planItems: FinancialPlanItem[];
+  movements: FinancialMovement[];
+  documents: FinancialDocument[];
+  reports: FinancialAccountabilityReport[];
+  alerts: FinancialAlert[];
 };

@@ -1,4 +1,4 @@
-import type { Accountability, Alert, Council, ResourceTransfer, SchoolUnit, UserRole } from "@/lib/types";
+import type { Accountability, Alert, Council, FinancialControl, ResourceTransfer, SchoolUnit, UserRole } from "@/lib/types";
 
 export const roleLabels: Record<UserRole, string> = {
   admin_sme: "Administrador SME",
@@ -220,3 +220,116 @@ export const alerts: Alert[] = [
     dueDate: "2026-05-27"
   }
 ];
+
+export const financialControlMock: FinancialControl = {
+  allocations: [
+    {
+      id: "ALOC-2026-001",
+      school: "Escola Municipal Jardim das Oliveiras",
+      program: "PDDE Basico",
+      period: "Exercicio 2026",
+      resourceType: "Custeio",
+      plannedAmount: 2049,
+      receivedAmount: 2049,
+      releasedAt: "2026-05-23",
+      currentBalance: 857,
+      status: "atencao",
+      notes: "Baseada na planilha de controle de recursos da unidade."
+    },
+    {
+      id: "ALOC-2026-002",
+      school: "Escola Municipal Jardim das Oliveiras",
+      program: "PDDE Basico",
+      period: "Exercicio 2026",
+      resourceType: "Capital",
+      plannedAmount: 19902,
+      receivedAmount: 19902,
+      releasedAt: "2026-05-23",
+      currentBalance: 12900,
+      status: "regular",
+      notes: "Itens de capital aguardando documentos comprobatorios."
+    }
+  ],
+  planItems: [
+    {
+      id: "ITEM-001",
+      school: "Escola Municipal Jardim das Oliveiras",
+      program: "PDDE Basico",
+      itemName: "Material de expediente",
+      category: "Custeio",
+      quantity: 1,
+      unitLabel: "lote",
+      unitPrice: 1200,
+      plannedTotal: 1200,
+      priority: "Alta",
+      status: "aprovado",
+      observation: "Item importado do modelo de alimentacao."
+    },
+    {
+      id: "ITEM-002",
+      school: "Escola Municipal Jardim das Oliveiras",
+      program: "PDDE Basico",
+      itemName: "Computadores administrativos",
+      category: "Capital",
+      quantity: 3,
+      unitLabel: "un",
+      unitPrice: 4300,
+      plannedTotal: 12900,
+      priority: "Media",
+      status: "planejado",
+      observation: "Compra depende de cotacao e aprovacao."
+    }
+  ],
+  movements: [
+    {
+      id: "MOV-001",
+      school: "Escola Municipal Jardim das Oliveiras",
+      program: "PDDE Basico",
+      supplier: "Fornecedor Demonstrativo",
+      type: "pagamento",
+      documentNumber: "NF-2026-001",
+      issuedAt: "2026-05-24",
+      paidAt: "2026-05-27",
+      amount: 1192,
+      paymentMethod: "Transferencia",
+      status: "pago",
+      description: "Compra parcial de material de expediente."
+    }
+  ],
+  documents: [
+    {
+      id: "DOC-FIN-001",
+      school: "Escola Municipal Jardim das Oliveiras",
+      title: "Nota fiscal material de expediente",
+      category: "Nota fiscal",
+      documentNumber: "NF-2026-001",
+      storagePath: "jardim-oliveiras/nota-fiscal-material.pdf",
+      documentDate: "2026-05-24",
+      competence: "2026-05"
+    }
+  ],
+  reports: [
+    {
+      id: "PC-FIN-001",
+      school: "Escola Municipal Jardim das Oliveiras",
+      program: "PDDE Basico",
+      reference: "Exercicio 2026",
+      dueDate: "2026-12-31",
+      status: "pendente",
+      plannedAmount: 21951,
+      executedAmount: 1192,
+      balance: 20759
+    }
+  ],
+  alerts: [
+    {
+      id: "ALT-FIN-001",
+      school: "Escola Municipal Jardim das Oliveiras",
+      title: "Documento comprobatorio pendente",
+      description: "Itens de capital planejados ainda nao possuem cotacao ou documento vinculado.",
+      severity: "media",
+      dueDate: "2026-06-30",
+      status: "aberto"
+    }
+  ]
+};

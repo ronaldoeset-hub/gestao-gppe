@@ -9,18 +9,29 @@ type ExportButtonsProps = {
 
 export function ExportButtons({ filename, rows }: ExportButtonsProps) {
   async function exportExcel() {
-    const XLSX = await import("xlsx");
-    const sheet = XLSX.utils.json_to_sheet(rows);
-    const book = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(book, sheet, "Relatório");
-    XLSX.writeFile(book, `${filename}.xlsx`);
+    const headers = Object.keys(rows[0] ?? {});
+    const escapeCell = (value: string | number | undefined) => {
+      const text = String(value ?? "");
+      return `"${text.replace(/"/g, '""')}"`;
+    };
+    const csv = [
+      headers.map(escapeCell).join(";"),
+      ...rows.map((row) => headers.map((header) => escapeCell(row[header])).join(";"))
+    ].join("\r\n");
+    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${filename}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   async function exportPdf() {
     const { jsPDF } = await import("jspdf");
     const doc = new jsPDF();
     doc.setFontSize(14);
-    doc.text("Gestão de Recursos e Conselhos - GPPE", 14, 18);
+    doc.text("Gestao de Recursos e Conselhos - GPPE", 14, 18);
     doc.setFontSize(10);
     rows.slice(0, 32).forEach((row, index) => {
       doc.text(Object.values(row).join(" | "), 14, 30 + index * 7);
@@ -36,7 +47,7 @@ export function ExportButtons({ filename, rows }: ExportButtonsProps) {
         className="inline-flex h-10 items-center gap-2 rounded-md bg-sme-blue px-3 text-sm font-semibold text-white transition hover:bg-sme-navy focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2"
       >
         <FileSpreadsheet className="h-4 w-4" aria-hidden="true" />
-        Excel
+        CSV
       </button>
       <button
         type="button"

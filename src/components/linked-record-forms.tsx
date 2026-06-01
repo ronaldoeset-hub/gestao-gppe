@@ -9,12 +9,6 @@ type SchoolOption = {
   name: string;
 };
 
-type ProgramOption = {
-  id: string;
-  name: string;
-  acronym: string;
-};
-
 function useSchoolOptions() {
   const [schools, setSchools] = useState<SchoolOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,24 +27,6 @@ function useSchoolOptions() {
   return { schools, loading };
 }
 
-function useProgramOptions() {
-  const [programs, setPrograms] = useState<ProgramOption[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadPrograms() {
-      const supabase = createClient();
-      const { data } = await supabase.from("resource_programs").select("id,name,acronym").order("acronym", { ascending: true });
-      setPrograms(data ?? []);
-      setLoading(false);
-    }
-
-    loadPrograms();
-  }, []);
-
-  return { programs, loading };
-}
-
 function SchoolSelect({ allowEmpty = false }: { allowEmpty?: boolean }) {
   const { schools, loading } = useSchoolOptions();
 
@@ -65,26 +41,6 @@ function SchoolSelect({ allowEmpty = false }: { allowEmpty?: boolean }) {
       {schools.map((school) => (
         <option key={school.id} value={school.id}>
           {school.name}
-        </option>
-      ))}
-    </select>
-  );
-}
-
-function ProgramSelect() {
-  const { programs, loading } = useProgramOptions();
-
-  return (
-    <select
-      name="program_id"
-      required
-      className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow"
-      disabled={loading}
-    >
-      <option value="">Selecione</option>
-      {programs.map((program) => (
-        <option key={program.id} value={program.id}>
-          {program.acronym} - {program.name}
         </option>
       ))}
     </select>
@@ -243,92 +199,6 @@ export function ResourceForm() {
   );
 }
 
-export function FinancialMovementForm() {
-  const [status, setStatus] = useState("");
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setStatus("Registrando movimentacao financeira...");
-    const formData = new FormData(event.currentTarget);
-    const supabase = createClient();
-
-    const movement = {
-      school_unit_id: String(formData.get("school_unit_id")),
-      program_id: String(formData.get("program_id")),
-      movement_type: String(formData.get("movement_type") ?? "receita"),
-      amount: Number(formData.get("amount") ?? 0),
-      movement_date: String(formData.get("movement_date")),
-      description: String(formData.get("description") ?? ""),
-      document_number: String(formData.get("document_number") ?? "") || null,
-      supplier_name: String(formData.get("supplier_name") ?? "") || null,
-      expense_category: String(formData.get("expense_category") ?? "outros")
-    };
-
-    const { error } = await supabase.from("financial_movements").insert(movement);
-
-    if (error) {
-      setStatus(`Nao foi possivel salvar em financial_movements: ${error.message}. Use a migration operacional no Supabase antes de usar este formulario.`);
-      return;
-    }
-
-    event.currentTarget.reset();
-    setStatus("Movimentacao registrada com sucesso.");
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <label className="block text-sm font-semibold text-slate-700 xl:col-span-2">
-          Unidade escolar
-          <SchoolSelect />
-        </label>
-        <label className="block text-sm font-semibold text-slate-700">
-          Programa
-          <ProgramSelect />
-        </label>
-        <label className="block text-sm font-semibold text-slate-700">
-          Tipo
-          <select name="movement_type" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow">
-            <option value="receita">Receita</option>
-            <option value="despesa">Despesa</option>
-            <option value="estorno">Estorno</option>
-            <option value="ajuste">Ajuste</option>
-          </select>
-        </label>
-        <label className="block text-sm font-semibold text-slate-700">
-          Valor
-          <input name="amount" type="number" min="0" step="0.01" required className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
-        </label>
-        <label className="block text-sm font-semibold text-slate-700">
-          Data
-          <input name="movement_date" type="date" required className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
-        </label>
-        <label className="block text-sm font-semibold text-slate-700">
-          Categoria
-          <select name="expense_category" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow">
-            <option value="custeio">Custeio</option>
-            <option value="capital">Capital</option>
-            <option value="outros">Outros</option>
-          </select>
-        </label>
-        <label className="block text-sm font-semibold text-slate-700">
-          Documento/protocolo
-          <input name="document_number" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
-        </label>
-        <label className="block text-sm font-semibold text-slate-700">
-          Fornecedor
-          <input name="supplier_name" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
-        </label>
-        <label className="block text-sm font-semibold text-slate-700 xl:col-span-4">
-          Descricao
-          <input name="description" required className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
-        </label>
-      </div>
-      <SubmitRow status={status} idleText="Registra receitas, despesas, estornos e ajustes na tabela financial_movements." label="Registrar movimentacao" />
-    </form>
-  );
-}
-
 export function AccountabilityForm() {
   const [status, setStatus] = useState("");
 
@@ -448,61 +318,6 @@ export function AlertForm() {
         </label>
       </div>
       <SubmitRow status={status} idleText="Os dados serão gravados na tabela alerts." label="Salvar alerta" />
-    </form>
-  );
-}
-
-export function SupportTicketForm() {
-  const [status, setStatus] = useState("");
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setStatus("Abrindo chamado...");
-    const formData = new FormData(event.currentTarget);
-    const supabase = createClient();
-    const { error } = await supabase.from("support_tickets").insert({
-      school_unit_id: String(formData.get("school_unit_id") ?? "") || null,
-      title: String(formData.get("title") ?? ""),
-      description: String(formData.get("description") ?? ""),
-      priority: String(formData.get("priority") ?? "media"),
-      status: "aberto"
-    });
-
-    if (error) {
-      setStatus(`Nao foi possivel abrir chamado: ${error.message}. Verifique se a migration operacional foi aplicada.`);
-      return;
-    }
-
-    event.currentTarget.reset();
-    setStatus("Chamado aberto com sucesso.");
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <label className="block text-sm font-semibold text-slate-700 xl:col-span-2">
-          Unidade
-          <SchoolSelect />
-        </label>
-        <label className="block text-sm font-semibold text-slate-700">
-          Prioridade
-          <select name="priority" className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow">
-            <option value="baixa">Baixa</option>
-            <option value="media">Media</option>
-            <option value="alta">Alta</option>
-            <option value="critica">Critica</option>
-          </select>
-        </label>
-        <label className="block text-sm font-semibold text-slate-700 xl:col-span-4">
-          Assunto
-          <input name="title" required className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
-        </label>
-        <label className="block text-sm font-semibold text-slate-700 xl:col-span-4">
-          Descricao
-          <input name="description" required className="mt-2 h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:ring-2 focus:ring-sme-yellow" />
-        </label>
-      </div>
-      <SubmitRow status={status} idleText="O chamado ficara vinculado a unidade selecionada." label="Abrir chamado" />
     </form>
   );
 }

@@ -4,20 +4,11 @@ import { ExportButtons } from "@/components/export-buttons";
 import { AccountabilityForm } from "@/components/linked-record-forms";
 import { ModuleHeader } from "@/components/module-header";
 import { StatusBadge } from "@/components/status-badge";
-import { getAccountabilities } from "@/lib/supabase/queries";
-import { formatDate } from "@/lib/utils";
+import { getAccountabilities, getFinancialControl } from "@/lib/supabase/queries";
+import { formatCurrency, formatDate } from "@/lib/utils";
 
 export default async function AccountabilityPage() {
-  const accountabilities = (await getAccountabilities()).sort((a, b) => {
-    const aPending = a.status === "pendente" || a.status === "vencido" || !a.submittedAt;
-    const bPending = b.status === "pendente" || b.status === "vencido" || !b.submittedAt;
-
-    if (aPending !== bPending) {
-      return aPending ? -1 : 1;
-    }
-
-    return a.school.localeCompare(b.school, "pt-BR");
-  });
+  const [accountabilities, financialControl] = await Promise.all([getAccountabilities(), getFinancialControl()]);
 
   return (
     <div className="space-y-6">
@@ -34,6 +25,30 @@ export default async function AccountabilityPage() {
       />
       <section id="nova-prestacao">
         <AccountabilityForm />
+      </section>
+      <section className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
+        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Controle financeiro</p>
+            <h2 className="text-lg font-bold text-sme-ink">Prestacoes vinculadas aos repasses</h2>
+          </div>
+          <a href="/recursos#prestacao-contas" className="text-sm font-bold text-sme-blue hover:text-sme-navy">
+            Ver painel financeiro
+          </a>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {financialControl.reports.slice(0, 3).map((report) => (
+            <div key={report.id} className="rounded-md border border-slate-200 p-4">
+              <p className="truncate text-sm font-bold text-sme-ink">{report.school}</p>
+              <p className="mt-1 text-sm text-slate-600">{report.reference}</p>
+              <div className="mt-3 flex items-center justify-between gap-3 text-sm">
+                <span className="font-semibold text-slate-500">Executado</span>
+                <span className="font-black text-sme-blue">{formatCurrency(report.executedAmount)}</span>
+              </div>
+              <p className="mt-2 text-xs font-bold uppercase text-slate-500">Prazo: {formatDate(report.dueDate)}</p>
+            </div>
+          ))}
+        </div>
       </section>
       <ExportButtons
         filename="prestacao-contas-gppe"

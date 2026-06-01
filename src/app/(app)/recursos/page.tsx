@@ -1,15 +1,16 @@
 import { Landmark, Plus } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { ExportButtons } from "@/components/export-buttons";
-import { FinancialMovementForm, ResourceForm } from "@/components/linked-record-forms";
+import { FinancialControlPanel } from "@/components/financial-control-panel";
+import { ResourceForm } from "@/components/linked-record-forms";
 import { ModuleHeader } from "@/components/module-header";
 import { ResourcesOverview } from "@/components/resources-overview";
 import { StatusBadge } from "@/components/status-badge";
-import { getResources } from "@/lib/supabase/queries";
+import { getFinancialControl, getResources } from "@/lib/supabase/queries";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 export default async function ResourcesPage() {
-  const resources = await getResources();
+  const [resources, financialControl] = await Promise.all([getResources(), getFinancialControl()]);
 
   return (
     <div className="space-y-6">
@@ -24,13 +25,24 @@ export default async function ResourcesPage() {
           </a>
         }
       />
+      <nav className="flex gap-2 overflow-x-auto rounded-md border border-slate-200 bg-white p-2 shadow-soft">
+        {[
+          ["#planejamento", "Planejamento"],
+          ["#repasses", "Repasses"],
+          ["#movimentacoes", "Movimentacoes"],
+          ["#documentos-comprobatorios", "Documentos"],
+          ["#prestacao-contas", "Prestacao"],
+          ["#alertas-vencimentos", "Alertas"]
+        ].map(([href, label]) => (
+          <a key={href} href={href} className="whitespace-nowrap rounded-md px-3 py-2 text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-sme-blue">
+            {label}
+          </a>
+        ))}
+      </nav>
       <section id="novo-recurso">
         <ResourceForm />
       </section>
-      <section className="space-y-3">
-        <h2 className="text-lg font-bold text-sme-ink">Movimentacao financeira por programa</h2>
-        <FinancialMovementForm />
-      </section>
+      <FinancialControlPanel control={financialControl} />
       <ResourcesOverview resources={resources} />
       <ExportButtons
         filename="recursos-gppe"

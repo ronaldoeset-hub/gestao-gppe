@@ -7,24 +7,112 @@ import {
   Building2,
   CalendarClock,
   ClipboardCheck,
+  Database,
   FileArchive,
-  FileCheck2,
+  FileSearch,
   FileText,
+  GraduationCap,
+  LayoutDashboard,
   Landmark,
-  LifeBuoy,
   Megaphone,
   MessageSquare,
   Network,
   PieChart,
+  Receipt,
   Settings,
   Share2,
   ShieldCheck,
-  TableProperties,
-  WalletCards,
   UsersRound
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import type { UserRole } from "@/lib/types";
 
+// ─── Menu agrupado por perfil ────────────────────────────────────────────────
+
+export type MenuBadge = "pendingAccess";
+
+export type MenuItem = {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  roles: UserRole[];
+  badge?: MenuBadge;
+};
+
+export type MenuGroup = {
+  label: string;
+  items: MenuItem[];
+};
+
+const ALL: UserRole[] = ["admin_sme", "tecnico_gppe", "gestor_escolar", "funcionario_escola", "conselho_escolar"];
+const SME_TEC_GES_FUN: UserRole[] = ["admin_sme", "tecnico_gppe", "gestor_escolar", "funcionario_escola"];
+const SME_TEC_GES: UserRole[] = ["admin_sme", "tecnico_gppe", "gestor_escolar"];
+const SME_TEC_GES_CON: UserRole[] = ["admin_sme", "tecnico_gppe", "gestor_escolar", "conselho_escolar"];
+const SME_TEC: UserRole[] = ["admin_sme", "tecnico_gppe"];
+const SME_ONLY: UserRole[] = ["admin_sme"];
+
+export const menuGroups: MenuGroup[] = [
+  {
+    label: "Visão Geral",
+    items: [
+      { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ALL }
+    ]
+  },
+  {
+    label: "Gestão Escolar",
+    items: [
+      { href: "/escolas",          label: "Unidades Escolares",   icon: Building2,     roles: SME_TEC_GES_FUN },
+      { href: "/gestao-escolar",   label: "Gestão Escolar",       icon: GraduationCap, roles: SME_TEC_GES_FUN },
+      { href: "/alimentar-dados",  label: "Alimentar Dados",      icon: Database,      roles: SME_TEC_GES_FUN },
+      { href: "/diagnostico-dados",label: "Diagnóstico de Dados", icon: FileSearch,    roles: SME_TEC }
+    ]
+  },
+  {
+    label: "Conselhos e Documentos",
+    items: [
+      { href: "/conselhos",      label: "Conselhos",      icon: UsersRound, roles: SME_TEC_GES_CON },
+      { href: "/documentos",     label: "Documentos",     icon: FileText,   roles: ALL },
+      { href: "/biblioteca-sei", label: "Biblioteca SEI", icon: BookOpen,   roles: SME_TEC_GES_FUN },
+      { href: "/arquivos",       label: "Arquivos",       icon: Archive,    roles: ALL }
+    ]
+  },
+  {
+    label: "Recursos e Prestação de Contas",
+    items: [
+      { href: "/recursos",         label: "Recursos",            icon: Landmark,     roles: SME_TEC_GES_CON },
+      { href: "/fnde-pdde",        label: "FNDE/PDDE",           icon: ClipboardCheck, roles: SME_TEC_GES_CON },
+      { href: "/prestacao-contas", label: "Prestação de Contas", icon: Receipt,      roles: SME_TEC_GES_CON },
+      { href: "/central-prazos",   label: "Central de Prazos",   icon: CalendarClock, roles: SME_TEC_GES_FUN }
+    ]
+  },
+  {
+    label: "Comunicação e Suporte",
+    items: [
+      { href: "/mural",          label: "Mural",          icon: Megaphone,     roles: ALL },
+      { href: "/alertas",        label: "Alertas",        icon: Bell,          roles: SME_TEC_GES },
+      { href: "/feedback",       label: "Feedback",       icon: MessageSquare, roles: ALL },
+      { href: "/ia-educacional", label: "IA Educacional", icon: Bot,           roles: SME_TEC_GES_FUN },
+      { href: "/parceiros",      label: "Parceiros",      icon: Network,       roles: ALL },
+      { href: "/redes-sociais",  label: "Redes Sociais",  icon: Share2,        roles: SME_TEC }
+    ]
+  },
+  {
+    label: "Relatórios e Analytics",
+    items: [
+      { href: "/relatorios", label: "Relatórios", icon: FileArchive, roles: SME_TEC_GES },
+      { href: "/analytics",  label: "Analytics",  icon: PieChart,    roles: SME_TEC }
+    ]
+  },
+  {
+    label: "Administração",
+    items: [
+      { href: "/perfis",       label: "Perfis de Acesso", icon: ShieldCheck, roles: SME_ONLY, badge: "pendingAccess" },
+      { href: "/administracao",label: "Administração",    icon: Settings,    roles: SME_ONLY }
+    ]
+  }
+];
+
+// ─── Legado (usado apenas internamente) ────────────────────────────────────
 export type EduModuleKey =
   | "dashboard"
   | "escolas"
@@ -41,9 +129,6 @@ export type EduModuleKey =
   | "feedback"
   | "redes-sociais"
   | "arquivos"
-  | "organizacao-financeira"
-  | "regularidade-documental"
-  | "suporte-unidades"
   | "administracao"
   | "auditoria";
 
@@ -92,16 +177,7 @@ export const eduMenuItems: EduMenuItem[] = [
   { href: "/feedback", label: "Feedback", icon: MessageSquare },
   { href: "/redes-sociais", label: "Redes Sociais", icon: Share2 },
   { href: "/arquivos", label: "Arquivos", icon: Archive },
-  { href: "/gestao-recursos", label: "Gestao de Recursos", icon: BarChart3 },
-  { href: "/gestao-recursos/alertas", label: "Alertas Financeiros", icon: Bell },
-  { href: "/gestao-recursos/programas", label: "Programas", icon: PieChart },
-  { href: "/financeiro", label: "Controle Financeiro", icon: WalletCards },
-  { href: "/pdde-controle", label: "Controle PDDE", icon: TableProperties },
-  { href: "/organizacao-financeira", label: "Organizacao Financeira", icon: WalletCards },
-  { href: "/regularidade-documental", label: "Regularidade Documental", icon: FileCheck2 },
-  { href: "/suporte-unidades", label: "Suporte as Unidades", icon: LifeBuoy },
-  { href: "/administracao", label: "Administracao", icon: Settings },
-  { href: "/perfis", label: "Perfis", icon: ShieldCheck }
+  { href: "/administracao", label: "Administracao", icon: Settings }
 ];
 
 export const dashboardCards: EduCard[] = [
@@ -409,60 +485,6 @@ export const modules: Record<Exclude<EduModuleKey, "dashboard">, EduModule> = {
       { Arquivo: "Modelo oficio.docx", Categoria: "SEI", Tamanho: "180 KB" }
     ],
     actions: ["Upload", "Nova pasta", "Exportar lista"]
-  },
-  "organizacao-financeira": {
-    key: "organizacao-financeira",
-    title: "Organizacao Financeira",
-    description: "Mapa financeiro, radar de risco, linha do tempo dos recursos e conciliacao rapida por unidade.",
-    icon: WalletCards,
-    cards: [
-      { label: "Unidades monitoradas", value: "55", detail: "Rede completa", tone: "blue" },
-      { label: "Risco financeiro", value: "12", detail: "Exigem acompanhamento", tone: "yellow" },
-      { label: "Conciliadas", value: "31", detail: "Saldo coerente", tone: "green" }
-    ],
-    columns: [{ key: "Unidade", header: "Unidade" }, { key: "Programa", header: "Programa" }, { key: "Risco", header: "Risco" }, { key: "Acao", header: "Acao" }],
-    rows: [
-      { Unidade: "Escola M. Acelina Alves", Programa: "PDDE", Risco: "Baixo", Acao: "Monitorar saldo" },
-      { Unidade: "Escola M. Joaquim Pedro", Programa: "FNDE", Risco: "Medio", Acao: "Conferir prestacao" },
-      { Unidade: "Creche Eliene Martins", Programa: "Educacao Conectada", Risco: "Alto", Acao: "Conciliar extrato" }
-    ],
-    actions: ["Mapa financeiro", "Radar de risco", "Conciliacao rapida"]
-  },
-  "regularidade-documental": {
-    key: "regularidade-documental",
-    title: "Regularidade Documental",
-    description: "Checklist de documentos, vencimentos e matriz de regularidade por unidade.",
-    icon: FileCheck2,
-    cards: [
-      { label: "Documentos validos", value: "148", detail: "Na base", tone: "green" },
-      { label: "Vencendo", value: "22", detail: "Proximos 30 dias", tone: "yellow" },
-      { label: "Pendentes", value: "17", detail: "Sem envio", tone: "red" }
-    ],
-    columns: [{ key: "Unidade", header: "Unidade" }, { key: "Documento", header: "Documento" }, { key: "Status", header: "Status" }],
-    rows: [
-      { Unidade: "Escola M. Acelina Alves", Documento: "Ata do conselho", Status: "Valido" },
-      { Unidade: "Escola M. Joaquim Pedro", Documento: "Extrato bancario", Status: "Pendente" },
-      { Unidade: "Creche Eliene Martins", Documento: "Protocolo de prestacao", Status: "Vencendo" }
-    ],
-    actions: ["Enviar documento", "Ver matriz", "Gerar alerta"]
-  },
-  "suporte-unidades": {
-    key: "suporte-unidades",
-    title: "Suporte as Unidades",
-    description: "Chamados, orientacoes e acompanhamento de atendimento as unidades escolares.",
-    icon: LifeBuoy,
-    cards: [
-      { label: "Chamados abertos", value: "8", detail: "Em atendimento", tone: "blue" },
-      { label: "Urgentes", value: "2", detail: "Prioridade alta", tone: "red" },
-      { label: "Resolvidos", value: "34", detail: "Ultimos 30 dias", tone: "green" }
-    ],
-    columns: [{ key: "Unidade", header: "Unidade" }, { key: "Assunto", header: "Assunto" }, { key: "Status", header: "Status" }],
-    rows: [
-      { Unidade: "Escola M. Acelina Alves", Assunto: "Duvida sobre PDDE", Status: "Respondido" },
-      { Unidade: "Escola M. Joaquim Pedro", Assunto: "Prestacao de contas", Status: "Aberto" },
-      { Unidade: "Creche Eliene Martins", Assunto: "Documento vencido", Status: "Urgente" }
-    ],
-    actions: ["Abrir chamado", "Atribuir responsavel", "Responder unidade"]
   },
   administracao: {
     key: "administracao",

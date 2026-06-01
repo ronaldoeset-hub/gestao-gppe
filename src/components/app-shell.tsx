@@ -4,8 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import {
-  Bell,
   ChevronDown,
+  Info,
   LayoutGrid,
   LogOut,
   Menu,
@@ -15,14 +15,25 @@ import {
   X
 } from "lucide-react";
 import { useState } from "react";
-import { eduMenuItems } from "@/data/educonecta";
+import { menuGroups } from "@/data/educonecta";
 import { cn } from "@/lib/utils";
+import type { UserRole } from "@/lib/types";
+
+const ROLE_LABELS: Record<UserRole, string> = {
+  admin_sme: "Administrador SME",
+  tecnico_gppe: "Técnico GPPE",
+  gestor_escolar: "Gestor Escolar",
+  funcionario_escola: "Funcionário Escolar",
+  conselho_escolar: "Conselho Escolar"
+};
+
+const LIMITED_ROLES: UserRole[] = ["gestor_escolar", "funcionario_escola", "conselho_escolar"];
 
 const topLinks = [
   {
     href: "/dashboard",
-    label: "Inicio",
-    description: "Importancia da gestao inteligente de informacoes educacionais."
+    label: "Início",
+    description: "Visão geral da gestão educacional da rede."
   },
   {
     href: "/secretaria",
@@ -32,22 +43,29 @@ const topLinks = [
   },
   {
     href: "/servicos",
-    label: "Servicos",
+    label: "Serviços",
     description: "Controle de recursos, conselhos, prazos, documentos e relatórios."
   },
   {
     href: "/gestao-escolar",
-    label: "Gestao Escolar",
+    label: "Gestão Escolar",
     description: "Dados completos para acompanhamento de recursos e unidades."
   },
   {
     href: "/transparencia",
-    label: "Transparencia",
-    description: "Relatorios, exportacoes e visao publica futura."
+    label: "Transparência",
+    description: "Relatórios, exportações e visão pública futura."
   }
 ];
 
-export function AppShell({ children, pendingAccessCount = 0 }: { children: ReactNode; pendingAccessCount?: number }) {
+type AppShellProps = {
+  children: ReactNode;
+  role: UserRole | null;
+  fullName: string | null;
+  pendingCount?: number;
+};
+
+export function AppShell({ children, role, fullName, pendingCount = 0 }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -58,8 +76,20 @@ export function AppShell({ children, pendingAccessCount = 0 }: { children: React
     router.refresh();
   }
 
+  const visibleGroups = menuGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter(
+        (item) => role === null || item.roles.includes(role)
+      )
+    }))
+    .filter((group) => group.items.length > 0);
+
+  const isLimited = role !== null && LIMITED_ROLES.includes(role);
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-950">
+      {/* ── Header ── */}
       <header className="sticky top-0 z-40 border-b border-blue-950/20 bg-gradient-to-r from-blue-950 via-blue-800 to-emerald-700 text-white shadow-lg shadow-blue-950/20">
         <div className="flex min-h-20 items-center gap-4 px-4 lg:px-7">
           <button
@@ -77,7 +107,7 @@ export function AppShell({ children, pendingAccessCount = 0 }: { children: React
             </div>
             <div className="min-w-0">
               <p className="truncate text-2xl font-black tracking-tight">EDUCONECTA</p>
-              <p className="truncate text-sm font-semibold text-blue-100">Gestao Educacional Inteligente</p>
+              <p className="truncate text-sm font-semibold text-blue-100">Gestão Educacional Inteligente</p>
             </div>
           </Link>
 
@@ -86,13 +116,18 @@ export function AppShell({ children, pendingAccessCount = 0 }: { children: React
               <div key={item.label} className="group relative">
                 <Link href={item.href} className="inline-flex items-center gap-1 hover:text-amber-300">
                   {item.label}
-                  {item.label !== "Inicio" ? <ChevronDown className="h-3 w-3" aria-hidden="true" /> : null}
+                  {item.label !== "Início" ? <ChevronDown className="h-3 w-3" aria-hidden="true" /> : null}
                 </Link>
                 <div className="invisible absolute left-0 top-full z-50 mt-4 w-80 rounded-2xl border border-slate-200 bg-white p-4 text-left normal-case text-slate-700 opacity-0 shadow-xl transition group-hover:visible group-hover:opacity-100">
                   <p className="text-sm font-black uppercase text-blue-800">{item.label}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
                   {item.externalHref ? (
-                    <Link href={item.externalHref} target="_blank" rel="noreferrer" className="mt-3 inline-flex text-sm font-black text-blue-700 hover:underline">
+                    <Link
+                      href={item.externalHref}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-3 inline-flex text-sm font-black text-blue-700 hover:underline"
+                    >
                       Acessar site da SME
                     </Link>
                   ) : null}
@@ -101,10 +136,14 @@ export function AppShell({ children, pendingAccessCount = 0 }: { children: React
             ))}
           </nav>
 
-          <Link href="/analytics" className="hidden h-11 w-56 items-center gap-2 rounded-xl bg-white px-3 text-slate-500 transition hover:bg-blue-50 lg:flex">
+          <Link
+            href="/analytics"
+            className="hidden h-11 w-56 items-center gap-2 rounded-xl bg-white px-3 text-slate-500 transition hover:bg-blue-50 lg:flex"
+          >
             <Search className="h-4 w-4 text-blue-700" aria-hidden="true" />
             <span className="text-sm">Busca global...</span>
           </Link>
+
           <button
             type="button"
             onClick={signOut}
@@ -117,77 +156,116 @@ export function AppShell({ children, pendingAccessCount = 0 }: { children: React
       </header>
 
       <div className="flex">
+        {/* ── Sidebar ── */}
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-50 w-80 overflow-y-auto bg-white shadow-2xl transition-transform lg:sticky lg:top-20 lg:z-20 lg:h-[calc(100vh-5rem)] lg:translate-x-0 lg:border-r lg:border-slate-200 lg:shadow-none",
+            "fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto bg-white shadow-2xl transition-transform lg:sticky lg:top-20 lg:z-20 lg:h-[calc(100vh-5rem)] lg:translate-x-0 lg:border-r lg:border-slate-200 lg:shadow-none",
             open ? "translate-x-0" : "-translate-x-full"
           )}
         >
+          {/* mobile close */}
           <div className="flex items-center justify-between border-b border-slate-200 p-4 lg:hidden">
             <p className="font-black text-blue-950">Menu EduConecta</p>
-            <button type="button" onClick={() => setOpen(false)} className="rounded-lg border border-slate-200 p-2" aria-label="Fechar menu">
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="rounded-lg border border-slate-200 p-2"
+              aria-label="Fechar menu"
+            >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
 
-          <div className="m-4 rounded-2xl bg-gradient-to-br from-blue-950 via-blue-800 to-emerald-700 p-5 text-white shadow-soft">
+          {/* banner */}
+          <div className="m-4 rounded-2xl bg-gradient-to-br from-blue-950 via-blue-800 to-emerald-700 p-4 text-white shadow-sm">
             <p className="text-xs font-black uppercase tracking-wide text-amber-300">Plataforma SaaS</p>
-            <p className="mt-2 text-2xl font-black leading-7">EduConecta</p>
-            <p className="mt-3 text-sm font-semibold leading-6 text-blue-50">
-              Transformando informacao educacional em gestao inteligente.
-            </p>
-            <p className="mt-4 rounded-xl bg-white/10 px-3 py-2 text-xs font-semibold text-blue-50">
-              Prototipo independente, com dados mockados e preparado para backend futuro.
-            </p>
+            <p className="mt-1 text-xl font-black leading-6">EduConecta</p>
+            {fullName ? (
+              <p className="mt-2 truncate text-sm font-semibold text-blue-100">{fullName}</p>
+            ) : null}
+            {role ? (
+              <span className="mt-2 inline-block rounded-lg bg-white/15 px-2 py-1 text-xs font-bold text-white">
+                {ROLE_LABELS[role]}
+              </span>
+            ) : null}
           </div>
 
-          <nav className="space-y-1 px-3 pb-5">
-            {eduMenuItems.map((item) => {
-              const active = pathname === item.href || (item.href === "/escolas" && pathname.startsWith("/unidades"));
-              const Icon = item.icon;
+          {/* aviso de acesso limitado */}
+          {isLimited ? (
+            <div className="mx-4 mb-3 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span>Acesso limitado à sua unidade escolar.</span>
+            </div>
+          ) : null}
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    "flex min-h-11 items-center gap-3 rounded-xl px-4 text-sm font-bold transition",
-                    active ? "bg-blue-700 text-white shadow-sm" : "text-blue-950 hover:bg-blue-50 hover:text-blue-800"
-                  )}
-                >
-                  <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
-                  <span className="min-w-0 flex-1">{item.label}</span>
-                  {item.href === "/perfis" && pendingAccessCount > 0 ? (
-                    <span className={cn("ml-auto rounded-full px-2 py-0.5 text-xs font-black", active ? "bg-white text-blue-800" : "bg-amber-300 text-blue-950")}>
-                      {pendingAccessCount}
-                    </span>
-                  ) : null}
-                </Link>
-              );
-            })}
+          {/* menu agrupado */}
+          <nav className="space-y-3 px-3 pb-6 pt-1">
+            {visibleGroups.map((group) => (
+              <div key={group.label}>
+                <p className="mb-1 px-3 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  {group.label}
+                </p>
+                <div className="space-y-0.5">
+                  {group.items.map((item) => {
+                    const active =
+                      pathname === item.href ||
+                      (item.href === "/escolas" && pathname.startsWith("/unidades"));
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                          "flex min-h-10 items-center gap-3 rounded-xl px-3 text-sm font-semibold transition",
+                          active
+                            ? "bg-blue-700 text-white shadow-sm"
+                            : "text-slate-700 hover:bg-blue-50 hover:text-blue-800"
+                        )}
+                      >
+                        <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        <span className="flex-1">{item.label}</span>
+                        {item.badge === "pendingAccess" && pendingCount > 0 ? (
+                          <span className="rounded-full bg-amber-300 px-2 py-0.5 text-xs font-black text-blue-950">
+                            {pendingCount}
+                          </span>
+                        ) : null}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
         </aside>
 
-        {open ? <button className="fixed inset-0 z-40 bg-slate-950/40 lg:hidden" aria-label="Fechar menu" onClick={() => setOpen(false)} /> : null}
+        {open ? (
+          <button
+            className="fixed inset-0 z-40 bg-slate-950/40 lg:hidden"
+            aria-label="Fechar menu"
+            onClick={() => setOpen(false)}
+          />
+        ) : null}
 
+        {/* ── Conteúdo principal ── */}
         <div className="min-w-0 flex-1">
           <div className="border-b border-slate-200 bg-white">
             <div className="mx-auto flex min-h-14 max-w-[1540px] items-center justify-between gap-4 px-4 text-sm lg:px-7">
               <div className="min-w-0">
-                <p className="truncate font-black text-blue-950">EDUCONECTA - Gestao Educacional Inteligente</p>
-                <p className="truncate text-xs font-semibold text-slate-500">Sistema independente em desenvolvimento, sem credenciamento ou intermediacao publica.</p>
+                <p className="truncate font-black text-blue-950">EDUCONECTA — Gestão Educacional Inteligente</p>
+                <p className="truncate text-xs font-semibold text-slate-500">
+                  Plataforma independente. Sem credenciamento ou intermediação de fornecedores.
+                </p>
               </div>
-              {pendingAccessCount > 0 ? (
-                <Link href="/perfis" className="hidden items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-black text-blue-950 hover:bg-amber-100 sm:inline-flex">
-                  <Bell className="h-4 w-4" aria-hidden="true" />
-                  {pendingAccessCount} pendente{pendingAccessCount > 1 ? "s" : ""}
+              {role === "admin_sme" ? (
+                <Link
+                  href="/administracao"
+                  className="hidden items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-black text-blue-800 hover:bg-blue-50 sm:inline-flex"
+                >
+                  <LayoutGrid className="h-4 w-4" aria-hidden="true" />
+                  Administração
                 </Link>
               ) : null}
-              <Link href="/administracao" className="hidden items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-black text-blue-800 hover:bg-blue-50 sm:inline-flex">
-                <LayoutGrid className="h-4 w-4" aria-hidden="true" />
-                Administracao
-              </Link>
               <button
                 type="button"
                 onClick={signOut}
@@ -210,15 +288,15 @@ export function AppShell({ children, pendingAccessCount = 0 }: { children: React
                   </div>
                   <div>
                     <p className="text-2xl font-black">EDUCONECTA</p>
-                    <p className="text-sm font-semibold text-blue-100">Gestao Educacional Inteligente</p>
+                    <p className="text-sm font-semibold text-blue-100">Gestão Educacional Inteligente</p>
                   </div>
                 </div>
                 <p className="mt-4 text-sm leading-6 text-blue-100">
-                  Plataforma independente, em fase de prototipo, voltada a organizacao de informacoes educacionais.
+                  Plataforma independente, em fase de protótipo, voltada à organização de informações educacionais.
                 </p>
               </div>
-              <FooterColumn title="Modulos" items={["Escolas", "Conselhos", "Recursos", "FNDE/PDDE"]} />
-              <FooterColumn title="Gestao" items={["Central de Prazos", "Analytics", "Relatorios", "Auditoria"]} />
+              <FooterColumn title="Módulos" items={["Escolas", "Conselhos", "Recursos", "FNDE/PDDE"]} />
+              <FooterColumn title="Gestão" items={["Central de Prazos", "Analytics", "Relatórios", "Auditoria"]} />
               <div>
                 <h2 className="text-sm font-black uppercase text-white">Contato e aviso</h2>
                 <ul className="mt-3 space-y-2 text-sm text-blue-100">
