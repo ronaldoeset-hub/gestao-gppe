@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import { CheckCircle2, FileArchive } from "lucide-react";
-import { DataTable } from "@/components/data-table";
 import { DocumentUploader } from "@/components/document-uploader";
 import { ModuleHeader } from "@/components/module-header";
+import { DocumentsExplorer } from "@/components/v4-operational-panels";
 import { getDocuments } from "@/lib/supabase/queries";
-import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Documentos",
   description: "Upload, checklist e consulta de documentos vinculados às unidades e prestações."
 };
+
+export const revalidate = 60;
 
 const documentTypes = [
   "Edital de Convocacao",
@@ -62,17 +63,7 @@ export default async function DocumentsPage() {
       </section>
       <section className="space-y-3">
         <h2 className="text-lg font-bold text-sme-ink">Documentos enviados</h2>
-        <DataTable
-          rows={documents}
-          emptyDescription="Nenhum documento enviado foi encontrado."
-          columns={[
-            { key: "title", header: "Titulo", render: (row) => <span className="font-semibold text-sme-ink">{row.title}</span> },
-            { key: "category", header: "Categoria", render: (row) => row.category },
-            { key: "school", header: "Unidade", render: (row) => row.school },
-            { key: "createdAt", header: "Envio", render: (row) => formatDate(row.createdAt) },
-            { key: "path", header: "Arquivo", render: (row) => row.storagePath }
-          ]}
-        />
+        <DocumentsExplorer rows={documents} />
       </section>
     </div>
   );

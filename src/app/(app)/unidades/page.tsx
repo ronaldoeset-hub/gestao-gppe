@@ -3,13 +3,15 @@ import { Building2, Plus } from "lucide-react";
 import { ExportButtons } from "@/components/export-buttons";
 import { ModuleHeader } from "@/components/module-header";
 import { SchoolUnitForm } from "@/components/school-unit-form";
-import { SchoolUnitsTable } from "@/components/school-units-table";
+import { SchoolUnitsExplorer } from "@/components/v4-filter-panels";
 import { getSchoolUnits } from "@/lib/supabase/queries";
 
 export const metadata: Metadata = {
   title: "Unidades escolares",
   description: "Cadastro e consulta das unidades escolares acompanhadas pelo GPPE."
 };
+
+export const revalidate = 60;
 
 export default async function SchoolUnitsPage() {
   const schoolUnits = await getSchoolUnits();
@@ -42,7 +44,7 @@ export default async function SchoolUnitsPage() {
           Conselho: unit.councilStatus
         }))}
       />
-      <SchoolUnitsTable rows={schoolUnits} />
+      <SchoolUnitsExplorer rows={schoolUnits} />
     </div>
   );
 }

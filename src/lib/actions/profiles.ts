@@ -180,3 +180,57 @@ export async function updateProfileFromForm(_state: FormActionState, formData: F
 
   return { ok: true, message: "Perfil atualizado com sucesso." };
 }
+
+export async function updateOwnProfile(_state: FormActionState, formData: FormData): Promise<FormActionState> {
+  const { supabase, user } = await getSessionAndRole();
+  if (!user) return { ok: false, message: "Nao autenticado." };
+
+  const fullName = text(formData, "full_name");
+  const phone = text(formData, "phone");
+
+  if (fullName.length < 3) return { ok: false, message: "Informe um nome com pelo menos 3 caracteres." };
+
+  const payload = {
+    full_name: fullName,
+    phone: phone || null
+  };
+
+  const { error } = await supabase.from("profiles").update(payload).eq("id", user.id);
+  if (error) return { ok: false, message: `Erro ao atualizar: ${error.message}` };
+
+  await tryAuditLog(supabase, {
+    user_id: user.id,
+    action: "update_own_profile",
+    entity_type: "profiles",
+    entity_id: user.id,
+    new_data: payload
+  });
+
+  revalidatePath("/perfis");
+  revalidatePath("/dashboard");
+
+  return { ok: true, message: "Dados pessoais atualizados com sucesso." };
+}
+
+export async function updateOwnPassword(_state: FormActionState, formData: FormData): Promise<FormActionState> {
+  const { supabase, user } = await getSessionAndRole();
+  if (!user) return { ok: false, message: "Nao autenticado." };
+
+  const password = text(formData, "password");
+  const confirmation = text(formData, "password_confirmation");
+
+  if (password.length < 8) return { ok: false, message: "Use uma senha com pelo menos 8 caracteres." };
+  if (password !== confirmation) return { ok: false, message: "A confirmacao de senha nao confere." };
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { ok: false, message: `Erro ao trocar senha: ${error.message}` };
+
+  await tryAuditLog(supabase, {
+    user_id: user.id,
+    action: "update_own_password",
+    entity_type: "auth.users",
+    entity_id: user.id
+  });
+
+  return { ok: true, message: "Senha atualizada com sucesso." };
+}

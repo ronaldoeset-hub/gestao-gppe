@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { DataTable } from "@/components/data-table";
-import { EduConectaModulePage } from "@/components/educonecta-module-page";
-import { modules } from "@/data/educonecta";
+import { ModuleHeader } from "@/components/module-header";
+import { FndeCategoryCards } from "@/components/v4-operational-panels";
 import { getFinancialControl } from "@/lib/supabase/queries";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { Landmark } from "lucide-react";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "FNDE e PDDE",
@@ -16,7 +19,12 @@ export default async function FndePddePage() {
 
   return (
     <div className="space-y-6">
-      <EduConectaModulePage module={modules["fnde-pdde"]} />
+      <ModuleHeader
+        title="FNDE e PDDE"
+        description="Materiais de referência, sistemas de apoio e acompanhamento dos repasses vinculados ao PDDE."
+        icon={Landmark}
+      />
+      <FndeCategoryCards />
       <section className="space-y-3">
         <div>
           <h2 className="text-lg font-bold text-sme-ink">Repasses PDDE no controle financeiro</h2>

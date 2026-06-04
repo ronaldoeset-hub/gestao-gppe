@@ -2,13 +2,16 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { AlertTriangle, ArrowRight, BarChart3, CheckCircle2, FileWarning, ShieldAlert } from "lucide-react";
 import { ModuleHeader } from "@/components/module-header";
+import { CompletenessPanel } from "@/components/v4-operational-panels";
 import { getAccountabilities, getCouncils, getDocuments, getResources, getSchoolUnits } from "@/lib/supabase/queries";
 import type { SchoolUnit } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "Diagnóstico de dados",
-  description: "Leitura automática de pendências, inconsistências e prioridades de preenchimento."
+  title: "Diagnostico de dados",
+  description: "Leitura automatica de pendencias, inconsistencias e prioridades de preenchimento."
 };
+
+export const revalidate = 60;
 
 type DataIssue = {
   unit: SchoolUnit;
@@ -20,9 +23,9 @@ type DataIssue = {
 };
 
 const severityStyles = {
-  alta: "border-red-200 bg-red-50 text-red-700",
-  media: "border-amber-200 bg-amber-50 text-amber-700",
-  baixa: "border-blue-200 bg-blue-50 text-blue-700"
+  alta: "border-sme-red bg-sme-red/10 text-sme-red",
+  media: "border-sme-yellow bg-sme-yellow/20 text-sme-navy",
+  baixa: "border-sme-blue bg-sme-blue-soft text-sme-blue"
 };
 
 function isGenericManager(value: string) {
@@ -30,9 +33,7 @@ function isGenericManager(value: string) {
 }
 
 function daysUntil(value?: string) {
-  if (!value) {
-    return null;
-  }
+  if (!value) return null;
 
   const today = new Date();
   const date = new Date(value);
@@ -146,7 +147,7 @@ export default async function DataDiagnosisPage() {
   return (
     <div className="space-y-6">
       <ModuleHeader
-        title="Diagnostico dos Dados"
+        title="Diagnostico dos dados"
         description="Leitura automatica para identificar o que falta alimentar, corrigir ou priorizar em cada unidade escolar."
         icon={BarChart3}
       />
@@ -158,11 +159,19 @@ export default async function DataDiagnosisPage() {
         <SummaryCard title="Unidades ok" value={completeUnits} description="Sem pendencia media/alta" icon={CheckCircle2} tone="green" />
       </section>
 
-      <section className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
+      <section className="rounded-md border border-sme-line bg-white p-5 shadow-soft">
+        <div className="mb-4">
+          <h2 className="text-lg font-black text-sme-ink">Completude por unidade</h2>
+          <p className="mt-1 text-sm text-sme-muted">Percentual calculado por INEP, gestor, conselho regular, prestacao e documento vinculado.</p>
+        </div>
+        <CompletenessPanel units={units} councils={councils} accountabilities={accountabilities} documents={documents} />
+      </section>
+
+      <section className="rounded-md border border-sme-line bg-white p-5 shadow-soft">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
             <h2 className="text-lg font-black text-sme-ink">Fila de trabalho da GPPE</h2>
-            <p className="mt-1 text-sm text-slate-600">Use esta lista para decidir o que alimentar primeiro no sistema.</p>
+            <p className="mt-1 text-sm text-sme-muted">Use esta lista para decidir o que alimentar primeiro no sistema.</p>
           </div>
           <Link href="/alimentar-dados" className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-sme-blue px-3 text-sm font-bold text-white hover:bg-sme-navy">
             Alimentar dados
@@ -172,7 +181,7 @@ export default async function DataDiagnosisPage() {
 
         <div className="mt-5 space-y-3">
           {issues.slice(0, 80).map((issue, index) => (
-            <article key={`${issue.unit.id}-${issue.title}-${index}`} className="rounded-md border border-slate-200 p-4">
+            <article key={`${issue.unit.id}-${issue.title}-${index}`} className="rounded-md border border-sme-line p-4">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
@@ -181,10 +190,10 @@ export default async function DataDiagnosisPage() {
                     </span>
                     <p className="font-black text-sme-ink">{issue.title}</p>
                   </div>
-                  <p className="mt-2 text-sm font-semibold text-[#003b7a]">{issue.unit.name}</p>
-                  <p className="mt-1 text-sm leading-6 text-slate-600">{issue.description}</p>
+                  <p className="mt-2 text-sm font-semibold text-sme-blue">{issue.unit.name}</p>
+                  <p className="mt-1 text-sm leading-6 text-sme-muted">{issue.description}</p>
                 </div>
-                <Link href={issue.actionHref} className="inline-flex h-10 shrink-0 items-center justify-center rounded-md border border-slate-300 px-3 text-sm font-bold text-sme-blue hover:border-sme-blue hover:bg-blue-50">
+                <Link href={issue.actionHref} className="inline-flex h-10 shrink-0 items-center justify-center rounded-md border border-sme-line px-3 text-sm font-bold text-sme-blue hover:border-sme-blue hover:bg-sme-blue-soft">
                   {issue.actionLabel}
                 </Link>
               </div>
@@ -210,19 +219,19 @@ function SummaryCard({
   tone: "red" | "yellow" | "blue" | "green";
 }) {
   const colors = {
-    red: "bg-red-500 text-white",
+    red: "bg-sme-red text-white",
     yellow: "bg-sme-yellow text-sme-ink",
     blue: "bg-sme-blue text-white",
-    green: "bg-emerald-500 text-white"
+    green: "bg-sme-green text-white"
   };
 
   return (
-    <article className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
+    <article className="rounded-md border border-sme-line bg-white p-5 shadow-soft">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-black uppercase tracking-wide text-slate-500">{title}</p>
+          <p className="text-xs font-black uppercase tracking-wide text-sme-muted">{title}</p>
           <p className="mt-3 text-3xl font-black text-sme-ink">{value}</p>
-          <p className="mt-1 text-sm text-slate-600">{description}</p>
+          <p className="mt-1 text-sm text-sme-muted">{description}</p>
         </div>
         <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-md ${colors[tone]}`}>
           <Icon className="h-5 w-5" aria-hidden="true" />

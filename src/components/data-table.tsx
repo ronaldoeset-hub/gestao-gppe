@@ -10,9 +10,10 @@ type DataTableProps<T> = {
   }>;
   rows: T[];
   emptyDescription?: string;
+  rowClassName?: (row: T, index: number) => string | undefined;
 };
 
-export function DataTable<T>({ columns, rows, emptyDescription = "A consulta nao retornou registros para exibicao." }: DataTableProps<T>) {
+export function DataTable<T>({ columns, rows, emptyDescription = "A consulta nao retornou registros para exibicao.", rowClassName }: DataTableProps<T>) {
   if (!rows.length) {
     return <EmptyState description={emptyDescription} />;
   }
@@ -38,7 +39,7 @@ export function DataTable<T>({ columns, rows, emptyDescription = "A consulta nao
           </thead>
           <tbody className="divide-y divide-sme-line bg-white">
             {rows.map((row, rowIndex) => (
-              <tr key={rowIndex} className="transition hover:bg-sme-surface/70">
+              <tr key={rowIndex} className={cn("transition hover:bg-sme-surface/70", rowClassName?.(row, rowIndex))}>
                 {columns.map((column) => (
                   <td
                     key={column.key}

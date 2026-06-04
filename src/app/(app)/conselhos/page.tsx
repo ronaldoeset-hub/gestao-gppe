@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { Plus, UsersRound } from "lucide-react";
 import { CouncilRegularityPanel } from "@/components/council-regularity-panel";
-import { DataTable } from "@/components/data-table";
 import { CouncilForm } from "@/components/linked-record-forms";
 import { ExportButtons } from "@/components/export-buttons";
 import { ModuleHeader } from "@/components/module-header";
-import { StatusBadge } from "@/components/status-badge";
+import { CouncilsExplorer } from "@/components/v4-filter-panels";
 import { getCouncils } from "@/lib/supabase/queries";
 import { formatDate } from "@/lib/utils";
 
@@ -13,6 +12,8 @@ export const metadata: Metadata = {
   title: "Conselhos escolares",
   description: "Controle de mandatos, composição e regularidade dos conselhos escolares."
 };
+
+export const revalidate = 60;
 
 export default async function CouncilsPage() {
   const councils = await getCouncils();
@@ -48,19 +49,7 @@ export default async function CouncilsPage() {
           Status: item.status
         }))}
       />
-      <DataTable
-        rows={councils}
-        emptyDescription="Nenhum conselho escolar cadastrado foi encontrado."
-        columns={[
-          { key: "id", header: "Codigo", render: (row) => row.id },
-          { key: "school", header: "Unidade", render: (row) => row.school },
-          { key: "president", header: "Presidencia", render: (row) => row.president },
-          { key: "members", header: "Membros", render: (row) => row.members },
-          { key: "expectedMembers", header: "Previsto", render: (row) => row.expectedMembers ?? (row.studentCount && row.studentCount > 600 ? 13 : 11) },
-          { key: "mandateEnd", header: "Fim do mandato", render: (row) => formatDate(row.mandateEnd) },
-          { key: "status", header: "Status", render: (row) => <StatusBadge status={row.status} /> }
-        ]}
-      />
+      <CouncilsExplorer rows={councils} />
     </div>
   );
 }

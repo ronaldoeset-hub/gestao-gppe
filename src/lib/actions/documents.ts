@@ -34,7 +34,7 @@ export async function createDocument(_state: FormActionState, formData: FormData
   const { data: { user } } = await supabase.auth.getUser();
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
   const storagePath = `${schoolUnitId}/${Date.now()}-${safeName}`;
-  const { error: uploadError } = await supabase.storage.from("documentos-gppe").upload(storagePath, file, { upsert: false });
+  const { error: uploadError } = await supabase.storage.from("documentos").upload(storagePath, file, { upsert: false });
 
   if (uploadError) {
     return { ok: false, message: `Erro no upload: ${uploadError.message}` };

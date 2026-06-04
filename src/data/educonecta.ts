@@ -31,7 +31,7 @@ import type { UserRole } from "@/lib/types";
 
 // ─── Menu agrupado por perfil ────────────────────────────────────────────────
 
-export type MenuBadge = "pendingAccess";
+export type MenuBadge = "pendingAccess" | "activeAlerts";
 
 export type MenuItem = {
   href: string;
@@ -93,7 +93,7 @@ export const menuGroups: MenuGroup[] = [
     label: "Comunicação e Suporte",
     items: [
       { href: "/mural",          label: "Mural",          icon: Megaphone,     roles: ALL },
-      { href: "/alertas",        label: "Alertas",        icon: Bell,          roles: SME_TEC_GES },
+      { href: "/alertas",        label: "Alertas",        icon: Bell,          roles: SME_TEC_GES, badge: "activeAlerts" },
       { href: "/feedback",       label: "Feedback",       icon: MessageSquare, roles: ALL },
       { href: "/ia-educacional", label: "IA Educacional", icon: Bot,           roles: SME_TEC_GES_FUN },
       { href: "/parceiros",      label: "Parceiros",      icon: Network,       roles: ALL },

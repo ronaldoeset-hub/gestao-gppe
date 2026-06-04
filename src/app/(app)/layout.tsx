@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/app-shell";
 import { isSupabaseEnabled } from "@/lib/supabase/config";
+import { getAlerts } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import type { UserRole } from "@/lib/types";
 
@@ -17,6 +18,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   let role: UserRole | null = null;
   let fullName: string | null = null;
   let pendingCount = 0;
+  let alertCount = 0;
 
   try {
     const {
@@ -40,13 +42,16 @@ export default async function ProtectedLayout({ children }: { children: React.Re
           .eq("access_status", "pendente");
         pendingCount = count ?? 0;
       }
+
+      const alerts = await getAlerts();
+      alertCount = alerts.length;
     }
   } catch {
     // fallback: role null → AppShell mostra todos os itens
   }
 
   return (
-    <AppShell role={role} fullName={fullName} pendingCount={pendingCount}>
+    <AppShell role={role} fullName={fullName} pendingCount={pendingCount} alertCount={alertCount}>
       {children}
     </AppShell>
   );

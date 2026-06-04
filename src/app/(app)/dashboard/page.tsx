@@ -6,6 +6,7 @@ import { EduConectaCards } from "@/components/educonecta-cards";
 import { InstitutionalNotice } from "@/components/institutional-notice";
 import { MockChart } from "@/components/mock-chart";
 import { modules } from "@/data/educonecta";
+import { getAccountabilities, getCouncils, getDocuments, getSchoolUnits } from "@/lib/supabase/queries";
 import { getDashboardSummary } from "@/lib/supabase/queries/schools";
 import { isSupabaseEnabled } from "@/lib/supabase/config";
 
@@ -14,12 +15,27 @@ export const metadata: Metadata = {
   description: "Resumo executivo de unidades, conselhos, recursos e prazos do GPPE."
 };
 
+export const revalidate = 60;
+
 function formatBRL(value: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(value);
 }
 
+function daysUntil(value?: string) {
+  if (!value) return null;
+  const today = new Date();
+  const target = new Date(value);
+  return Math.ceil((target.getTime() - today.getTime()) / 86400000);
+}
+
 export default async function DashboardPage() {
-  const summary = await getDashboardSummary();
+  const [summary, units, councils, accountabilities, documents] = await Promise.all([
+    getDashboardSummary(),
+    getSchoolUnits(),
+    getCouncils(),
+    getAccountabilities(),
+    getDocuments()
+  ]);
   const isMock = !isSupabaseEnabled();
 
   const financialSummary = [
@@ -43,6 +59,34 @@ export default async function DashboardPage() {
     { label: "Total recebido", value: formatBRL(summary?.totalRecebido ?? 0), detail: "Exercício 2026", tone: "green" as const },
     { label: "Saldo disponível", value: formatBRL(summary?.saldoDisponivel ?? 0), detail: "A executar", tone: "yellow" as const }
   ];
+
+  const criticalUnits = units
+    .map((unit) => {
+      const unitCouncils = councils.filter((item) => item.school === unit.name);
+      const currentCouncil = unitCouncils[0];
+      const councilDays = daysUntil(currentCouncil?.mandateEnd);
+      const hasAccountability = accountabilities.some((item) => item.school === unit.name);
+      const hasDocument = documents.some((item) => item.school === unit.name);
+      const score =
+        (!unit.inep ? 2 : 0) +
+        (!unitCouncils.length ? 5 : 0) +
+        (councilDays !== null && councilDays < 0 ? 4 : councilDays !== null && councilDays <= 30 ? 3 : 0) +
+        (!hasAccountability ? 3 : 0) +
+        (!hasDocument ? 1 : 0);
+      const reasons = [
+        !unit.inep ? "INEP pendente" : null,
+        !unitCouncils.length ? "Sem conselho" : null,
+        councilDays !== null && councilDays < 0 ? "Mandato vencido" : null,
+        councilDays !== null && councilDays >= 0 && councilDays <= 30 ? "Mandato vence em 30 dias" : null,
+        !hasAccountability ? "Sem prestacao" : null,
+        !hasDocument ? "Sem documentos" : null
+      ].filter((reason): reason is string => Boolean(reason));
+
+      return { unit, score, reasons };
+    })
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
 
   return (
     <div className="space-y-6">
@@ -90,13 +134,52 @@ export default async function DashboardPage() {
       <InstitutionalNotice />
 
       {isMock && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <div className="rounded-2xl border border-sme-yellow bg-sme-yellow/20 px-4 py-3 text-sm text-sme-navy">
           <strong>Modo demonstração</strong> — os dados financeiros abaixo são ilustrativos.
           Configure o Supabase para exibir dados reais.
         </div>
       )}
 
       <EduConectaCards cards={dashboardCards} />
+
+      <section className="rounded-2xl border border-sme-line bg-white p-5 shadow-soft-sm">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="font-display font-bold text-sme-navy">Requer atencao agora</h2>
+            <p className="mt-1 text-sm text-sme-muted">Tres unidades com maior prioridade operacional a partir de dados, prazos e documentos.</p>
+          </div>
+          <Link href="/diagnostico-dados" className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-sme-blue px-4 text-sm font-semibold text-white hover:bg-sme-navy">
+            Ver diagnostico
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </div>
+        <div className="mt-4 grid gap-3 lg:grid-cols-3">
+          {criticalUnits.length ? (
+            criticalUnits.map(({ unit, score, reasons }) => (
+              <article key={unit.id} className="rounded-xl border border-sme-line bg-sme-surface p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-black text-sme-ink">{unit.name}</p>
+                    <p className="mt-1 text-sm text-sme-muted">{unit.type} - {unit.district || "Bairro nao informado"}</p>
+                  </div>
+                  <span className="rounded-full bg-sme-red px-2 py-1 text-xs font-black text-white">{score}</span>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {reasons.map((reason) => (
+                    <span key={reason} className="rounded-full border border-sme-yellow bg-sme-yellow/20 px-2 py-1 text-xs font-bold text-sme-navy">
+                      {reason}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="rounded-xl border border-sme-line bg-sme-surface p-4 text-sm text-sme-muted lg:col-span-3">
+              Nenhuma prioridade critica encontrada com os dados atuais.
+            </div>
+          )}
+        </div>
+      </section>
 
       <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
         <MockChart title="Resumo financeiro" values={financialSummary} />

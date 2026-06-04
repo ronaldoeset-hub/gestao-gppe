@@ -553,14 +553,23 @@ export async function getDocuments(): Promise<DocumentRecord[]> {
       return [];
     }
 
-    return (data as DocumentRow[]).map((item) => ({
-      id: item.id,
-      title: item.title,
-      category: item.category,
-      school: relatedSchoolName(item.school_units),
-      storagePath: item.storage_path,
-      createdAt: item.created_at
-    }));
+    const documents = await Promise.all(
+      (data as DocumentRow[]).map(async (item) => {
+        const { data: signed } = await supabase.storage.from("documentos").createSignedUrl(item.storage_path, 60 * 60);
+
+        return {
+          id: item.id,
+          title: item.title,
+          category: item.category,
+          school: relatedSchoolName(item.school_units),
+          storagePath: item.storage_path,
+          downloadUrl: signed?.signedUrl,
+          createdAt: item.created_at
+        };
+      })
+    );
+
+    return documents;
   } catch {
     return [];
   }

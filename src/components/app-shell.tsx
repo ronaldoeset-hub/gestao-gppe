@@ -47,9 +47,10 @@ type AppShellProps = {
   role: UserRole | null;
   fullName: string | null;
   pendingCount?: number;
+  alertCount?: number;
 };
 
-export function AppShell({ children, role, fullName, pendingCount = 0 }: AppShellProps) {
+export function AppShell({ children, role, fullName, pendingCount = 0, alertCount = 0 }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -222,6 +223,11 @@ export function AppShell({ children, role, fullName, pendingCount = 0 }: AppShel
                             {pendingCount}
                           </span>
                         ) : null}
+                        {item.badge === "activeAlerts" && alertCount > 0 ? (
+                          <span className="rounded-full bg-sme-red px-2 py-0.5 text-xs font-bold text-white">
+                            {alertCount}
+                          </span>
+                        ) : null}
                       </Link>
                     );
                   })}
@@ -293,7 +299,7 @@ export function AppShell({ children, role, fullName, pendingCount = 0 }: AppShel
                   </div>
                 </div>
                 <p className="mt-4 text-sm leading-6 text-blue-200">
-                  Plataforma independente, em fase de protótipo, voltada à organização de informações educacionais.
+                  Plataforma institucional para organizar dados, prazos, documentos e evidencias da gestao educacional.
                 </p>
               </div>
               <FooterColumn title="Módulos" items={["Escolas", "Conselhos", "Recursos", "FNDE/PDDE"]} />
@@ -301,8 +307,8 @@ export function AppShell({ children, role, fullName, pendingCount = 0 }: AppShel
               <div>
                 <h2 className="text-sm font-bold uppercase tracking-wide text-white">Contato e aviso</h2>
                 <ul className="mt-3 space-y-2 text-sm text-blue-200">
-                  <li>contato@educonecta.local</li>
-                  <li>Uso demonstrativo com dados mockados</li>
+                  <li>Secretaria Municipal de Educacao de Aguas Lindas de Goias</li>
+                  <li>Portal EduConecta GPPE</li>
                   <li>
                     <Link href="/aviso-institucional" className="font-bold text-sme-yellow hover:underline">
                       Ler aviso institucional

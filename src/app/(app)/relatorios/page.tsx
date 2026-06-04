@@ -2,137 +2,26 @@ import type { Metadata } from "next";
 import { FileBarChart } from "lucide-react";
 import { ExportButtons } from "@/components/export-buttons";
 import { ModuleHeader } from "@/components/module-header";
-import { createClient } from "@/lib/supabase/server";
-import { formatDate } from "@/lib/utils";
+import { getAccountabilities, getCouncils, getFinancialControl, getResources, getSchoolUnits } from "@/lib/supabase/queries";
+import { formatCurrency, formatDate } from "@/lib/utils";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Relatórios",
-  description: "Exportação de relatórios de conselhos, unidades escolares e alertas."
+  description: "Exportação de relatórios reais de conselhos, recursos, prestações e regularidade."
 };
 
 type ExportRow = Record<string, string | number | undefined>;
-type RelatedName = { name: string } | { name: string }[] | null;
-
-function relatedName(value: RelatedName, fallback = "Nao informado") {
-  if (Array.isArray(value)) {
-    return value[0]?.name ?? fallback;
-  }
-
-  return value?.name ?? fallback;
-}
-
-async function getCouncilRows(): Promise<ExportRow[]> {
-  try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("school_councils")
-      .select("id,school_units(name),president_name,vice_president_name,mandate_start,mandate_end,members_count,status")
-      .order("mandate_end", { ascending: true });
-
-    if (error) return [];
-
-    return ((data ?? []) as Array<{
-      id: string;
-      school_units: RelatedName;
-      president_name: string | null;
-      vice_president_name: string | null;
-      mandate_start: string | null;
-      mandate_end: string | null;
-      members_count: number | null;
-      status: string | null;
-    }>).map((item) => ({
-      Codigo: item.id,
-      Unidade: relatedName(item.school_units, "Unidade nao informada"),
-      Presidente: item.president_name ?? "",
-      Vice: item.vice_president_name ?? "",
-      Inicio: item.mandate_start ? formatDate(item.mandate_start) : "",
-      Fim: item.mandate_end ? formatDate(item.mandate_end) : "",
-      Membros: item.members_count ?? 0,
-      Status: item.status ?? ""
-    }));
-  } catch {
-    return [];
-  }
-}
-
-async function getSchoolRows(): Promise<ExportRow[]> {
-  try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("school_units")
-      .select("id,name,inep,type,district,manager_name,cnpj,phone,email,zip_code")
-      .order("name", { ascending: true });
-
-    if (error) return [];
-
-    return ((data ?? []) as Array<{
-      id: string;
-      name: string;
-      inep: string | null;
-      type: string | null;
-      district: string | null;
-      manager_name: string | null;
-      cnpj: string | null;
-      phone: string | null;
-      email: string | null;
-      zip_code: string | null;
-    }>).map((item) => ({
-      Codigo: item.id,
-      Unidade: item.name,
-      INEP: item.inep ?? "",
-      Tipo: item.type ?? "",
-      Bairro: item.district ?? "",
-      Gestor: item.manager_name ?? "",
-      CNPJ: item.cnpj ?? "",
-      Telefone: item.phone ?? "",
-      Email: item.email ?? "",
-      CEP: item.zip_code ?? ""
-    }));
-  } catch {
-    return [];
-  }
-}
-
-async function getAlertRows(): Promise<ExportRow[]> {
-  try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("alerts")
-      .select("id,school_units(name),title,description,severity,due_date,created_at")
-      .order("due_date", { ascending: true });
-
-    if (error) return [];
-
-    return ((data ?? []) as Array<{
-      id: string;
-      school_units: RelatedName;
-      title: string;
-      description: string;
-      severity: string;
-      due_date: string | null;
-      created_at: string | null;
-    }>).map((item) => ({
-      Codigo: item.id,
-      Unidade: relatedName(item.school_units, "Todas"),
-      Titulo: item.title,
-      Descricao: item.description,
-      Prioridade: item.severity,
-      Prazo: item.due_date ? formatDate(item.due_date) : "",
-      CriadoEm: item.created_at ? formatDate(item.created_at) : ""
-    }));
-  } catch {
-    return [];
-  }
-}
 
 function ReportCard({ title, description, filename, rows }: { title: string; description: string; filename: string; rows: ExportRow[] }) {
   return (
-    <section className="rounded-md border border-slate-200 bg-white p-5 shadow-soft">
+    <section className="rounded-2xl border border-sme-line bg-white p-5 shadow-soft-sm">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <h2 className="text-lg font-bold text-sme-ink">{title}</h2>
-          <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">{description}</p>
-          <p className="mt-3 text-xs font-bold uppercase tracking-wide text-slate-500">{rows.length} registros disponiveis</p>
+          <h2 className="font-display text-xl font-bold text-sme-navy">{title}</h2>
+          <p className="mt-1 max-w-2xl text-sm leading-6 text-sme-muted">{description}</p>
+          <p className="mt-3 text-xs font-bold uppercase tracking-wide text-sme-muted">{rows.length} registros disponíveis</p>
         </div>
         <ExportButtons filename={filename} rows={rows} />
       </div>
@@ -141,39 +30,83 @@ function ReportCard({ title, description, filename, rows }: { title: string; des
 }
 
 export default async function RelatoriosPage() {
-  const [councilRows, schoolRows, alertRows] = await Promise.all([
-    getCouncilRows(),
-    getSchoolRows(),
-    getAlertRows()
+  const [units, councils, resources, accountabilities, financialControl] = await Promise.all([
+    getSchoolUnits(),
+    getCouncils(),
+    getResources(),
+    getAccountabilities(),
+    getFinancialControl()
   ]);
+
+  const councilRows = councils.map((item) => ({
+    Codigo: item.id,
+    Unidade: item.school,
+    Presidente: item.president,
+    Vice: item.vicePresident ?? "",
+    MandatoInicio: item.mandateStart ? formatDate(item.mandateStart) : "",
+    MandatoFim: formatDate(item.mandateEnd),
+    Membros: item.members,
+    Status: item.status
+  }));
+
+  const resourceRows = [
+    ...resources.map((item) => ({
+      Codigo: item.id,
+      Programa: item.program,
+      Unidade: item.school,
+      Valor: formatCurrency(item.amount),
+      Saldo: formatCurrency(item.balance),
+      Status: item.status
+    })),
+    ...financialControl.allocations.map((item) => ({
+      Codigo: item.id,
+      Programa: item.program,
+      Unidade: item.school,
+      Valor: formatCurrency(item.receivedAmount),
+      Saldo: formatCurrency(item.currentBalance),
+      Status: item.status
+    }))
+  ];
+
+  const accountabilityRows = [
+    ...accountabilities.map((item) => ({
+      Unidade: item.school,
+      Referencia: item.reference,
+      Prazo: formatDate(item.dueDate),
+      Status: item.status
+    })),
+    ...financialControl.reports.map((item) => ({
+      Unidade: item.school,
+      Referencia: item.reference,
+      Prazo: formatDate(item.dueDate),
+      Status: item.status
+    }))
+  ];
+
+  const regularityRows = units.map((unit) => {
+    const council = councils.find((item) => item.school === unit.name);
+    const pending = accountabilities.filter((item) => item.school === unit.name && ["pendente", "vencido"].includes(item.status)).length;
+    return {
+      Unidade: unit.name,
+      Tipo: unit.type,
+      Conselho: council?.status ?? "sem_conselho",
+      Pendencias: pending
+    };
+  });
 
   return (
     <div className="space-y-6">
       <ModuleHeader
-        title="Relatorios"
-        description="Exporte dados operacionais do GPPE em CSV para acompanhamento, auditoria e consolidacao interna."
+        title="Relatórios"
+        description="Exporte dados operacionais do GPPE em CSV para acompanhamento, auditoria e consolidação interna."
         icon={FileBarChart}
       />
 
       <div className="grid gap-4">
-        <ReportCard
-          title="Relatorio de Conselhos Escolares"
-          description="Composicao, presidencia, periodo de mandato, quantidade de membros e situacao de cada conselho."
-          filename="relatorio-conselhos-escolares"
-          rows={councilRows}
-        />
-        <ReportCard
-          title="Relatorio de Unidades Escolares"
-          description="Cadastro das unidades, identificadores, contato e dados administrativos principais."
-          filename="relatorio-unidades-escolares"
-          rows={schoolRows}
-        />
-        <ReportCard
-          title="Relatorio de Alertas"
-          description="Alertas ativos e historicos cadastrados para acompanhamento de prazos e pendencias."
-          filename="relatorio-alertas"
-          rows={alertRows}
-        />
+        <ReportCard title="Conselhos" description="Status, presidência, mandato e unidade vinculada." filename="relatorio-conselhos" rows={councilRows} />
+        <ReportCard title="Recursos financeiros" description="Programa, unidade, valores recebidos, saldos e situação." filename="relatorio-recursos-financeiros" rows={resourceRows} />
+        <ReportCard title="Prestação de contas" description="Unidade, referência, prazo e status da prestação." filename="relatorio-prestacao-contas" rows={accountabilityRows} />
+        <ReportCard title="Regularidade" description="Visão consolidada por unidade, tipo, conselho e pendências." filename="relatorio-regularidade" rows={regularityRows} />
       </div>
     </div>
   );

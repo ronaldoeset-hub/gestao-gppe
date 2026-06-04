@@ -66,6 +66,7 @@ export type DocumentRecord = {
   category: string;
   school: string;
   storagePath: string;
+  downloadUrl?: string;
   createdAt: string;
 };
 

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { Landmark, Plus } from "lucide-react";
-import { DataTable } from "@/components/data-table";
 import { ExportButtons } from "@/components/export-buttons";
 import { FinancialControlPanel } from "@/components/financial-control-panel";
 import { ResourceForm } from "@/components/linked-record-forms";
 import { ModuleHeader } from "@/components/module-header";
 import { ResourcesOverview } from "@/components/resources-overview";
-import { StatusBadge } from "@/components/status-badge";
+import { ResourcesExplorer } from "@/components/v4-filter-panels";
 import { getFinancialControl, getResources } from "@/lib/supabase/queries";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
@@ -14,6 +13,8 @@ export const metadata: Metadata = {
   title: "Recursos",
   description: "Acompanhamento de repasses, saldos, planejamento e controle financeiro."
 };
+
+export const revalidate = 60;
 
 export default async function ResourcesPage() {
   const [resources, financialControl] = await Promise.all([getResources(), getFinancialControl()]);
@@ -63,20 +64,7 @@ export default async function ResourcesPage() {
           Status: item.status
         }))}
       />
-      <DataTable
-        rows={resources}
-        emptyDescription="Nenhum recurso cadastrado foi encontrado."
-        columns={[
-          { key: "id", header: "Codigo", render: (row) => row.id },
-          { key: "program", header: "Programa", render: (row) => <span className="font-semibold text-sme-ink">{row.program}</span> },
-          { key: "school", header: "Unidade", render: (row) => row.school },
-          { key: "category", header: "Tipo", render: (row) => row.category ?? "Outros" },
-          { key: "amount", header: "Valor", render: (row) => formatCurrency(row.amount) },
-          { key: "releasedAt", header: "Liberacao", render: (row) => formatDate(row.releasedAt) },
-          { key: "balance", header: "Saldo", render: (row) => formatCurrency(row.balance) },
-          { key: "status", header: "Status", render: (row) => <StatusBadge status={row.status} /> }
-        ]}
-      />
+      <ResourcesExplorer rows={resources} />
     </div>
   );
 }
