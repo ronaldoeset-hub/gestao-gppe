@@ -10,7 +10,6 @@ type ExportButtonsProps = {
 export function ExportButtons({ filename, rows }: ExportButtonsProps) {
   async function exportExcel() {
     if (!rows.length) return;
-
     const headers = Object.keys(rows[0] ?? {});
     const escapeCell = (value: string | number | undefined) => {
       const text = String(value ?? "");
@@ -20,7 +19,7 @@ export function ExportButtons({ filename, rows }: ExportButtonsProps) {
       headers.map(escapeCell).join(";"),
       ...rows.map((row) => headers.map((header) => escapeCell(row[header])).join(";"))
     ].join("\r\n");
-    const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" });
+    const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -31,7 +30,6 @@ export function ExportButtons({ filename, rows }: ExportButtonsProps) {
 
   async function exportPdf() {
     if (!rows.length) return;
-
     const { jsPDF } = await import("jspdf");
     const doc = new jsPDF();
     doc.setFontSize(14);
@@ -50,7 +48,7 @@ export function ExportButtons({ filename, rows }: ExportButtonsProps) {
         onClick={exportExcel}
         disabled={!rows.length}
         aria-label={`Exportar ${filename} em CSV`}
-        className="inline-flex h-10 items-center gap-2 rounded-md bg-sme-blue px-3 text-sm font-semibold text-white transition hover:bg-sme-navy focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex h-10 items-center gap-2 rounded-xl bg-sme-navy px-4 text-sm font-semibold text-white transition hover:bg-sme-blue focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <FileSpreadsheet className="h-4 w-4" aria-hidden="true" />
         CSV
@@ -60,7 +58,7 @@ export function ExportButtons({ filename, rows }: ExportButtonsProps) {
         onClick={exportPdf}
         disabled={!rows.length}
         aria-label={`Exportar ${filename} em PDF`}
-        className="inline-flex h-10 items-center gap-2 rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold text-sme-ink transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex h-10 items-center gap-2 rounded-xl border border-sme-line bg-white px-4 text-sm font-semibold text-sme-ink transition hover:bg-sme-surface focus:outline-none focus:ring-2 focus:ring-sme-yellow focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <FileText className="h-4 w-4" aria-hidden="true" />
         PDF

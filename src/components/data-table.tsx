@@ -18,26 +18,32 @@ export function DataTable<T>({ columns, rows, emptyDescription = "A consulta nao
   }
 
   return (
-    <div className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-soft">
+    <div className="overflow-hidden rounded-2xl border border-sme-line bg-white shadow-soft-sm">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50">
+        <table className="min-w-full divide-y divide-sme-line">
+          <thead className="bg-sme-surface">
             <tr>
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className={cn("whitespace-nowrap px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500", column.className)}
+                  className={cn(
+                    "whitespace-nowrap px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-sme-muted",
+                    column.className
+                  )}
                 >
                   {column.header}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 bg-white">
+          <tbody className="divide-y divide-sme-line bg-white">
             {rows.map((row, rowIndex) => (
-              <tr key={rowIndex} className="hover:bg-slate-50">
+              <tr key={rowIndex} className="transition hover:bg-sme-surface/70">
                 {columns.map((column) => (
-                  <td key={column.key} className={cn("whitespace-nowrap px-4 py-3 text-sm text-slate-700", column.className)}>
+                  <td
+                    key={column.key}
+                    className={cn("whitespace-nowrap px-4 py-3 text-sm text-sme-ink", column.className)}
+                  >
                     {column.render(row)}
                   </td>
                 ))}
